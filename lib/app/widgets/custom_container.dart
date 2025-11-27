@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 class CustomContainer extends StatelessWidget {
 
   final String text;
-
   const CustomContainer({
 
     super.key, required this.
@@ -16,7 +15,6 @@ class CustomContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
         color: AppColors.primaryColor,
@@ -25,9 +23,9 @@ class CustomContainer extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-
           SizedBox(width: 8),
           Text(
+            textAlign: TextAlign.center,
             text,
             style: GoogleFonts.karla(
               color: Colors.white,

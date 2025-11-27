@@ -12,7 +12,7 @@ class AppToast {
         content: Text(message),
         backgroundColor: bgColor,
         behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(top: 16,bottom: 16,left: 12,right: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),

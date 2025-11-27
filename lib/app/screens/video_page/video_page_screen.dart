@@ -1,18 +1,21 @@
 import 'package:bmtc_app/app/core/app_colors.dart';
+import 'package:bmtc_app/app/screens/home/dashboard_page/dashBoard_page_screen.dart';
 import 'package:bmtc_app/app/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../../core/text_style.dart';
 
-class TestYoutubeScreen extends StatefulWidget {
-  const TestYoutubeScreen({super.key});
+class videoPageScreen extends StatefulWidget {
+  const videoPageScreen({super.key});
 
   @override
-  State<TestYoutubeScreen> createState() => _TestYoutubeScreenState();
+  State<videoPageScreen> createState() => _videoPageScreenState();
 }
 
-class _TestYoutubeScreenState extends State<TestYoutubeScreen> {
+class _videoPageScreenState extends State<videoPageScreen> {
   late YoutubePlayerController _controller;
 
   @override
@@ -38,6 +41,7 @@ class _TestYoutubeScreenState extends State<TestYoutubeScreen> {
   @override
   Widget build(BuildContext context) {
     final h = MediaQuery.of(context).size.height;
+    final w = MediaQuery.sizeOf(context).width;
 
     return YoutubePlayerBuilder(
       player: YoutubePlayer(
@@ -87,7 +91,7 @@ class _TestYoutubeScreenState extends State<TestYoutubeScreen> {
                     child: CustomPrimaryButton(
                       text: "Let's get started",
                       onPressed: () {
-                        // TODO: navigate yaha
+                        Get.to(DashboardPageScreen());
                       },
                     ),
                   ),

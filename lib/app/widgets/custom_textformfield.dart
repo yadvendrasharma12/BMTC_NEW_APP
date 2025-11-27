@@ -33,68 +33,65 @@ class AppTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 55,
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        obscureText: obscureText,
-        maxLines: obscureText ? 1 : maxLines,
-        validator: validator,
-        onChanged: (value) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      obscureText: obscureText,
+      maxLines: obscureText ? 1 : maxLines,
+      validator: validator,
+      onChanged: (value) {
 
-          if (validator != null) {
-            validator!(value);
-          }
-          if (onChanged != null) {
-            onChanged!(value);
-          }
-        },
-        inputFormatters: inputFormatters,
-        style: AppTextStyles.inputLabel,
-        decoration: InputDecoration(
-          labelText: label,
-          hintText: hintText,
-          labelStyle: AppTextStyles.inputLabel,
-          hintStyle: AppTextStyles.inputHint,
+        if (validator != null) {
+          validator!(value);
+        }
+        if (onChanged != null) {
+          onChanged!(value);
+        }
+      },
+      inputFormatters: inputFormatters,
+      style: AppTextStyles.inputLabel,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hintText,
+        labelStyle: AppTextStyles.inputLabel,
+        hintStyle: AppTextStyles.inputHint,
 
-          errorStyle: const TextStyle(height: 0, fontSize: 0),
+        errorStyle: const TextStyle(height: 0, fontSize: 0),
 
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 10,
-            horizontal: 12,
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 10,
+          horizontal: 12,
+        ),
+        filled: true,
+        fillColor: AppColors.fillColorFB,
+        prefixIcon: prefix,
+        suffixIcon: suffix,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: AppColors.borderColor,
+            width: 1,
           ),
-          filled: true,
-          fillColor: AppColors.fillColorFB,
-          prefixIcon: prefix,
-          suffixIcon: suffix,
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: AppColors.borderColor,
-              width: 1,
-            ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: AppColors.primaryColor,
+            width: 1.2,
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: AppColors.primaryColor,
-              width: 1.2,
-            ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: Colors.red,
+            width: 1,
           ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(
-              color: Colors.red,
-              width: 1,
-            ),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(
-              color: Colors.red,
-              width: 1.2,
-            ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(
+            color: Colors.red,
+            width: 1.2,
           ),
         ),
       ),

@@ -13,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../video_page/video_page_screen.dart';
+
 class CenterDetailsPage4 extends StatefulWidget {
   const CenterDetailsPage4({super.key});
 
@@ -29,6 +31,7 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
   final TextEditingController panController = TextEditingController();
   final TextEditingController gstStateController = TextEditingController();
   final TextEditingController udhaiController = TextEditingController();
+  final TextEditingController udhayamController = TextEditingController();
 
   // ✅ Yes/No selections
   String? hasGST; // "Yes" or "No"
@@ -177,7 +180,7 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
 
     // ✅ All validations passed
     AppToast.showSuccess(context, "Bank details saved successfully");
-    Get.to(DashboardPageScreen());
+    Get.to(videoPageScreen());
   }
 
   // 🔹 File variables
@@ -329,7 +332,7 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
 
                 const SizedBox(height: 15),
                 // IFSC
-                Text("IFSC Code", style: AppTextStyles.centerText),
+                Text("Bank IFSC code", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
                 AppTextField(
                   controller: ifscController,
@@ -528,7 +531,7 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
                   Text("UDHYAM / MSME Number", style: AppTextStyles.centerText),
                   const SizedBox(height: 8),
                   AppTextField(
-                    controller: udhaiController,
+                    controller: udhayamController,
                     label: "",
                     hintText: "",
                   ),

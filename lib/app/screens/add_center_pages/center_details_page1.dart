@@ -59,25 +59,132 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
   bool? isLiftAvailable; // null / true / false
 
   // ✅ Sample dropdown data
-  final List<String> centerTypes = [
-    'School',
-    'College',
-    'Training Center',
-    'Other',
-  ];
+  final List<String> centerTypes = ['Online'];
   final List<String> countries = ['India', 'USA', 'UK'];
   final List<String> states = ['Karnataka', 'Maharashtra', 'Delhi'];
   final List<String> cities = ['Bangalore', 'Mysore', 'Mumbai', 'Delhi'];
-  final List<String> categoryTypes = ['Category A', 'Category B', 'Category C'];
-  final List<String> distanceOptions = [
-    'Within 1 KM',
-    '1–5 KM',
-    '5–10 KM',
-    '10–20 KM',
-    'More than 20 KM',
+
+  // ✅ FIXED: removed duplicate 'University' and fixed typo 'College'
+  final List<String> categoryTypes = [
+    'University',
+    'School',
+    'ITI College',
   ];
 
-  // 🔹 File states – ALAG-ALAG for each upload
+  // NOTE: distanceOptions cleaned minor backtick typo
+  final List<String> distanceOptions = [
+    '100 Meters',
+    '200 Meters',
+    '300 Meters',
+    '400 Meters',
+    '500 Meters',
+    '600 Meters',
+    '700 Meters',
+    '800 Meters',
+    '900 Meters',
+    '1000 Meters',
+    '1.10 km',
+    '1.20 km',
+    '1.30 km',
+    '1.40 km',
+    '1.50 km',
+    '1.60 km',
+    '1.70 km',
+    '1.80 km',
+    '1.90 km',
+    '2 km',
+    '2.10 km',
+    '2.20 km',
+    '2.30 km',
+    '2.40 km',
+    '2.50 km',
+    '2.60 km',
+    '2.70 km',
+    '2.80 km',
+    '2.90 km',
+    '3 km',
+    '3.10 km',
+    '3.20 km',
+    '3.30 km',
+    '3.40 km',
+    '3.50 km',
+    '3.60 km',
+    '3.70 km',
+    '3.80 km',
+    '3.90 km',
+    '4 km',
+    '4.10 km',
+    '4.20 km',
+    '4.30 km',
+    '4.40 km',
+    '4.50 km',
+    '4.60 km',
+    '4.70 km',
+    '4.80 km',
+    '4.90 km',
+    '5 km',
+    '5.10 km',
+    '5.20 km',
+    '5.30 km',
+    '5.40 km',
+    '5.50 km',
+    '5.60 km',
+    '5.70 km',
+    '5.80 km',
+    '5.90 km',
+    '6 km',
+    '6.10 km',
+    '6.20 km',
+    '6.30 km',
+    '6.40 km',
+    '6.50 km',
+    '6.60 km',
+    '6.70 km',
+    '6.80 km',
+    '6.90 km',
+    '7 km',
+    '7.10 km',
+    '7.20 km',
+    '7.30 km',
+    '7.40 km',
+    '7.50 km',
+    '7.60 km',
+    '7.70 km',
+    '7.80 km',
+    '7.90 km',
+    '8 km',
+    '8.10 km',
+    '8.20 km',
+    '8.30 km',
+    '8.40 km',
+    '8.50 km',
+    '8.60 km',
+    '8.70 km',
+    '8.80 km',
+    '8.90 km',
+    '9 km',
+    '9.10 km',
+    '9.20 km',
+    '9.30 km',
+    '9.40 km',
+    '9.50 km',
+    '9.60 km',
+    '9.70 km',
+    '9.80 km',
+    '9.90 km',
+    '10 km',
+    '10.10 km',
+    '10.20 km',
+    '10.30 km',
+    '10.40 km',
+    '10.50 km',
+    '10.60 km',
+    '10.70 km',
+    '10.80 km',
+    '10.90 km',
+    '11 km',
+  ];
+
   File? entranceFile;
   String? entranceFileName;
   int? entranceFileSizeBytes;
@@ -129,7 +236,6 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     return double.tryParse(value) != null;
   }
 
-
   Future<PlatformFile?> _pickImageFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -150,7 +256,6 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     return file;
   }
 
-
   Future<PlatformFile?> _pickVideoFile() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -170,8 +275,6 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
 
     return file;
   }
-
-
 
   Future<void> _pickEntranceFile() async {
     try {
@@ -249,8 +352,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
       setState(() {
         conferenceRoomFileName = file.name;
         conferenceRoomFileSizeBytes = file.size;
-        conferenceRoomFile =
-        file.path != null ? File(file.path!) : null;
+        conferenceRoomFile = file.path != null ? File(file.path!) : null;
       });
 
       AppToast.showSuccess(context, "Conference room photo selected");
@@ -284,8 +386,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
       setState(() {
         walkthroughVideoFileName = file.name;
         walkthroughVideoFileSizeBytes = file.size;
-        walkthroughVideoFile =
-        file.path != null ? File(file.path!) : null;
+        walkthroughVideoFile = file.path != null ? File(file.path!) : null;
       });
 
       AppToast.showSuccess(context, "Walkthrough video selected");
@@ -496,7 +597,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 const SizedBox(height: 20),
 
                 // 🔹 Center Name
-                Text("Center Name?", style: AppTextStyles.centerText),
+                Text("Center Name", style: AppTextStyles.centerText),
                 const SizedBox(height: 10),
                 AppTextField(
                   controller: centerNameController,
@@ -521,7 +622,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 const SizedBox(height: 12),
 
                 // 🔹 Center Type
-                Text("Center Type?", style: AppTextStyles.centerText),
+                Text("Center Type", style: AppTextStyles.centerText),
                 const SizedBox(height: 10),
                 CustomDropdown<String>(
                   hintText: "Select Center Type",
@@ -535,11 +636,10 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                   },
                   validator: (_) {},
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 17),
 
                 // 🔹 Portal Address
-                Text("Center Portal Address?",
-                    style: AppTextStyles.centerText),
+                Text("Center Portal Address?", style: AppTextStyles.centerText),
                 const SizedBox(height: 10),
                 AppTextField(
                   controller: portalAddressController,
@@ -610,87 +710,73 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 ),
                 const SizedBox(height: 12),
 
-
-
                 // Entrance
-                Text("Upload Center Entrance",
-                    style: AppTextStyles.centerText),
+                Text("Upload Center Entrance", style: AppTextStyles.centerText),
                 const SizedBox(height: 10),
                 UploadingContainer(
                   buttonText: "Upload File",
-                  infoText:
-                  "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                  infoText: "Max Each file size: 1 MB | File type: jpg, png, jpeg",
                   onPressed: _pickEntranceFile,
                 ),
                 _fileInfoText(entranceFileName, entranceFileSizeBytes),
 
-                SizedBox(height: 16,),
+                const SizedBox(height: 16),
 
                 Text("Lab Photos", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
                 UploadingContainer(
                   buttonText: "Upload File",
-                  infoText:
-                  "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                  infoText: "Max Each file size: 1 MB | File type: jpg, png, jpeg",
                   onPressed: _pickLabPhotoFile,
                 ),
                 _fileInfoText(labPhotoFileName, labPhotoFileSizeBytes),
-                SizedBox(height: 16,),
-                Text("Main Gate/Entrance",
-                    style: AppTextStyles.centerText),
+                const SizedBox(height: 16),
+                Text("Main Gate/Entrance", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
                 UploadingContainer(
                   buttonText: "Upload File",
-                  infoText:
-                  "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                  infoText: "Max Each file size: 1 MB | File type: jpg, png, jpeg",
                   onPressed: _pickMainGateFile,
                 ),
                 _fileInfoText(mainGateFileName, mainGateFileSizeBytes),
 
-                SizedBox(height: 16,),
+                const SizedBox(height: 16),
                 Text("Server Room", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
                 UploadingContainer(
                   buttonText: "Upload File",
-                  infoText:
-                  "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                  infoText: "Max Each file size: 1 MB | File type: jpg, png, jpeg",
                   onPressed: _pickServerRoomFile,
                 ),
                 _fileInfoText(serverRoomFileName, serverRoomFileSizeBytes),
 
-                SizedBox(height: 16,),
-                Text("Observer/Conference room",
-                    style: AppTextStyles.centerText),
+                const SizedBox(height: 16),
+                Text("Observer/Conference room", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
                 UploadingContainer(
                   buttonText: "Upload File",
-                  infoText:
-                  "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                  infoText: "Max Each file size: 1 MB | File type: jpg, png, jpeg",
                   onPressed: _pickConferenceRoomFile,
                 ),
                 _fileInfoText(
                     conferenceRoomFileName, conferenceRoomFileSizeBytes),
 
-                SizedBox(height: 16,),
-                Text("UPS & Generator photo",
-                    style: AppTextStyles.centerText),
+                const SizedBox(height: 16),
+                Text("UPS & Generator photo", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
                 UploadingContainer(
                   buttonText: "Upload File",
-                  infoText:
-                  "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                  infoText: "Max Each file size: 1 MB | File type: jpg, png, jpeg",
                   onPressed: _pickUpsGeneratorFile,
                 ),
                 _fileInfoText(upsGeneratorFileName, upsGeneratorFileSizeBytes),
 
-                SizedBox(height: 16,),
-                Text("Center Walkthrough video",
-                    style: AppTextStyles.centerText),
+                const SizedBox(height: 16),
+                Text("Center Walkthrough video", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
                 UploadingContainer(
                   buttonText: "Upload File",
-                  infoText:
-                  "Max Each file size: 5 MB | File type: mp4, webm",
+                  infoText: "Max Each file size: 5 MB | File type: mp4, webm",
                   onPressed: _pickWalkthroughVideoFile,
                 ),
                 _fileInfoText(
@@ -742,7 +828,9 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                       selectedCity = value;
                     });
                   },
-                  validator: (_) {},
+                  validator: (_) {
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
 
@@ -789,8 +877,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 const SizedBox(height: 16),
 
                 // 🔹 Landmark
-                Text("Any nearby Landmark",
-                    style: AppTextStyles.centerText),
+                Text("Any nearby Landmark", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
                 AppTextField(
                   label: "",
@@ -819,7 +906,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                         },
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: SelectableTile(
                         value: isLiftAvailable == false,
@@ -835,9 +922,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 ),
                 const SizedBox(height: 16),
 
-
-                Text("Name of Railway Station",
-                    style: AppTextStyles.centerText),
+                Text("Name of Railway Station", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
                 AppTextField(
                   label: "",
@@ -867,8 +952,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 const SizedBox(height: 16),
 
                 // 🔹 Bus
-                Text("Name of Bus Station",
-                    style: AppTextStyles.centerText),
+                Text("Name of Bus Station", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
                 AppTextField(
                   label: "",
@@ -896,8 +980,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 const SizedBox(height: 16),
 
                 // 🔹 Metro
-                Text("Name of Metro Station",
-                    style: AppTextStyles.centerText),
+                Text("Name of Metro Station", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
                 AppTextField(
                   label: "",

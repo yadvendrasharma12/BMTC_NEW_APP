@@ -1,0 +1,335 @@
+import 'package:bmtc_app/app/screens/home/center_pages/center_details_screen.dart';
+import 'package:bmtc_app/app/screens/home/center_pages/center_page_screen.dart';
+import 'package:bmtc_app/app/screens/home/self_booking/self_booking_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../../../core/app_colors.dart';
+import '../../../../core/text_style.dart';
+import '../../../../widgets/custom_textformfield.dart';
+import '../../exam_details/exam_details_screen.dart';
+import '../../widgets/action_button_card.dart';
+import '../../widgets/add_booking_dailog.dart';
+import '../../widgets/status_summary_card.dart';
+
+class BookingRequestScreen extends StatefulWidget {
+  const BookingRequestScreen({super.key});
+
+  @override
+  State<BookingRequestScreen> createState() => _BookingRequestScreenState();
+}
+
+class _BookingRequestScreenState extends State<BookingRequestScreen> {
+  final TextEditingController searchController = TextEditingController();
+  bool headerChecked = false;
+  String _selectedYear = "1Y";
+  String _selectedYears = "1Y";
+  bool rowChecked = false;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.borderColor,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 10.0),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: StatusSummaryCard(
+                  title: "Total bookings",
+                  currentCount: 58,
+                  percentage: 64.54,
+                  iconPath: "assets/icons/check.png",
+                  showYearDropdown: true,
+                  selectedYear: _selectedYears,
+                  onYearChanged: (val) {
+                    setState(() {
+                      _selectedYear = val ?? "1Y";
+                    });
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 20.0,
+                  right: 20.0,
+                  top: 10.0,
+                ),
+                child: StatusSummaryCard(
+                  title: "Seats Booked",
+                  currentCount: 67,
+
+                  percentage: 64,
+                  iconPath: "assets/icons/seat_booked.png",
+                  showYearDropdown: true,
+                  selectedYear: _selectedYear,
+                  onYearChanged: (val) {
+                    setState(() {
+                      _selectedYear = val ?? "1Y";
+                    });
+                  },
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 20.0,
+                  right: 20.0,
+                  top: 10.0,
+                ),
+                child: ActionButtonsCard(
+                  primaryText: "Custom booking",
+                  secondaryText: "Edit Center profile",
+                  onPrimaryTap: () {
+                    Get.to(SelfBookingScreen());
+
+                  },
+                  onSecondaryTap: () {
+                    Get.to(CenterPageScreen());
+                  },
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 20.0,
+                  right: 20.0,
+                  top: 12.0,
+                  bottom: 10,
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.background,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.grey73),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: AppTextField(
+                                    controller: searchController,
+                                    keyboardType: TextInputType.number,
+                                    label: 'Search here',
+                                    prefix: Icon(Icons.search),
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: _onExportTap,
+                                    child: Container(
+                                      height: 42,
+                                      color: AppColors.blackColor,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            textAlign: TextAlign.center,
+                                            "Export",
+                                            style: AppTextStyles.button,
+                                          ),
+                                          Icon(
+                                            Icons.file_download_outlined,
+                                            color: AppColors.background,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const Divider(height: 1),
+
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // ===== HEADER ROW =====
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                    vertical: 8,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Checkbox(
+                                        value: headerChecked,
+                                        onChanged: (val) {
+                                          setState(() {
+                                            headerChecked = val ?? false;
+                                          });
+                                        },
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        "Exam Name",
+                                        style: AppTextStyles.centerSubTitle,
+                                      ),
+                                      const SizedBox(width: 28),
+                                      Text(
+                                        "From",
+                                        style: AppTextStyles.centerSubTitle,
+                                      ),
+                                      const SizedBox(width: 76),
+                                      Text(
+                                        "Duration",
+                                        style: AppTextStyles.centerSubTitle,
+                                      ),
+                                      const SizedBox(width: 25),
+                                      Text(
+                                        "Exam Date",
+                                        style: AppTextStyles.centerSubTitle,
+                                      ),
+                                      const SizedBox(width: 70),
+                                      Text(
+                                        "Seats",
+                                        style: AppTextStyles.centerSubTitle,
+                                      ),
+                                      const SizedBox(width: 25),
+                                      Text(
+                                        "Pricing",
+                                        style: AppTextStyles.centerSubTitle,
+                                      ),
+                                      const SizedBox(width: 50),
+                                      Text(
+                                        "Status",
+                                        style: AppTextStyles.centerSubTitle,
+                                      ),
+                                      const SizedBox(width: 55),
+                                      Text(
+                                        "Action",
+                                        style: AppTextStyles.centerSubTitle,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const Divider(height: 1),
+
+                                // ===== DATA ROWS =====
+                                Column(
+                                  children: List.generate(5, (index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0,
+                                        vertical: 4,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Checkbox(
+                                            value: rowChecked,
+                                            onChanged: (val) {
+                                              setState(() {
+                                                rowChecked = val ?? false;
+                                              });
+                                            },
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            "Bar Council",
+                                            style: AppTextStyles.tableText,
+                                          ),
+                                          const SizedBox(width: 20),
+                                          Text(
+                                            "Testpan India",
+                                            style: AppTextStyles.tableText,
+                                          ),
+                                          const SizedBox(width: 20),
+                                          Text(
+                                            "2 days",
+                                            style: AppTextStyles.tableText,
+                                          ),
+                                          const SizedBox(width: 20),
+                                          Text(
+                                            "Mar 3th - 4th, 2025",
+                                            style: AppTextStyles.tableText,
+                                          ),
+                                          const SizedBox(width: 20),
+                                          Text(
+                                            "470",
+                                            style: AppTextStyles.tableText,
+                                          ),
+                                          const SizedBox(width: 20),
+                                          Text(
+                                            "Rs. 60/seat",
+                                            style: AppTextStyles.tableText,
+                                          ),
+                                          const SizedBox(width: 20),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.yellow.shade100,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                            ),
+                                            height: 30,
+                                            width: 98,
+                                            alignment: Alignment.center,
+                                            child: Text(
+                                              "Active",
+                                              style:
+                                                  AppTextStyles.centerSubTitle,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 15),
+                                          GestureDetector(
+                                            onTap: () {
+                                              Get.to(ExamDetailsScreen());
+                                            },
+                                            child: Container(
+                                              height: 30,
+                                              width: 65,
+                                              decoration: BoxDecoration(
+                                                color: AppColors.blackColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "View",
+                                                style: AppTextStyles.button,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 30),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _onExportTap() async {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Export started...')));
+  }
+}

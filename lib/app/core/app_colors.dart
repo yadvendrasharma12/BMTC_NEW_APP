@@ -11,4 +11,7 @@ class AppColors {
   static Color fillColorFB = Color(0xFFF9FAFB);
   static Color borderColor = Color (0xFFDFDFDF);
   static Color secounDryBlack = Color (0xFF737373);
+  static Color inReviewcolor = Color(0XffFEFFBD) ;
+  static Color ConfirmColor = Color (0XffCAFFBD);
+  static Color requestColor = Color(0xffF9822C4D);
 }

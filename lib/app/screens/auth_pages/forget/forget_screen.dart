@@ -94,11 +94,11 @@ class _ForgetScreenState extends State<ForgetScreen> {
                 ),
 
                 const SizedBox(height: 24),
-                Text("Reset/Forget MpIN", style: AppTextStyles.topHeading2),
+                Text("Reset/Forget MpIN",style: AppTextStyles.topHeading1,),
                 const SizedBox(height: 6),
                 Text("Enter your registered phone number", style: AppTextStyles.topHeading3),
                 const SizedBox(height: 24),
-                // Phone input
+
                 AppTextField(
                   controller: _phoneController,
                   label: "Phone number",

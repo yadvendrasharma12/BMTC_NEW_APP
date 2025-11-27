@@ -29,7 +29,7 @@ class SelectableTile extends StatelessWidget {
       child: Row(
         children: [
           Checkbox(
-            shape: const CircleBorder(), // ✅ correct shape
+            shape: const CircleBorder(),
             value: value,
             onChanged: onChanged,
           ),

@@ -33,7 +33,6 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
     );
 
-    // Fade 0 → 1
     _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
@@ -60,13 +59,11 @@ class _SplashScreenState extends State<SplashScreen>
           opacity: _fadeAnimation,
           child: ScaleTransition(
             scale: _scaleAnimation,
-            child: SizedBox(
-              width: 160,
-              child: Image.asset(
-                "assets/logo/BMTCLogo.png",
-                filterQuality: FilterQuality.high,
-                fit: BoxFit.contain,
-              ),
+            child: Image.asset(
+              "assets/logo/BMTCLogo.png",
+              height: 160,
+              filterQuality: FilterQuality.high,
+              fit: BoxFit.contain,
             ),
           ),
         ),

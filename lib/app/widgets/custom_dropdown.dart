@@ -31,6 +31,7 @@ class CustomDropdown<T> extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
+      height: 47,
       padding: padding,
       decoration: BoxDecoration(
         color: fillColor ?? Colors.white,
