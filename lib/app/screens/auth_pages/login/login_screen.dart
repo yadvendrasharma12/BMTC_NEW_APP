@@ -46,36 +46,36 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
 
-  void _onLogin() {
-    final phone = _phoneController.text.trim();
-    final mpin = _otpController.text.trim();
-
-    // Phone validation
-    final phoneError = Validators.phone(phone);
-    if (phoneError != null) {
-      AppToast.showError(context, phoneError);
-      return;
-    }
-
-    // MPIN validation
-    if (mpin.isEmpty) {
-      errorController.add(ErrorAnimationType.shake);
-      AppToast.showError(context, 'Please enter your MPIN');
-      return;
-    }
-
-    if (mpin.length != 4) {
-      errorController.add(ErrorAnimationType.shake);
-      AppToast.showError(context, 'MPIN must be 4 digits');
-      return;
-    }
-
-    final isValid = _formKey.currentState?.validate() ?? false;
-    if (!isValid) return;
-
-    AppToast.showSuccess(context, 'OTP/MPIN valid!');
-    Get.to(CenterDetailsPage1());
-  }
+  // void _onLogin() {
+  //   final phone = _phoneController.text.trim();
+  //   final mpin = _otpController.text.trim();
+  //
+  //   // Phone validation
+  //   final phoneError = Validators.phone(phone);
+  //   if (phoneError != null) {
+  //     AppToast.showError(context, phoneError);
+  //     return;
+  //   }
+  //
+  //   // MPIN validation
+  //   if (mpin.isEmpty) {
+  //     errorController.add(ErrorAnimationType.shake);
+  //     AppToast.showError(context, 'Please enter your MPIN');
+  //     return;
+  //   }
+  //
+  //   if (mpin.length != 4) {
+  //     errorController.add(ErrorAnimationType.shake);
+  //     AppToast.showError(context, 'MPIN must be 4 digits');
+  //     return;
+  //   }
+  //
+  //   final isValid = _formKey.currentState?.validate() ?? false;
+  //   if (!isValid) return;
+  //
+  //   AppToast.showSuccess(context, 'OTP/MPIN valid!');
+  //   Get.to(CenterDetailsPage1());
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +150,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 CustomPrimaryButton(
                   text: "Log in",
                   icon: Icons.arrow_right_alt_rounded,
-                  onPressed: _onLogin,
+                  // onPressed: _onLogin,
+                  onPressed: (){
+                    Get.to(CenterDetailsPage1());
+                  },
                 ),
 
                 const SizedBox(height: 15),
@@ -180,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 15),
 
-                // Reset/Forget MPIN
+
                 Align(
                   alignment: Alignment.center,
                   child: Wrap(

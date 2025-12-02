@@ -211,7 +211,7 @@ class _ExamDetailsScreenState extends State<ExamDetailsScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                      //    Get.to(ForgetScreen());
+
                         },
                         child: Text("Contact Us", style: AppTextStyles.linkText),
                       ),
@@ -227,7 +227,6 @@ class _ExamDetailsScreenState extends State<ExamDetailsScreen> {
   }
 }
 
-/// 🔻 Same file ke niche yahi helper widget hai
 class _DetailFieldTile extends StatelessWidget {
   final String label;
   final String value;

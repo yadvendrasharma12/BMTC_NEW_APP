@@ -4,6 +4,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../models/city_modal.dart';
+import '../../models/country_modal.dart';
+import '../../models/state_modal.dart';
+import '../../services/center_services.dart';
+import '../../services/location_services/location_service.dart';
 import '../../utils/toast_message.dart';
 import '../../widgets/custom_container.dart';
 import '../../widgets/custom_dropdown.dart';
@@ -44,11 +49,8 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
   TextEditingController();
   final TextEditingController airportNameController = TextEditingController();
 
-  // ✅ Dropdown values
   String? selectedCenterType;
-  String? selectedCountry;
-  String? selectedState;
-  String? selectedCity;
+
   String? selectedTestCenterCategory;
   String? selectedRailwayDistance;
   String? selectedBusDistance;
@@ -64,14 +66,9 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
   final List<String> states = ['Karnataka', 'Maharashtra', 'Delhi'];
   final List<String> cities = ['Bangalore', 'Mysore', 'Mumbai', 'Delhi'];
 
-  // ✅ FIXED: removed duplicate 'University' and fixed typo 'College'
-  final List<String> categoryTypes = [
-    'University',
-    'School',
-    'ITI College',
-  ];
 
-  // NOTE: distanceOptions cleaned minor backtick typo
+
+
   final List<String> distanceOptions = [
     '100 Meters',
     '200 Meters',
@@ -395,162 +392,162 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     }
   }
 
-  void _validateAndNext() {
-    // 🟥 BASIC TEXT FIELDS
-    if (centerNameController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Center Name");
-      return;
-    }
-
-    if (centerDescriptionController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Center Description");
-      return;
-    }
-
-    if (selectedCenterType == null) {
-      AppToast.showError(context, "Please select Center Type");
-      return;
-    }
-
-    if (portalAddressController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Portal Address");
-      return;
-    }
-
-    // 🟥 LAT / LONG
-    if (latitudeController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Center Latitude");
-      return;
-    }
-    if (!_isNumeric(latitudeController.text.trim())) {
-      AppToast.showError(context, "Latitude must be a valid number");
-      return;
-    }
-
-    if (longitudeController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Center Longitude");
-      return;
-    }
-    if (!_isNumeric(longitudeController.text.trim())) {
-      AppToast.showError(context, "Longitude must be a valid number");
-      return;
-    }
-
-    // 🟥 CAPACITY
-    if (centerCapacityController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Center Capacity");
-      return;
-    }
-    if (!_isNumeric(centerCapacityController.text.trim())) {
-      AppToast.showError(context, "Center Capacity must be a valid number");
-      return;
-    }
-
-    // 🟥 COUNTRY / STATE / CITY / AREA / PINCODE
-    if (selectedCountry == null) {
-      AppToast.showError(context, "Please select Country");
-      return;
-    }
-    if (selectedState == null) {
-      AppToast.showError(context, "Please select State");
-      return;
-    }
-    if (selectedCity == null) {
-      AppToast.showError(context, "Please select City");
-      return;
-    }
-
-    if (localAreaController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Area Name");
-      return;
-    }
-
-    if (pinCodeController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Pincode");
-      return;
-    }
-    if (!_isNumeric(pinCodeController.text.trim()) ||
-        pinCodeController.text.trim().length != 6) {
-      AppToast.showError(context, "Please enter valid 6 digit Pincode");
-      return;
-    }
-
-    // 🟥 CATEGORY + LANDMARK
-    if (selectedTestCenterCategory == null) {
-      AppToast.showError(context, "Please select Test Center Category");
-      return;
-    }
-
-    if (landmarkController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter nearby Landmark");
-      return;
-    }
-
-    // 🟥 LIFT AVAILABILITY
-    if (isLiftAvailable == null) {
-      AppToast.showError(
-        context,
-        "Please select if Lift is available for PH candidate",
-      );
-      return;
-    }
-
-    // 🟥 RAILWAY
-    if (railwayStationNameController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Railway Station Name");
-      return;
-    }
-    if (selectedRailwayDistance == null) {
-      AppToast.showError(
-        context,
-        "Please select Distance from main Railway Station",
-      );
-      return;
-    }
-
-    // 🟥 BUS
-    if (busStationNameController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Bus Station Name");
-      return;
-    }
-    if (selectedBusDistance == null) {
-      AppToast.showError(
-        context,
-        "Please select Distance from Bus Station",
-      );
-      return;
-    }
-
-    // 🟥 METRO
-    if (metroStationNameController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Metro Station Name");
-      return;
-    }
-    if (selectedMetroDistance == null) {
-      AppToast.showError(
-        context,
-        "Please select Distance from Metro Station",
-      );
-      return;
-    }
-
-    // 🟥 AIRPORT
-    if (airportNameController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Airport Name");
-      return;
-    }
-    if (selectedAirportDistance == null) {
-      AppToast.showError(
-        context,
-        "Please select Distance from main Airport",
-      );
-      return;
-    }
-
-    // ✅ SAB VALID → NEXT PAGE
-    AppToast.showSuccess(context, "All details validated");
-    Get.to(() => const CenterDetailsPage2());
-  }
+  // void _validateAndNext() {
+  //   // 🟥 BASIC TEXT FIELDS
+  //   if (centerNameController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Center Name");
+  //     return;
+  //   }
+  //
+  //   if (centerDescriptionController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Center Description");
+  //     return;
+  //   }
+  //
+  //   if (selectedCenterType == null) {
+  //     AppToast.showError(context, "Please select Center Type");
+  //     return;
+  //   }
+  //
+  //   if (portalAddressController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Portal Address");
+  //     return;
+  //   }
+  //
+  //   // 🟥 LAT / LONG
+  //   if (latitudeController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Center Latitude");
+  //     return;
+  //   }
+  //   if (!_isNumeric(latitudeController.text.trim())) {
+  //     AppToast.showError(context, "Latitude must be a valid number");
+  //     return;
+  //   }
+  //
+  //   if (longitudeController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Center Longitude");
+  //     return;
+  //   }
+  //   if (!_isNumeric(longitudeController.text.trim())) {
+  //     AppToast.showError(context, "Longitude must be a valid number");
+  //     return;
+  //   }
+  //
+  //   // 🟥 CAPACITY
+  //   if (centerCapacityController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Center Capacity");
+  //     return;
+  //   }
+  //   if (!_isNumeric(centerCapacityController.text.trim())) {
+  //     AppToast.showError(context, "Center Capacity must be a valid number");
+  //     return;
+  //   }
+  //
+  //   // 🟥 COUNTRY / STATE / CITY / AREA / PINCODE
+  //   if (selectedCountry == null) {
+  //     AppToast.showError(context, "Please select Country");
+  //     return;
+  //   }
+  //   if (selectedState == null) {
+  //     AppToast.showError(context, "Please select State");
+  //     return;
+  //   }
+  //   if (selectedCity == null) {
+  //     AppToast.showError(context, "Please select City");
+  //     return;
+  //   }
+  //
+  //   if (localAreaController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Area Name");
+  //     return;
+  //   }
+  //
+  //   if (pinCodeController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Pincode");
+  //     return;
+  //   }
+  //   if (!_isNumeric(pinCodeController.text.trim()) ||
+  //       pinCodeController.text.trim().length != 6) {
+  //     AppToast.showError(context, "Please enter valid 6 digit Pincode");
+  //     return;
+  //   }
+  //
+  //   // 🟥 CATEGORY + LANDMARK
+  //   if (selectedTestCenterCategory == null) {
+  //     AppToast.showError(context, "Please select Test Center Category");
+  //     return;
+  //   }
+  //
+  //   if (landmarkController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter nearby Landmark");
+  //     return;
+  //   }
+  //
+  //   // 🟥 LIFT AVAILABILITY
+  //   if (isLiftAvailable == null) {
+  //     AppToast.showError(
+  //       context,
+  //       "Please select if Lift is available for PH candidate",
+  //     );
+  //     return;
+  //   }
+  //
+  //   // 🟥 RAILWAY
+  //   if (railwayStationNameController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Railway Station Name");
+  //     return;
+  //   }
+  //   if (selectedRailwayDistance == null) {
+  //     AppToast.showError(
+  //       context,
+  //       "Please select Distance from main Railway Station",
+  //     );
+  //     return;
+  //   }
+  //
+  //   // 🟥 BUS
+  //   if (busStationNameController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Bus Station Name");
+  //     return;
+  //   }
+  //   if (selectedBusDistance == null) {
+  //     AppToast.showError(
+  //       context,
+  //       "Please select Distance from Bus Station",
+  //     );
+  //     return;
+  //   }
+  //
+  //   // 🟥 METRO
+  //   if (metroStationNameController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Metro Station Name");
+  //     return;
+  //   }
+  //   if (selectedMetroDistance == null) {
+  //     AppToast.showError(
+  //       context,
+  //       "Please select Distance from Metro Station",
+  //     );
+  //     return;
+  //   }
+  //
+  //   // 🟥 AIRPORT
+  //   if (airportNameController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Airport Name");
+  //     return;
+  //   }
+  //   if (selectedAirportDistance == null) {
+  //     AppToast.showError(
+  //       context,
+  //       "Please select Distance from main Airport",
+  //     );
+  //     return;
+  //   }
+  //
+  //   // ✅ SAB VALID → NEXT PAGE
+  //   AppToast.showSuccess(context, "All details validated");
+  //   Get.to(() => const CenterDetailsPage2());
+  // }
 
   Widget _fileInfoText(String? name, int? sizeBytes) {
     if (name == null || sizeBytes == null) return const SizedBox.shrink();
@@ -563,6 +560,88 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
       ),
     );
   }
+
+
+  String? categoryTypes;
+  List<String> _categoryTypes = [];
+  bool _isCenterTypeLoading = false;
+
+
+  List<CountryModel> countryList = [];
+  List<StateModel> stateList = [];
+  List<CityModel> cityList = [];
+
+  CountryModel? selectedCountry;
+  StateModel? selectedState;
+  CityModel? selectedCity;
+
+  bool isCountryLoading = false;
+  bool isStateLoading = false;
+  bool isCityLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCenterTypes();
+    _loadCountries();
+
+  }
+
+  Future<void> _fetchCenterTypes() async {
+    setState(() {
+      _isCenterTypeLoading = true;
+    });
+
+    final list = await CenterService.getCenterTypes();
+    await Future.delayed(const Duration(seconds: 1));
+    if (!mounted) return;
+    setState(() {
+      _categoryTypes = list.map((e) => e.centerType).toList();
+      _isCenterTypeLoading = false;
+    });
+
+    if (list.isEmpty) {
+      AppToast.showError(context, "Failed to load Center Types");
+    }
+  }
+
+  Future<void> _loadCountries() async {
+    setState(() => isCountryLoading = true);
+    final list = await LocationService.getCountries();
+    setState(() {
+      countryList = list;
+      isCountryLoading = false;
+    });
+  }
+  Future<void> _loadStatesByCountry(String countryId) async {
+    setState(() {
+      isStateLoading = true;
+      stateList = [];
+      selectedState = null;
+      cityList = [];
+      selectedCity = null;
+    });
+
+    final list = await LocationService.getStates(countryId);
+    setState(() {
+      stateList = list;
+      isStateLoading = false;
+    });
+  }
+  Future<void> _loadCitiesByState(String stateId) async {
+    setState(() {
+      isCityLoading = true;
+      cityList = [];
+      selectedCity = null;
+    });
+
+    final list = await LocationService.getCities(stateId);
+    setState(() {
+      cityList = list;
+      isCityLoading = false;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -781,20 +860,25 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 ),
                 _fileInfoText(
                     walkthroughVideoFileName, walkthroughVideoFileSizeBytes),
-                const SizedBox(height: 16),
+                const SizedBox(height: 22),
+                Text("Where is your Center Located?", style: AppTextStyles.dashBordButton2),
+                const SizedBox(height: 15),
 
-                // 🔹 Country / State / City
                 Text("Country", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
-                CustomDropdown<String>(
+
+                CustomDropdown<CountryModel>(
                   hintText: "Select Country",
                   value: selectedCountry,
-                  items: countries,
-                  itemLabel: (value) => value,
+                  items: countryList,
+                  itemLabel: (item) => item.name,
                   onChanged: (value) {
                     setState(() {
                       selectedCountry = value;
                     });
+                    if (value != null) {
+                      _loadStatesByCountry(value.id);
+                    }
                   },
                   validator: (_) {},
                 ),
@@ -802,37 +886,42 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
 
                 Text("State", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
-                CustomDropdown<String>(
+
+                 CustomDropdown<StateModel>(
                   hintText: "Select State",
                   value: selectedState,
-                  items: states,
-                  itemLabel: (value) => value,
+                  items: stateList,
+                  itemLabel: (item) => item.name,   // ya item.stateName
                   onChanged: (value) {
                     setState(() {
                       selectedState = value;
+                    });
+                    if (value != null) {
+                      _loadCitiesByState(value.id);
+                    }
+                  },
+                  validator: (_) {},
+                ),
+                const SizedBox(height: 16),
+
+
+                Text("City", style: AppTextStyles.centerText),
+                const SizedBox(height: 8),
+
+               CustomDropdown<CityModel>(
+                  hintText: "Select City",
+                  value: selectedCity,
+                  items: cityList,
+                  itemLabel: (item) => item.name,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedCity = value;
                     });
                   },
                   validator: (_) {},
                 ),
                 const SizedBox(height: 16),
 
-                Text("City", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                CustomDropdown<String>(
-                  hintText: "Select City",
-                  value: selectedCity,
-                  items: cities,
-                  itemLabel: (value) => value,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedCity = value;
-                    });
-                  },
-                  validator: (_) {
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
 
                 // 🔹 Area Name
                 Text("Area Name", style: AppTextStyles.centerText),
@@ -856,27 +945,29 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 ),
                 const SizedBox(height: 16),
 
-                // 🔹 Test center category
-                Text(
-                  "What is the Category of your Test Center?",
-                  style: AppTextStyles.centerText,
-                ),
-                const SizedBox(height: 8),
-                CustomDropdown<String>(
-                  hintText: "Select Category",
-                  value: selectedTestCenterCategory,
-                  items: categoryTypes,
+                // 🔹 Center Type
+                Text("Center Type", style: AppTextStyles.centerText),
+                const SizedBox(height: 10),
+
+                _isCenterTypeLoading
+                    ? CircularProgressIndicator()
+                    : CustomDropdown<String>(
+                  hintText: "Select Center Type",
+                  value: categoryTypes,
+                  items: _categoryTypes,
                   itemLabel: (value) => value,
                   onChanged: (value) {
                     setState(() {
-                      selectedTestCenterCategory = value;
+                      categoryTypes = value;
                     });
                   },
                   validator: (_) {},
                 ),
+
+                const SizedBox(height: 17),
+
                 const SizedBox(height: 16),
 
-                // 🔹 Landmark
                 Text("Any nearby Landmark", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
                 AppTextField(
@@ -1039,7 +1130,9 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 CustomPrimaryButton(
                   text: "Next",
                   icon: Icons.arrow_right_alt_rounded,
-                  onPressed: _validateAndNext,
+                  onPressed: (){
+                    Get.to(() => const CenterDetailsPage2());
+                  },
                 ),
                 const SizedBox(height: 24),
               ],

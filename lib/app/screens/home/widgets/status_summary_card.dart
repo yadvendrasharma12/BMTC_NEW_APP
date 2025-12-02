@@ -6,12 +6,12 @@ import 'package:bmtc_app/app/core/text_style.dart';
 class StatusSummaryCard extends StatelessWidget {
   final String title;
   final int currentCount;
-
   final int? totalCount;
 
-  final double percentage;
-  final String iconPath;
+  /// 🔹 Ab optional & nullable
+  final double? percentage;
 
+  final String iconPath;
   final Widget? countTrailing;
 
   // optional customization
@@ -23,7 +23,7 @@ class StatusSummaryCard extends StatelessWidget {
   final Color? percentageBorderColor;
   final Color? percentageTextColor;
 
-
+  // year dropdown
   final bool showYearDropdown;
   final String? selectedYear;
   final ValueChanged<String?>? onYearChanged;
@@ -32,8 +32,8 @@ class StatusSummaryCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.currentCount,
-    this.totalCount, // ab optional
-    required this.percentage,
+    this.totalCount,
+    this.percentage, // ⬅️ ab optional
     required this.iconPath,
     this.countTrailing,
     this.backgroundColor,
@@ -43,8 +43,6 @@ class StatusSummaryCard extends StatelessWidget {
     this.totalCountColor,
     this.percentageBorderColor,
     this.percentageTextColor,
-
-    // year dropdown
     this.showYearDropdown = false,
     this.selectedYear,
     this.onYearChanged,
@@ -56,7 +54,6 @@ class StatusSummaryCard extends StatelessWidget {
       if (countTrailing != null) {
         return countTrailing!;
       }
-
 
       if (totalCount != null) {
         return Wrap(
@@ -93,8 +90,8 @@ class StatusSummaryCard extends StatelessWidget {
     }
 
     Widget _buildRightSide() {
+      // 🔹 Agar dropdown dikhana hai → percentage ignore
       if (showYearDropdown) {
-
         return Container(
           margin: const EdgeInsets.only(top: 30),
           height: 27,
@@ -118,22 +115,22 @@ class StatusSummaryCard extends StatelessWidget {
                 color: percentageTextColor ?? AppColors.blackColor,
               ),
               onChanged: onYearChanged,
-              items:  [
+              items: const [
                 DropdownMenuItem(
                   value: "1Y",
-                  child: Text("1Y",style: AppTextStyles.centerText,),
+                  child: Text("1Y"),
                 ),
                 DropdownMenuItem(
                   value: "2Y",
-                  child: Text("2Y",style: AppTextStyles.centerText,),
+                  child: Text("2Y"),
                 ),
                 DropdownMenuItem(
                   value: "3Y",
-                  child: Text("3Y",style: AppTextStyles.centerText,),
+                  child: Text("3Y"),
                 ),
                 DropdownMenuItem(
                   value: "4Y",
-                  child: Text("4Y",style: AppTextStyles.centerText,),
+                  child: Text("4Y"),
                 ),
               ],
             ),
@@ -141,6 +138,12 @@ class StatusSummaryCard extends StatelessWidget {
         );
       }
 
+      // 🔹 Agar percentage hi nahi diya gaya → kuch mat dikhाओ (ya chhota gap)
+      if (percentage == null) {
+        return const SizedBox(width: 10);
+      }
+
+      // 🔹 Normal percentage chip
       return Container(
         margin: const EdgeInsets.only(top: 30),
         height: 27,
@@ -153,7 +156,7 @@ class StatusSummaryCard extends StatelessWidget {
         ),
         alignment: Alignment.center,
         child: Text(
-          "${percentage.toStringAsFixed(2)}%",
+          "${percentage!.toStringAsFixed(2)}%",
           style: AppTextStyles.inputHint.copyWith(
             color: percentageTextColor ?? AppColors.grey73,
           ),

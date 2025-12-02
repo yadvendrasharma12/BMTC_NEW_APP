@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -23,12 +22,15 @@ class CustomDropdown<T> extends StatelessWidget {
     this.padding = const EdgeInsets.symmetric(horizontal: 12, vertical: 1),
     this.borderRadius = 10,
     this.fillColor,
-    this.borderColor, required String? Function(dynamic value) validator,
+    this.borderColor,
+    required String? Function(dynamic value) validator,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    final bool hasValue = value != null;
 
     return Container(
       height: 47,
@@ -48,25 +50,38 @@ class CustomDropdown<T> extends StatelessWidget {
           hint: Text(
             hintText,
             style: GoogleFonts.karla(
-              fontSize: 16,
-              color: Colors.black,
-              fontWeight: FontWeight.w700
+              fontSize: 14,
+              color: Colors.grey.shade500, // 👈 hint halka grey
+              fontWeight: FontWeight.w500,
             ),
           ),
-          icon: Icon(
+          icon: const Icon(
             Icons.keyboard_arrow_down_rounded,
-            size: 35,
+            size: 26,
             color: Colors.black,
           ),
+
+          // 👇 yeh style selected value ke liye use hota hai
           style: GoogleFonts.karla(
             fontSize: 14,
-            color: Colors.black,
+            color: Colors.black,          // 👈 selected text pure black
+            fontWeight: FontWeight.w600,  // 👈 thoda bold
           ),
+
           onChanged: onChanged,
           items: items.map((item) {
+            final isSelected = item == value;
             return DropdownMenuItem<T>(
               value: item,
-              child: Text(itemLabel(item)),
+              child: Text(
+                itemLabel(item),
+                style: GoogleFonts.karla(
+                  fontSize: 14,
+                  color: isSelected ? Colors.black : Colors.black87,
+                  fontWeight:
+                  isSelected ? FontWeight.w700 : FontWeight.w500,
+                ),
+              ),
             );
           }).toList(),
         ),

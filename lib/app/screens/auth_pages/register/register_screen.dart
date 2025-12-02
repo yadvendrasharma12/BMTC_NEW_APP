@@ -12,7 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../utils/toast_message.dart';
 import '../../../widgets/custom_appbar.dart';
 import '../../../widgets/custom_button.dart';
-import '../../../widgets/custom_textformfield.dart'; // yahi AppTextField hai
+import '../../../widgets/custom_textformfield.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -31,40 +31,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _selectedCountryCode = '+91';
   bool _agreedToTerms = false;
 
-  void _onSignUp() {
-    final nameError  = Validators.name(_nameController.text);
-    final emailError = Validators.email(_emailController.text);
-    final phoneError = Validators.phone(_phoneController.text);
-
-    if (nameError != null) {
-      AppToast.showError(context, nameError);
-      return;
-    }
-    if (emailError != null) {
-      AppToast.showError(context, emailError);
-      return;
-    }
-    if (phoneError != null) {
-      AppToast.showError(context, phoneError);
-      return;
-    }
-
-    if (!_agreedToTerms) {
-      AppToast.showError(context, 'Please agree to Terms & Privacy Policy');
-      return;
-    }
-
-    _formKey.currentState?.validate();
-
-    AppToast.showSuccess(context, 'OTP sent successful!');
-    Get.to(
-          () => OtpScreen(
-        mobileNumber: _phoneController.text,
-        name: _nameController.text,
-        countryCode: _selectedCountryCode,
-      ),
-    );
-  }
+  // void _onSignUp() {
+  //   final nameError  = Validators.name(_nameController.text);
+  //   final emailError = Validators.email(_emailController.text);
+  //   final phoneError = Validators.phone(_phoneController.text);
+  //
+  //   if (nameError != null) {
+  //     AppToast.showError(context, nameError);
+  //     return;
+  //   }
+  //   if (emailError != null) {
+  //     AppToast.showError(context, emailError);
+  //     return;
+  //   }
+  //   if (phoneError != null) {
+  //     AppToast.showError(context, phoneError);
+  //     return;
+  //   }
+  //
+  //   if (!_agreedToTerms) {
+  //     AppToast.showError(context, 'Please agree to Terms & Privacy Policy');
+  //     return;
+  //   }
+  //
+  //   _formKey.currentState?.validate();
+  //
+  //   AppToast.showSuccess(context, 'OTP sent successful!');
+  //   Get.to(
+  //         () => OtpScreen(
+  //       mobileNumber: _phoneController.text,
+  //       name: _nameController.text,
+  //       countryCode: _selectedCountryCode,
+  //     ),
+  //   );
+  // }
 
   @override
   void dispose() {
@@ -204,7 +204,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 21),
 
-                // 🔹 TERMS ROW (checkbox + text in one line)
+
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -256,7 +256,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              // TODO: Privacy screen
                             },
                             child: Text(
                               "Privacy Policy",
@@ -274,7 +273,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 CustomPrimaryButton(
                   text: "Sign up",
                   icon: Icons.arrow_right_alt_rounded,
-                  onPressed: () =>_onSignUp(),
+                  onPressed: () {
+                    Get.to(OtpScreen(mobileNumber:  _phoneController.text,name: _nameController.text,));
+                  },
                 ),
                 SizedBox(height: 15,),
                 Align(

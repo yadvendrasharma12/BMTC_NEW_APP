@@ -9,7 +9,6 @@ import '../../../../core/text_style.dart';
 import '../../../../widgets/custom_textformfield.dart';
 import '../../exam_details/exam_details_screen.dart';
 import '../../widgets/action_button_card.dart';
-import '../../widgets/add_booking_dailog.dart';
 import '../../widgets/status_summary_card.dart';
 
 class BookingRequestScreen extends StatefulWidget {
@@ -21,10 +20,22 @@ class BookingRequestScreen extends StatefulWidget {
 
 class _BookingRequestScreenState extends State<BookingRequestScreen> {
   final TextEditingController searchController = TextEditingController();
+
   bool headerChecked = false;
   String _selectedYear = "1Y";
   String _selectedYears = "1Y";
-  bool rowChecked = false;
+
+  final int _rowCount = 5;
+
+
+  late List<bool> _rowCheckedList;
+
+  @override
+  void initState() {
+    super.initState();
+    _rowCheckedList = List<bool>.filled(_rowCount, false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,7 +56,7 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
                   selectedYear: _selectedYears,
                   onYearChanged: (val) {
                     setState(() {
-                      _selectedYear = val ?? "1Y";
+                      _selectedYears = val ?? "1Y";
                     });
                   },
                 ),
@@ -59,7 +70,6 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
                 child: StatusSummaryCard(
                   title: "Seats Booked",
                   currentCount: 67,
-
                   percentage: 64,
                   iconPath: "assets/icons/seat_booked.png",
                   showYearDropdown: true,
@@ -83,7 +93,6 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
                   secondaryText: "Edit Center profile",
                   onPrimaryTap: () {
                     Get.to(SelfBookingScreen());
-
                   },
                   onSecondaryTap: () {
                     Get.to(CenterPageScreen());
@@ -109,6 +118,7 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // 🔍 Search + Export row
                           Padding(
                             padding: const EdgeInsets.all(12),
                             child: Row(
@@ -119,10 +129,10 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
                                     controller: searchController,
                                     keyboardType: TextInputType.number,
                                     label: 'Search here',
-                                    prefix: Icon(Icons.search),
+                                    prefix: const Icon(Icons.search),
                                   ),
                                 ),
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 Expanded(
                                   child: GestureDetector(
                                     onTap: _onExportTap,
@@ -131,15 +141,16 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
                                       color: AppColors.blackColor,
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            textAlign: TextAlign.center,
                                             "Export",
+                                            textAlign: TextAlign.center,
                                             style: AppTextStyles.button,
                                           ),
                                           Icon(
                                             Icons.file_download_outlined,
+                                            size: 20,
                                             color: AppColors.background,
                                           ),
                                         ],
@@ -158,7 +169,7 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // ===== HEADER ROW =====
+
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 8.0,
@@ -171,6 +182,12 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
                                         onChanged: (val) {
                                           setState(() {
                                             headerChecked = val ?? false;
+                                            for (int i = 0;
+                                            i < _rowCheckedList.length;
+                                            i++) {
+                                              _rowCheckedList[i] =
+                                                  headerChecked;
+                                            }
                                           });
                                         },
                                       ),
@@ -220,9 +237,9 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
 
                                 const Divider(height: 1),
 
-                                // ===== DATA ROWS =====
+
                                 Column(
-                                  children: List.generate(5, (index) {
+                                  children: List.generate(_rowCount, (index) {
                                     return Padding(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 8.0,
@@ -231,10 +248,17 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
                                       child: Row(
                                         children: [
                                           Checkbox(
-                                            value: rowChecked,
+                                            value: _rowCheckedList[index],
                                             onChanged: (val) {
                                               setState(() {
-                                                rowChecked = val ?? false;
+                                                _rowCheckedList[index] =
+                                                    val ?? false;
+
+                                                // 🔹 Check karo kya saare rows selected hain?
+                                                final allSelected =
+                                                _rowCheckedList.every(
+                                                        (e) => e == true);
+                                                headerChecked = allSelected;
                                               });
                                             },
                                           ),
@@ -273,15 +297,15 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
                                             decoration: BoxDecoration(
                                               color: Colors.yellow.shade100,
                                               borderRadius:
-                                                  BorderRadius.circular(16),
+                                              BorderRadius.circular(10),
                                             ),
                                             height: 30,
                                             width: 98,
                                             alignment: Alignment.center,
                                             child: Text(
                                               "Active",
-                                              style:
-                                                  AppTextStyles.centerSubTitle,
+                                              style: AppTextStyles
+                                                  .centerSubTitle,
                                             ),
                                           ),
                                           const SizedBox(width: 15),
@@ -290,12 +314,12 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
                                               Get.to(ExamDetailsScreen());
                                             },
                                             child: Container(
-                                              height: 30,
+                                              height: 32,
                                               width: 65,
                                               decoration: BoxDecoration(
                                                 color: AppColors.blackColor,
                                                 borderRadius:
-                                                    BorderRadius.circular(10),
+                                                BorderRadius.circular(10),
                                               ),
                                               alignment: Alignment.center,
                                               child: Text(
@@ -319,7 +343,7 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
                 ),
               ),
 
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
             ],
           ),
         ),

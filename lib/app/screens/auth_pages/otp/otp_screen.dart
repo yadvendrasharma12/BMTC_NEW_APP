@@ -164,7 +164,7 @@ class _OtpScreenState extends State<OtpScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Get.off(() => const LoginScreen());
+
                         },
                         child: Text(
                           "Resend",

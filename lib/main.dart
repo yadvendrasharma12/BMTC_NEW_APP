@@ -5,7 +5,9 @@ import 'package:bmtc_app/app/screens/home/dashboard_page/dashBoard_page_screen.d
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 
+import 'app/screens/add_center_pages/center_details_page2.dart';
 import 'app/screens/add_center_pages/center_details_page4.dart';
+import 'app/screens/video_page/video_page_screen.dart';
 
 
 

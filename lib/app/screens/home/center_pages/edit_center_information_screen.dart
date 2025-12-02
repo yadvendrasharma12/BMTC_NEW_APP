@@ -16,8 +16,7 @@ import '../../../widgets/custom_dropdown.dart';
 import '../../../widgets/custom_textformfield.dart';
 import '../../../widgets/selectabe_tile.dart';
 import '../../../widgets/uploading_container.dart';
-import '../../add_center_pages/center_details_page2.dart';
-import '../../add_center_pages/center_details_page3.dart';
+
 
 class EditCenterInformationScreen extends StatefulWidget {
   const EditCenterInformationScreen({super.key});
@@ -81,7 +80,7 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
 
   // ✅ Sample dropdown data
   final List<String> centerTypes = [
-    'Online'
+    'Online','Offline','Both',
   ];
   final List<String> countries = ['India', 'USA', 'UK'];
   final List<String> states = ['Karnataka', 'Maharashtra', 'Delhi'];
@@ -555,6 +554,7 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
   String? selectedSecondarySpeed;
   String? selectedGenerator;
   String? selectedUPSBackupTime;
+  String? selectFueltankTime;
 
   // ===== Dropdown Data =====
   final List<String> yesNoOptions = ['Yes', 'No'];
@@ -585,6 +585,18 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
     '40 mins',
     '50 mins',
     '60 mins',
+  ];
+  final List<String> fuelTankOption = [
+    '5 ltr',
+    '10 ltr',
+    '15 ltr',
+    '20 ltr',
+    '25 ltr',
+    '30 ltr',
+    '35 ltr',
+    '40 ltr',
+    '50 ltr',
+    '60 ltr',
   ];
 
 
@@ -646,7 +658,9 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
             items: floors,
             itemLabel: (v) => v,
             onChanged: (v) => setState(() => lab.floor = v),
-            validator: (value) {},
+            validator: (value) {
+              return null;
+            },
           ),
 
           const SizedBox(height: 15),
@@ -667,7 +681,9 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
             items: processors,
             itemLabel: (v) => v,
             onChanged: (v) => setState(() => lab.processor = v),
-            validator: (value) {},
+            validator: (value) {
+              return null;
+            },
           ),
 
           const SizedBox(height: 15),
@@ -691,7 +707,9 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
             items: oss,
             itemLabel: (v) => v,
             onChanged: (v) => setState(() => lab.os = v),
-            validator: (value) {},
+            validator: (value) {
+              return null;
+            },
           ),
 
           const SizedBox(height: 15),
@@ -703,7 +721,9 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
             items: rams,
             itemLabel: (v) => v,
             onChanged: (v) => setState(() => lab.ram = v),
-            validator: (value) {},
+            validator: (value) {
+              return null;
+            },
           ),
 
           const SizedBox(height: 15),
@@ -715,7 +735,9 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
             items: hardDisks,
             itemLabel: (v) => v,
             onChanged: (v) => setState(() => lab.hardDisk = v),
-            validator: (value) {},
+            validator: (value) {
+              return null;
+            },
           ),
 
           const SizedBox(height: 15),
@@ -727,7 +749,9 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
             items: switchCompanies,
             itemLabel: (v) => v,
             onChanged: (v) => setState(() => lab.switchCompany = v),
-            validator: (value) {},
+            validator: (value) {
+              return null;
+            },
           ),
 
           const SizedBox(height: 15),
@@ -739,7 +763,9 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
             items: switchCategories,
             itemLabel: (v) => v,
             onChanged: (v) => setState(() => lab.switchCategory = v),
-            validator: (value) {},
+            validator: (value) {
+              return null;
+            },
           ),
 
           const SizedBox(height: 15),
@@ -751,7 +777,9 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
             items: switchParts,
             itemLabel: (v) => v,
             onChanged: (v) => setState(() => lab.switchParts = v),
-            validator: (value) {},
+            validator: (value) {
+              return null;
+            },
           ),
         ],
       ),
@@ -763,11 +791,10 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
       return;
     }
     setState(() {
-      // add new LabDetail till length == totalLabs
       while (labs.length < totalLabs) {
         labs.add(LabDetail());
       }
-      // extra labs ko remove karo
+
       while (labs.length > totalLabs) {
         labs.last.dispose();
         labs.removeLast();
@@ -783,9 +810,8 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
   final TextEditingController udhaiController = TextEditingController();
   final TextEditingController udhayamController = TextEditingController();
 
-  // ✅ Yes/No selections
-  String? hasGST; // "Yes" or "No"
-  String? hasMSME; // "Yes" or "No"
+  String? hasGST;
+  String? hasMSME;
 
 
   Widget yesNoSelector(
@@ -943,6 +969,9 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
     );
   }
 
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1039,7 +1068,7 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
                       ),
                       controller: longitudeController,
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 20),
 
                     // 🔹 Location buttons
                     Row(
@@ -1062,7 +1091,7 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
                       ],
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
 
 
 
@@ -1227,7 +1256,7 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
                       "What is the Category of your Test Center?",
                       style: AppTextStyles.centerText,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     CustomDropdown<String>(
                       hintText: "Select Category",
                       value: selectedTestCenterCategory,
@@ -1673,7 +1702,9 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
                                       items: yesNoOptions,
                                       itemLabel: (v) => v,
                                       onChanged: (v) => setState(() => selectedPartition = v),
-                                      validator: (value) {},
+                                      validator: (value) {
+                                        return null;
+                                      },
                                     ),
 
                                     const SizedBox(height: 15),
@@ -1699,7 +1730,9 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
                                       items: yesNoOptions,
                                       itemLabel: (v) => v,
                                       onChanged: (v) => setState(() => selectedPrinter = v),
-                                      validator: (value) {},
+                                      validator: (value) {
+                                        return null;
+                                      },
                                     ),
 
                                     const SizedBox(height: 15),
@@ -1930,16 +1963,16 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
                                       ),
 
                                       const SizedBox(height: 15),
-                                      Text("UPS Backup Time (in mins)",
+                                      Text("Generator fuel tank (ltr)",
                                           style: AppTextStyles.centerText),
                                       const SizedBox(height: 8),
                                       CustomDropdown<String>(
                                         hintText: "Select",
-                                        value: selectedUPSBackupTime,
-                                        items: upsBackupTimeOptions,
+                                        value: selectFueltankTime,
+                                        items: fuelTankOption,
                                         itemLabel: (v) => v,
                                         onChanged: (v) =>
-                                            setState(() => selectedUPSBackupTime = v),
+                                            setState(() => selectFueltankTime = v),
                                         validator: (value) => null,
                                       ),
                                     ],
@@ -1952,7 +1985,19 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
                                       keyboardType: TextInputType.text,
                                       label: '',
                                     ),
-
+                                    const SizedBox(height: 15),
+                                    Text("UPS Backup Time (in mins)",
+                                        style: AppTextStyles.centerText),
+                                    const SizedBox(height: 8),
+                                    CustomDropdown<String>(
+                                      hintText: "Select",
+                                      value: selectedUPSBackupTime,
+                                      items: upsBackupTimeOptions,
+                                      itemLabel: (v) => v,
+                                      onChanged: (v) =>
+                                          setState(() => selectedUPSBackupTime = v),
+                                      validator: (value) => null,
+                                    ),
                                     const SizedBox(height: 30),
                                     Text("Lab Details",
                                         style: GoogleFonts.karla(
@@ -2134,48 +2179,7 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
                                             ),
                                           ),
 
-                                          const SizedBox(height: 15),
-                                          Text("GST Station Code", style: AppTextStyles.centerText),
-                                          const SizedBox(height: 8),
-                                          AppTextField(
-                                            controller: gstStateController,
-                                            label: "",
-                                            hintText: "",
-                                            keyboardType: TextInputType.text,
-                                          ),
-                                          const SizedBox(height: 15),
-                                          Text("UIDAI Number", style: AppTextStyles.centerText),
-                                          const SizedBox(height: 8),
-                                          AppTextField(
-                                            controller: udhaiController,
-                                            label: "",
-                                            hintText: "",
-                                            keyboardType: TextInputType.text,
-                                          ),
-                                          const SizedBox(height: 15),
-                                          Text(
-                                            "Upload Unhandy certificate",
-                                            style: AppTextStyles.centerText,
-                                          ),
-                                          const SizedBox(height: 8),
-                                          UploadingContainer(
-                                            buttonText: "Upload File",
-                                            infoText:
-                                            "Max Each file size: 2 MB | File type: doc, docx, pdf",
-                                            onPressed: () async {
-                                              await _pickFile(
-                                                maxSizeMB: 2,
-                                                allowedExtensions: ['doc', 'docx', 'pdf'],
-                                                onFilePicked: (file, name, size) {
-                                                  setState(() {
-                                                    unhandyCertFile = file;
-                                                    unhandyCertFileName = name;
-                                                    unhandyCertFileSize = size;
-                                                  });
-                                                },
-                                              );
-                                            },
-                                          ),
+
                                           _selectedFileInfo(unhandyCertFileName, unhandyCertFileSize),
                                           const SizedBox(height: 15),
                                         ],
@@ -2211,7 +2215,7 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
                                         const SizedBox(height: 15),
 
                                         if (hasMSME == "Yes") ...[
-                                          Text("UDHYAM / MSME Number", style: AppTextStyles.centerText),
+                                          Text(" MSME Number", style: AppTextStyles.centerText),
                                           const SizedBox(height: 8),
                                           AppTextField(
                                             controller: udhayamController,
@@ -2221,7 +2225,6 @@ class _EditCenterInformationScreenState extends State<EditCenterInformationScree
                                           const SizedBox(height: 15),
                                         ],
 
-                                        /// ✅ Static Uploads (hamesha dikhne wale)
                                         Text("Upload Canceled Cheque", style: AppTextStyles.centerText),
                                         const SizedBox(height: 15),
                                         UploadingContainer(

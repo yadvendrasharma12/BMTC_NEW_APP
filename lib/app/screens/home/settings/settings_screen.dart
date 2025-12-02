@@ -9,6 +9,8 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../core/app_colors.dart';
 import '../../../core/text_style.dart';
+import '../../../services/auth_services.dart';
+import '../../../utils/toast_message.dart';
 import '../../../widgets/custom_textformfield.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -57,6 +59,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       backgroundColor: AppColors.borderColor,
       body: SingleChildScrollView(
         child: Column(
@@ -64,7 +67,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             Container(
               margin:
-              const EdgeInsets.only(left: 22, right: 22, bottom: 12, top: 12),
+              const EdgeInsets.only(left: 14, right: 14, bottom: 12, top: 12),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
@@ -125,7 +128,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               width: double.infinity,
               margin:
-              const EdgeInsets.only(left: 22, right: 22, bottom: 12, top: 12),
+              const EdgeInsets.only(left: 14, right: 14, bottom: 12, top: 12),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
@@ -177,7 +180,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // DELETE ACCOUNT BUTTON (simple card)
             Container(
               margin:
-              const EdgeInsets.only(left: 22, right: 22, bottom: 12, top: 12),
+              const EdgeInsets.only(left: 14, right: 14, bottom: 12, top: 12),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),
@@ -202,9 +205,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                   ),
                   const Spacer(),
+
                   GestureDetector(
-                    onTap: () {
-                      Get.offAll(RegisterScreen());
+                    onTap: () async {
+                      bool success = await AuthService.logout();
+                      if (success) {
+                        AppToast.showSuccess(context, "Logged out successfully");
+
+
+                        Future.delayed(const Duration(seconds: 1), () {
+                          Get.offAll(RegisterScreen());
+                        });
+                      } else {
+                        AppToast.showError(context, "Logout failed. Try again.");
+                      }
                     },
                     child: Image.asset(
                       "assets/icons/Delete.png",
@@ -213,6 +227,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       filterQuality: FilterQuality.high,
                     ),
                   ),
+
+
                 ],
               ),
             ),
@@ -220,7 +236,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // DANGER ZONE
             Container(
               margin:
-              const EdgeInsets.only(left: 22, right: 22, bottom: 12, top: 12),
+              const EdgeInsets.only(left: 14, right: 14, bottom: 12, top: 12),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(14),

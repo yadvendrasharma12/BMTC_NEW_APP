@@ -77,85 +77,85 @@ class _CenterDetailsPage2State extends State<CenterDetailsPage2> {
     return true;
   }
 
-  void _validateAndNext() {
-    // 🔹 Point of Contact
-    if (nameController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Point of Contact Name");
-      return;
-    }
-
-    if (!_isValidPhone(phoneController.text)) {
-      AppToast.showError(context, "Please enter valid 10 digit Phone Number");
-      return;
-    }
-
-    if (altPhoneController.text.trim().isNotEmpty &&
-        !_isValidPhone(altPhoneController.text)) {
-      AppToast.showError(
-          context, "Please enter valid 10 digit Alternate Phone Number");
-      return;
-    }
-
-    if (!_isValidEmail(emailController.text)) {
-      AppToast.showError(
-          context, "Please enter valid Email (e.g. example@gmail.com)");
-      return;
-    }
-
-    // 🔹 Center Superintendent details
-    if (name2Controller.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Superintendent Name");
-      return;
-    }
-
-    if (!_isValidPhone(phone2Controller.text)) {
-      AppToast.showError(
-          context, "Please enter valid 10 digit Superintendent Phone Number");
-      return;
-    }
-
-    if (!_isValidEmail(email2Controller.text)) {
-      AppToast.showError(
-          context, "Please enter valid Superintendent Email (@gmail.com)");
-      return;
-    }
-
-    // 🔹 IT Manager details
-    if (name3Controller.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter IT Manager Name");
-      return;
-    }
-
-    if (!_isValidPhone(phone3Controller.text)) {
-      AppToast.showError(
-          context, "Please enter valid 10 digit IT Manager Phone Number");
-      return;
-    }
-
-    if (!_isValidEmail(email3Controller.text)) {
-      AppToast.showError(
-          context, "Please enter valid IT Manager Email (@gmail.com)");
-      return;
-    }
-
-    // 🔹 Emergency Contact numbers
-    if (!_isValidPhone(phone4Controller.text)) {
-      AppToast.showError(
-          context, "Please enter valid 10 digit Emergency Phone Number");
-      return;
-    }
-
-    if (landLineController.text.trim().isNotEmpty &&
-        !_isValidPhone(landLineController.text)) {
-      AppToast.showError(
-          context, "Please enter valid 10 digit Alternate Emergency Number");
-      return;
-    }
-
-    // ✅ All good
-    AppToast.showSuccess(context, "All contact details validated");
-    Get.to(() => const CenterDetailsPage3());
-  }
+  // void _validateAndNext() {
+  //   // 🔹 Point of Contact
+  //   if (nameController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Point of Contact Name");
+  //     return;
+  //   }
+  //
+  //   if (!_isValidPhone(phoneController.text)) {
+  //     AppToast.showError(context, "Please enter valid 10 digit Phone Number");
+  //     return;
+  //   }
+  //
+  //   if (altPhoneController.text.trim().isNotEmpty &&
+  //       !_isValidPhone(altPhoneController.text)) {
+  //     AppToast.showError(
+  //         context, "Please enter valid 10 digit Alternate Phone Number");
+  //     return;
+  //   }
+  //
+  //   if (!_isValidEmail(emailController.text)) {
+  //     AppToast.showError(
+  //         context, "Please enter valid Email (e.g. example@gmail.com)");
+  //     return;
+  //   }
+  //
+  //   // 🔹 Center Superintendent details
+  //   if (name2Controller.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Superintendent Name");
+  //     return;
+  //   }
+  //
+  //   if (!_isValidPhone(phone2Controller.text)) {
+  //     AppToast.showError(
+  //         context, "Please enter valid 10 digit Superintendent Phone Number");
+  //     return;
+  //   }
+  //
+  //   if (!_isValidEmail(email2Controller.text)) {
+  //     AppToast.showError(
+  //         context, "Please enter valid Superintendent Email (@gmail.com)");
+  //     return;
+  //   }
+  //
+  //   // 🔹 IT Manager details
+  //   if (name3Controller.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter IT Manager Name");
+  //     return;
+  //   }
+  //
+  //   if (!_isValidPhone(phone3Controller.text)) {
+  //     AppToast.showError(
+  //         context, "Please enter valid 10 digit IT Manager Phone Number");
+  //     return;
+  //   }
+  //
+  //   if (!_isValidEmail(email3Controller.text)) {
+  //     AppToast.showError(
+  //         context, "Please enter valid IT Manager Email (@gmail.com)");
+  //     return;
+  //   }
+  //
+  //   // 🔹 Emergency Contact numbers
+  //   if (!_isValidPhone(phone4Controller.text)) {
+  //     AppToast.showError(
+  //         context, "Please enter valid 10 digit Emergency Phone Number");
+  //     return;
+  //   }
+  //
+  //   if (landLineController.text.trim().isNotEmpty &&
+  //       !_isValidPhone(landLineController.text)) {
+  //     AppToast.showError(
+  //         context, "Please enter valid 10 digit Alternate Emergency Number");
+  //     return;
+  //   }
+  //
+  //   // ✅ All good
+  //   AppToast.showSuccess(context, "All contact details validated");
+  //   Get.to(() => const CenterDetailsPage3());
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -390,7 +390,9 @@ class _CenterDetailsPage2State extends State<CenterDetailsPage2> {
                             child: CustomPrimaryButton(
                               icon: Icons.arrow_right_alt_rounded,
                               text: "Next",
-                              onPressed: _validateAndNext,
+                              onPressed: (){
+                                Get.to(() => const CenterDetailsPage3());
+                              },
                             ),
                           ),
                         ],

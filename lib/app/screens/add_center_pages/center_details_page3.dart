@@ -82,6 +82,9 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
   String? selectedSecondarySpeed;
   String? selectedGenerator;
   String? selectedUPSBackupTime;
+  String? tankCapacityLtrTime;
+
+
 
   // ===== Dropdown Data =====
   final List<String> yesNoOptions = ['Yes', 'No'];
@@ -113,8 +116,9 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
     '50 mins',
     '60 mins',
   ];
-
-  // ===== Dynamic Labs =====
+  final List<String> tankCapacityLtr = [
+    '1 ltr',  '1.5 ltr','2 ltr', '2.5 ltr', '3 ltr', '3.5 ltr', '4 ltr', '4.5 ltr', '5 ltr',
+  ];
   List<LabDetail> labs = [LabDetail()];
 
   @override
@@ -160,214 +164,214 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
     });
   }
 
-  void _validateAndNext() {
-    // ===== General Lab details =====
-    if (!_isPositiveNumber(totalLabsController.text)) {
-      AppToast.showError(context, "Please enter valid Total number of labs");
-      return;
-    }
-
-    if (!_isPositiveNumber(totalSystemsController.text)) {
-      AppToast.showError(context, "Please enter valid Total number of systems");
-      return;
-    }
-
-    if (selectedNetwork == null) {
-      AppToast.showError(
-          context, "Please select if all labs are on single network");
-      return;
-    }
-
-    if (totalNetworkController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Total Network");
-      return;
-    }
-
-    if (selectedPartition == null) {
-      AppToast.showError(context,
-          "Please select if partition is available in each lab/system");
-      return;
-    }
-
-    if (selectedAC == null) {
-      AppToast.showError(
-          context, "Please select if AC is available in each lab");
-      return;
-    }
-
-    if (selectedPrinter == null) {
-      AppToast.showError(
-          context, "Please select if Network Printer is available");
-      return;
-    }
-
-    if (selectedProjector == null) {
-      AppToast.showError(
-          context, "Please select if projector is available in each lab");
-      return;
-    }
-
-    if (selectedSoundSystem == null) {
-      AppToast.showError(
-          context, "Please select if sound system is available in each lab");
-      return;
-    }
-
-    if (selectedFireExit == null) {
-      AppToast.showError(context, "Please select number of Fire Extinguisher");
-      return;
-    }
-
-    if (selectedMemory == null) {
-      AppToast.showError(
-          context, "Please select if free baggage space is available");
-      return;
-    }
-
-    if (selectedDrinkingWater == null) {
-      AppToast.showError(context,
-          "Please select if drinking water facility is available");
-      return;
-    }
-
-    // ===== Lab Infrastructure =====
-    if (primaryISPController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Name of the Primary ISP");
-      return;
-    }
-
-    if (selectedPrimaryISPType == null) {
-      AppToast.showError(context, "Please select Primary ISP Connected Type");
-      return;
-    }
-
-    if (!_isPositiveNumber(primaryInternetController.text)) {
-      AppToast.showError(
-          context, "Please enter valid Primary Internet Speed value");
-      return;
-    }
-
-    if (selectedPrimarySpeed == null) {
-      AppToast.showError(context, "Please select Primary Internet Speed unit");
-      return;
-    }
-
-    if (secondaryISPController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Name of the Secondary ISP");
-      return;
-    }
-
-    if (selectedSecondaryISPType == null) {
-      AppToast.showError(
-          context, "Please select Secondary ISP Connected Type");
-      return;
-    }
-
-    if (!_isPositiveNumber(secondaryInternetController.text)) {
-      AppToast.showError(
-          context, "Please enter valid Secondary Internet Speed value");
-      return;
-    }
-
-    if (selectedSecondarySpeed == null) {
-      AppToast.showError(
-          context, "Please select Secondary Internet Speed unit");
-      return;
-    }
-
-    if (selectedGenerator == null) {
-      AppToast.showError(context, "Please select if Generator is available");
-      return;
-    }
-
-    // ✅ Agar generator "Yes" hai tabhi capacity & UPS backup time validate karo
-    if (selectedGenerator == "Yes") {
-      if (generatorCapacityController.text.trim().isEmpty) {
-        AppToast.showError(
-            context, "Please enter Generator Capacity (in KVA)");
-        return;
-      }
-
-      if (selectedUPSBackupTime == null) {
-        AppToast.showError(context, "Please select UPS Backup Time (in mins)");
-        return;
-      }
-    }
-
-    if (upsBackupController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter UPS Backup details");
-      return;
-    }
-
-    // ===== Dynamic Lab Details Validation =====
-    for (int i = 0; i < labs.length; i++) {
-      final lab = labs[i];
-
-      if (lab.floor == null) {
-        AppToast.showError(
-            context, "Please select Floor Number for Lab ${i + 1}");
-        return;
-      }
-
-      if (!_isPositiveNumber(lab.computersController.text)) {
-        AppToast.showError(
-            context, "Please enter valid number of computers for Lab ${i + 1}");
-        return;
-      }
-
-      if (lab.processor == null) {
-        AppToast.showError(
-            context, "Please select System Processor for Lab ${i + 1}");
-        return;
-      }
-
-      if (lab.monitor == null) {
-        AppToast.showError(
-            context, "Please select Monitor Type for Lab ${i + 1}");
-        return;
-      }
-
-      if (lab.os == null) {
-        AppToast.showError(
-            context, "Please select Operating System for Lab ${i + 1}");
-        return;
-      }
-
-      if (lab.ram == null) {
-        AppToast.showError(
-            context, "Please select RAM GB for Lab ${i + 1}");
-        return;
-      }
-
-      if (lab.hardDisk == null) {
-        AppToast.showError(
-            context, "Please select Hard Disk type for Lab ${i + 1}");
-        return;
-      }
-
-      if (lab.switchCompany == null) {
-        AppToast.showError(context,
-            "Please select Ethernet Switch Company for Lab ${i + 1}");
-        return;
-      }
-
-      if (lab.switchCategory == null) {
-        AppToast.showError(
-            context, "Please select Switch Category for Lab ${i + 1}");
-        return;
-      }
-
-      if (lab.switchParts == null) {
-        AppToast.showError(context,
-            "Please select No. of port Ethernet switch for Lab ${i + 1}");
-        return;
-      }
-    }
-
-    // ✅ Sab validation pass ho gaya
-    AppToast.showSuccess(context, "Exam infrastructure details saved");
-    Get.to(() => const CenterDetailsPage4());
-  }
+  // void _validateAndNext() {
+  //   // ===== General Lab details =====
+  //   if (!_isPositiveNumber(totalLabsController.text)) {
+  //     AppToast.showError(context, "Please enter valid Total number of labs");
+  //     return;
+  //   }
+  //
+  //   if (!_isPositiveNumber(totalSystemsController.text)) {
+  //     AppToast.showError(context, "Please enter valid Total number of systems");
+  //     return;
+  //   }
+  //
+  //   if (selectedNetwork == null) {
+  //     AppToast.showError(
+  //         context, "Please select if all labs are on single network");
+  //     return;
+  //   }
+  //
+  //   if (totalNetworkController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Total Network");
+  //     return;
+  //   }
+  //
+  //   if (selectedPartition == null) {
+  //     AppToast.showError(context,
+  //         "Please select if partition is available in each lab/system");
+  //     return;
+  //   }
+  //
+  //   if (selectedAC == null) {
+  //     AppToast.showError(
+  //         context, "Please select if AC is available in each lab");
+  //     return;
+  //   }
+  //
+  //   if (selectedPrinter == null) {
+  //     AppToast.showError(
+  //         context, "Please select if Network Printer is available");
+  //     return;
+  //   }
+  //
+  //   if (selectedProjector == null) {
+  //     AppToast.showError(
+  //         context, "Please select if projector is available in each lab");
+  //     return;
+  //   }
+  //
+  //   if (selectedSoundSystem == null) {
+  //     AppToast.showError(
+  //         context, "Please select if sound system is available in each lab");
+  //     return;
+  //   }
+  //
+  //   if (selectedFireExit == null) {
+  //     AppToast.showError(context, "Please select number of Fire Extinguisher");
+  //     return;
+  //   }
+  //
+  //   if (selectedMemory == null) {
+  //     AppToast.showError(
+  //         context, "Please select if free baggage space is available");
+  //     return;
+  //   }
+  //
+  //   if (selectedDrinkingWater == null) {
+  //     AppToast.showError(context,
+  //         "Please select if drinking water facility is available");
+  //     return;
+  //   }
+  //
+  //   // ===== Lab Infrastructure =====
+  //   if (primaryISPController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Name of the Primary ISP");
+  //     return;
+  //   }
+  //
+  //   if (selectedPrimaryISPType == null) {
+  //     AppToast.showError(context, "Please select Primary ISP Connected Type");
+  //     return;
+  //   }
+  //
+  //   if (!_isPositiveNumber(primaryInternetController.text)) {
+  //     AppToast.showError(
+  //         context, "Please enter valid Primary Internet Speed value");
+  //     return;
+  //   }
+  //
+  //   if (selectedPrimarySpeed == null) {
+  //     AppToast.showError(context, "Please select Primary Internet Speed unit");
+  //     return;
+  //   }
+  //
+  //   if (secondaryISPController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Name of the Secondary ISP");
+  //     return;
+  //   }
+  //
+  //   if (selectedSecondaryISPType == null) {
+  //     AppToast.showError(
+  //         context, "Please select Secondary ISP Connected Type");
+  //     return;
+  //   }
+  //
+  //   if (!_isPositiveNumber(secondaryInternetController.text)) {
+  //     AppToast.showError(
+  //         context, "Please enter valid Secondary Internet Speed value");
+  //     return;
+  //   }
+  //
+  //   if (selectedSecondarySpeed == null) {
+  //     AppToast.showError(
+  //         context, "Please select Secondary Internet Speed unit");
+  //     return;
+  //   }
+  //
+  //   if (selectedGenerator == null) {
+  //     AppToast.showError(context, "Please select if Generator is available");
+  //     return;
+  //   }
+  //
+  //   // ✅ Agar generator "Yes" hai tabhi capacity & UPS backup time validate karo
+  //   if (selectedGenerator == "Yes") {
+  //     if (generatorCapacityController.text.trim().isEmpty) {
+  //       AppToast.showError(
+  //           context, "Please enter Generator Capacity (in KVA)");
+  //       return;
+  //     }
+  //
+  //     if (selectedUPSBackupTime == null) {
+  //       AppToast.showError(context, "Please select UPS Backup Time (in mins)");
+  //       return;
+  //     }
+  //   }
+  //
+  //   if (upsBackupController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter UPS Backup details");
+  //     return;
+  //   }
+  //
+  //   // ===== Dynamic Lab Details Validation =====
+  //   for (int i = 0; i < labs.length; i++) {
+  //     final lab = labs[i];
+  //
+  //     if (lab.floor == null) {
+  //       AppToast.showError(
+  //           context, "Please select Floor Number for Lab ${i + 1}");
+  //       return;
+  //     }
+  //
+  //     if (!_isPositiveNumber(lab.computersController.text)) {
+  //       AppToast.showError(
+  //           context, "Please enter valid number of computers for Lab ${i + 1}");
+  //       return;
+  //     }
+  //
+  //     if (lab.processor == null) {
+  //       AppToast.showError(
+  //           context, "Please select System Processor for Lab ${i + 1}");
+  //       return;
+  //     }
+  //
+  //     if (lab.monitor == null) {
+  //       AppToast.showError(
+  //           context, "Please select Monitor Type for Lab ${i + 1}");
+  //       return;
+  //     }
+  //
+  //     if (lab.os == null) {
+  //       AppToast.showError(
+  //           context, "Please select Operating System for Lab ${i + 1}");
+  //       return;
+  //     }
+  //
+  //     if (lab.ram == null) {
+  //       AppToast.showError(
+  //           context, "Please select RAM GB for Lab ${i + 1}");
+  //       return;
+  //     }
+  //
+  //     if (lab.hardDisk == null) {
+  //       AppToast.showError(
+  //           context, "Please select Hard Disk type for Lab ${i + 1}");
+  //       return;
+  //     }
+  //
+  //     if (lab.switchCompany == null) {
+  //       AppToast.showError(context,
+  //           "Please select Ethernet Switch Company for Lab ${i + 1}");
+  //       return;
+  //     }
+  //
+  //     if (lab.switchCategory == null) {
+  //       AppToast.showError(
+  //           context, "Please select Switch Category for Lab ${i + 1}");
+  //       return;
+  //     }
+  //
+  //     if (lab.switchParts == null) {
+  //       AppToast.showError(context,
+  //           "Please select No. of port Ethernet switch for Lab ${i + 1}");
+  //       return;
+  //     }
+  //   }
+  //
+  //   // ✅ Sab validation pass ho gaya
+  //   AppToast.showSuccess(context, "Exam infrastructure details saved");
+  //   Get.to(() => const CenterDetailsPage4());
+  // }
 
   Widget _buildLabBox(int index) {
     final lab = labs[index];
@@ -866,7 +870,6 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                   onChanged: (v) {
                     setState(() {
                       selectedGenerator = v;
-                      // Agar No select kare to values clear kar do
                       if (selectedGenerator == "No") {
                         generatorCapacityController.clear();
                         selectedUPSBackupTime = null;
@@ -876,7 +879,6 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                   validator: (value) {},
                 ),
 
-                // ==== Generator Yes hone par hi yeh fields dikhenge ====
                 if (selectedGenerator == "Yes") ...[
                   const SizedBox(height: 15),
                   Text("Generator Capacity (in KVA)",
@@ -889,16 +891,16 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                   ),
 
                   const SizedBox(height: 15),
-                  Text("UPS Backup Time (in mins)",
+                  Text("Generator full tank Capacity (ltr)",
                       style: AppTextStyles.centerText),
                   const SizedBox(height: 8),
                   CustomDropdown<String>(
                     hintText: "Select",
-                    value: selectedUPSBackupTime,
-                    items: upsBackupTimeOptions,
+                    value: tankCapacityLtrTime,
+                    items: tankCapacityLtr,
                     itemLabel: (v) => v,
                     onChanged: (v) =>
-                        setState(() => selectedUPSBackupTime = v),
+                        setState(() => tankCapacityLtrTime = v),
                     validator: (value) => null,
                   ),
                 ],
@@ -911,7 +913,19 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                   keyboardType: TextInputType.text,
                   label: '',
                 ),
-
+                const SizedBox(height: 15),
+                Text("Ups Backup time (in mins)",
+                    style: AppTextStyles.centerText),
+                const SizedBox(height: 8),
+                CustomDropdown<String>(
+                  hintText: "Select",
+                  value: selectedUPSBackupTime,
+                  items: upsBackupTimeOptions,
+                  itemLabel: (v) => v,
+                  onChanged: (v) =>
+                      setState(() => selectedUPSBackupTime = v),
+                  validator: (value) => null,
+                ),
                 const SizedBox(height: 30),
                 Text("Lab Details",
                     style: GoogleFonts.karla(
@@ -954,7 +968,9 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                       child: CustomPrimaryButton(
                         icon: Icons.arrow_right_alt_rounded,
                         text: "Next",
-                        onPressed: _validateAndNext,
+                        onPressed: (){
+                          Get.to(() => const CenterDetailsPage4());
+                        },
                       ),
                     ),
                   ],

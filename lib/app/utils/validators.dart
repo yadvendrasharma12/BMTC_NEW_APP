@@ -6,7 +6,6 @@ class Validators {
       return 'Please enter your full name';
     }
 
-    // sirf letters + space allow
     final regex = RegExp(r"^[A-Za-z ]+$");
     if (!regex.hasMatch(text)) {
       return 'Name should contain only letters';

@@ -29,6 +29,8 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
   final TextEditingController accountNumberController = TextEditingController();
   final TextEditingController ifscController = TextEditingController();
   final TextEditingController panController = TextEditingController();
+  final TextEditingController gstNoController = TextEditingController();
+
   final TextEditingController gstStateController = TextEditingController();
   final TextEditingController udhaiController = TextEditingController();
   final TextEditingController udhayamController = TextEditingController();
@@ -116,72 +118,72 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
     return RegExp(r'^[0-9]{2}$').hasMatch(trimmed);
   }
 
-  void _validateAndNext() {
-    // Beneficiary Name
-    if (centerNameController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Beneficiary Name");
-      return;
-    }
-
-    // Bank Name
-    if (bankNameController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter Name of the Bank");
-      return;
-    }
-
-    // Account Number
-    if (!_isValidAccountNumber(accountNumberController.text)) {
-      AppToast.showError(context, "Please enter a valid Bank Account Number");
-      return;
-    }
-
-    // IFSC Code
-    if (!_isValidIFSC(ifscController.text)) {
-      AppToast.showError(context, "Please enter a valid IFSC Code");
-      return;
-    }
-
-    // PAN
-    if (!_isValidPAN(panController.text)) {
-      AppToast.showError(context, "Please enter a valid PAN Number");
-      return;
-    }
-
-    // GST Yes/No
-    if (hasGST == null) {
-      AppToast.showError(context, "Please select if you have GST number");
-      return;
-    }
-
-    // Agar GST = Yes hai tabhi GST state code validate karein
-    if (hasGST == "Yes") {
-      if (gstStateController.text.trim().isEmpty) {
-        AppToast.showError(context, "Please enter GST State Code");
-        return;
-      }
-      if (!_isValidGSTStateCode(gstStateController.text)) {
-        AppToast.showError(
-          context,
-          "Please enter a valid 2 digit GST State Code",
-        );
-        return;
-      }
-    }
-
-    // UDHYAM / MSME
-    if (hasMSME == null) {
-      AppToast.showError(context, "Please select if you have MSME number");
-      return;
-    }
-    if (hasMSME == "Yes" && udhaiController.text.trim().isEmpty) {
-      AppToast.showError(context, "Please enter UDHYAM / MSME Number");
-      return;
-    }
-
-    // ✅ All validations passed
-    AppToast.showSuccess(context, "Bank details saved successfully");
-    Get.to(videoPageScreen());
-  }
+  // void _validateAndNext() {
+  //   // Beneficiary Name
+  //   if (centerNameController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Beneficiary Name");
+  //     return;
+  //   }
+  //
+  //   // Bank Name
+  //   if (bankNameController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter Name of the Bank");
+  //     return;
+  //   }
+  //
+  //   // Account Number
+  //   if (!_isValidAccountNumber(accountNumberController.text)) {
+  //     AppToast.showError(context, "Please enter a valid Bank Account Number");
+  //     return;
+  //   }
+  //
+  //   // IFSC Code
+  //   if (!_isValidIFSC(ifscController.text)) {
+  //     AppToast.showError(context, "Please enter a valid IFSC Code");
+  //     return;
+  //   }
+  //
+  //   // PAN
+  //   if (!_isValidPAN(panController.text)) {
+  //     AppToast.showError(context, "Please enter a valid PAN Number");
+  //     return;
+  //   }
+  //
+  //   // GST Yes/No
+  //   if (hasGST == null) {
+  //     AppToast.showError(context, "Please select if you have GST number");
+  //     return;
+  //   }
+  //
+  //   // Agar GST = Yes hai tabhi GST state code validate karein
+  //   if (hasGST == "Yes") {
+  //     if (gstStateController.text.trim().isEmpty) {
+  //       AppToast.showError(context, "Please enter GST State Code");
+  //       return;
+  //     }
+  //     if (!_isValidGSTStateCode(gstStateController.text)) {
+  //       AppToast.showError(
+  //         context,
+  //         "Please enter a valid 2 digit GST State Code",
+  //       );
+  //       return;
+  //     }
+  //   }
+  //
+  //   // UDHYAM / MSME
+  //   if (hasMSME == null) {
+  //     AppToast.showError(context, "Please select if you have MSME number");
+  //     return;
+  //   }
+  //   if (hasMSME == "Yes" && udhaiController.text.trim().isEmpty) {
+  //     AppToast.showError(context, "Please enter UDHYAM / MSME Number");
+  //     return;
+  //   }
+  //
+  //   // ✅ All validations passed
+  //   AppToast.showSuccess(context, "Bank details saved successfully");
+  //   Get.to(videoPageScreen());
+  // }
 
   // 🔹 File variables
   File? chooseFile;
@@ -369,7 +371,7 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
                   Text("GST Number", style: AppTextStyles.centerText),
                   const SizedBox(height: 8),
                   AppTextField(
-                    controller: gstStateController,
+                    controller: gstNoController,
                     label: "",
                     hintText: "",
                     keyboardType: TextInputType.number,
@@ -452,7 +454,7 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
                   ),
 
                   const SizedBox(height: 15),
-                  Text("GST Station Code", style: AppTextStyles.centerText),
+                  Text("GST State Code", style: AppTextStyles.centerText),
                   const SizedBox(height: 8),
                   AppTextField(
                     controller: gstStateController,
@@ -460,45 +462,12 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
                     hintText: "",
                     keyboardType: TextInputType.text,
                   ),
-                  const SizedBox(height: 15),
-                  Text("UIDAI Number", style: AppTextStyles.centerText),
-                  const SizedBox(height: 8),
-                  AppTextField(
-                    controller: udhaiController,
-                    label: "",
-                    hintText: "",
-                    keyboardType: TextInputType.text,
-                  ),
-                  const SizedBox(height: 15),
-                  Text(
-                    "Upload Unhandy certificate",
-                    style: AppTextStyles.centerText,
-                  ),
-                  const SizedBox(height: 8),
-                  UploadingContainer(
-                    buttonText: "Upload File",
-                    infoText:
-                    "Max Each file size: 2 MB | File type: doc, docx, pdf",
-                    onPressed: () async {
-                      await _pickFile(
-                        maxSizeMB: 2,
-                        allowedExtensions: ['doc', 'docx', 'pdf'],
-                        onFilePicked: (file, name, size) {
-                          setState(() {
-                            unhandyCertFile = file;
-                            unhandyCertFileName = name;
-                            unhandyCertFileSize = size;
-                          });
-                        },
-                      );
-                    },
-                  ),
+
                   _selectedFileInfo(unhandyCertFileName, unhandyCertFileSize),
                   const SizedBox(height: 15),
                 ],
-
-                const SizedBox(height: 12),
-                Text("GST Station Code", style: AppTextStyles.centerText),
+                const SizedBox(height: 15),
+                Text("GST State Code", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
                 AppTextField(
                   controller: gstStateController,
@@ -506,6 +475,7 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
                   hintText: "",
                   keyboardType: TextInputType.text,
                 ),
+
                 const SizedBox(height: 15),
                 Text("UIDAI Number", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
@@ -528,7 +498,7 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
                 const SizedBox(height: 15),
 
                 if (hasMSME == "Yes") ...[
-                  Text("UDHYAM / MSME Number", style: AppTextStyles.centerText),
+                  Text("MSME Number", style: AppTextStyles.centerText),
                   const SizedBox(height: 8),
                   AppTextField(
                     controller: udhayamController,
@@ -706,7 +676,9 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
                       child: CustomPrimaryButton(
                         icon: Icons.arrow_right_alt_rounded,
                         text: "Next",
-                        onPressed: _validateAndNext,
+                        onPressed: (){
+                          Get.to(videoPageScreen());
+                        },
                       ),
                     ),
                   ],

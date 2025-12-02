@@ -34,6 +34,7 @@ class _videoPageScreenState extends State<videoPageScreen> {
 
   @override
   void dispose() {
+    _controller.pause();
     _controller.dispose();
     super.dispose();
   }
@@ -50,53 +51,83 @@ class _videoPageScreenState extends State<videoPageScreen> {
       ),
       builder: (context, player) {
         return Scaffold(
-          backgroundColor: AppColors.background,
-          body: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
 
-                Text(
-                  "Welcome to BookMyTestCenter",
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.centerDetailsTopTitle,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "We’re extremely exited to have you as a center partner",
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  style: AppTextStyles.centerSubTitle,
-                ),
+          body: Center(
+            child: Container(
+              height: 560,
+              margin:
+              const EdgeInsets.only(left: 12, right: 12),
 
-                const SizedBox(height: 32),
-
-                SizedBox(
-                  height: h * 0.30,
-                  width: double.infinity,
-                  child: FittedBox(
-                    fit: BoxFit.fill,
-                    child: player,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 4,
+                    spreadRadius: 1,
+                    color: Colors.black.withOpacity(0.05),
                   ),
-                ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
 
-                const SizedBox(height: 40),
-
-                // ✅ Button
-                SizedBox(
-                  width: double.infinity,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: CustomPrimaryButton(
-                      text: "Let's get started",
-                      onPressed: () {
-                        Get.to(DashboardPageScreen());
-                      },
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      "Welcome to BookMyTestCenter",
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.centerDetailsTopTitle,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      "We’re extremely exited to have you as a center partner",
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      style: AppTextStyles.centerSubTitle,
+                    ),
+                  ),
+
+                  const SizedBox(height: 26),
+
+
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: CustomPrimaryButton(
+                        text: "Let's get started",
+                        onPressed: () {
+                          _controller.pause();
+                          Get.to(DashboardPageScreen());
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 27),
+                  SizedBox(
+                    height: h * 0.26,
+                    width: double.infinity,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: FittedBox(
+                        fit: BoxFit.fill,
+                        child: player,
+                      ),
+                    ),
+                  ),
+
+
+
+
+                ],
+              ),
             ),
           ),
         );

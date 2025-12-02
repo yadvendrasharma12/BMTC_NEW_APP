@@ -27,18 +27,12 @@ class _SelfBookingScreenState extends State<SelfBookingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leading: IconButton(onPressed: (){
-          Get.back();
-        }, icon: Icon(Icons.arrow_back_ios)),
-        title: Text("My Self bookings",style: AppTextStyles.heading2,),
-      ),
+
       backgroundColor: AppColors.borderColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.only(top: 10.0),
+            padding: const EdgeInsets.only(top: 20.0),
             child: Column(
               children: [
                 Padding(
