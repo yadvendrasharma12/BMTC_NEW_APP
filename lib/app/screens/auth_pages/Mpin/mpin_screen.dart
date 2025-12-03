@@ -39,9 +39,15 @@ class _MpinScreenState extends State<MpinScreen> {
     super.initState();
     errorController = StreamController<ErrorAnimationType>();
   }
-
   void _onVerify() {
     final mpin = _mPinController.text.trim();
+
+    // 🔹 DEBUG: Print controller data before setting MPIN
+    print("Data before saving MPIN:");
+    print("Name: ${formController.name.value}");
+    print("Email: ${formController.email.value}");
+    print("Phone: ${formController.mobilePhone.value}");
+    print("MPIN (input): $mpin");
 
     if (mpin.isEmpty) {
       errorController.add(ErrorAnimationType.shake);
@@ -55,14 +61,46 @@ class _MpinScreenState extends State<MpinScreen> {
       return;
     }
 
-    _formKey.currentState?.validate();
-
-
     formController.mpin.value = mpin;
 
     AppToast.showSuccess(context, 'MPIN created successfully!');
+
+    // 🔹 DEBUG: Print after saving MPIN
+    print("Data after saving MPIN:");
+    print("Name: ${formController.name.value}");
+    print("Email: ${formController.email.value}");
+    print("Phone: ${formController.mobilePhone.value}");
+    print("MPIN: ${formController.mpin.value}");
+
     Get.off(() => MainScreen());
   }
+
+  // void _onVerify() {
+  //   final mpin = _mPinController.text.trim();
+  //   print("Data in OTP Screen:");
+  //   print("Name: ${formController.name.value}");
+  //   print("Phone: ${formController.mobilePhone.value}");
+  //
+  //   if (mpin.isEmpty) {
+  //     errorController.add(ErrorAnimationType.shake);
+  //     AppToast.showError(context, 'Please enter your MPIN');
+  //     return;
+  //   }
+  //
+  //   if (mpin.length != 4) {
+  //     errorController.add(ErrorAnimationType.shake);
+  //     AppToast.showError(context, 'MPIN must be 4 digits');
+  //     return;
+  //   }
+  //
+  //   _formKey.currentState?.validate();
+  //
+  //
+  //   formController.mpin.value = mpin;
+  //
+  //   AppToast.showSuccess(context, 'MPIN created successfully!');
+  //   Get.off(() => MainScreen());
+  // }
 
 
 

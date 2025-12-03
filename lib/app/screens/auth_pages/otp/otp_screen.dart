@@ -58,6 +58,9 @@ class _OtpScreenState extends State<OtpScreen> {
 
     // ✅ Save OTP in controller
     formController.otp.value = otp;
+    print("Data in OTP Screen:");
+    print("Name: ${formController.name.value}");
+    print("Phone: ${formController.mobilePhone.value}");
 
     AppToast.showSuccess(context, 'OTP verified successfully!');
     Get.to(() => MpinScreen());

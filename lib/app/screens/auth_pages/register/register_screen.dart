@@ -63,6 +63,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     formController.countryCode.value = _selectedCountryCode;
     formController.isAgree.value = _agreedToTerms;
 
+    print("Controller Data After Register:");
+    print("Name: ${formController.name.value}");
+    print("Email: ${formController.email.value}");
+    print("Phone: ${formController.mobilePhone.value}");
+    print("Country Code: ${formController.countryCode.value}");
+    print("Agreed Terms: ${formController.isAgree.value}");
 
     Get.to(() => OtpScreen(
       mobileNumber: formController.mobilePhone.value,
