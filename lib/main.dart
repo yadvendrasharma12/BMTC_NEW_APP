@@ -1,35 +1,47 @@
-
+import 'package:bmtc_app/app/screens/add_center_pages/center_details_page1.dart';
 import 'package:bmtc_app/app/screens/add_center_pages/center_details_page3.dart';
-import 'package:bmtc_app/app/screens/auth_pages/splash/splash_screen.dart';
-import 'package:bmtc_app/app/screens/home/dashboard_page/dashBoard_page_screen.dart';
+import 'package:bmtc_app/app/screens/auth_pages/register/register_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get/get.dart';
 
-import 'app/screens/add_center_pages/center_details_page2.dart';
+import 'app/controllers/auth_controller.dart';
+import 'app/controllers/center_form_controller.dart';
 import 'app/screens/add_center_pages/center_details_page4.dart';
-import 'app/screens/video_page/video_page_screen.dart';
-
-
+import 'app/services/connection_service/connectvity_service.dart';
+import 'app/utils/toast_message.dart';
+import 'app/screens/auth_pages/splash/splash_screen.dart';
 
 void main() {
+  Get.lazyPut(() => ExamCenterController());
+  Get.put(AuthController());
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final connectivityService = ConnectivityService();
+
+
+
+  @override
+  void dispose() {
+    connectivityService.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'BookMyTestCenter',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xff2A75AE)),
-        useMaterial3: true,
-      ),
-      home: SplashScreen(),
+      home: RegisterScreen(),
     );
   }
 }
-

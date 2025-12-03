@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../controllers/center_form_controller.dart';
 import '../../models/city_modal.dart';
 import '../../models/country_modal.dart';
 import '../../models/state_modal.dart';
@@ -28,25 +29,21 @@ class CenterDetailsPage1 extends StatefulWidget {
 }
 
 class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
+  final ExamCenterController examController = Get.find<ExamCenterController>();
+
   // ✅ Text Controllers
   final TextEditingController centerNameController = TextEditingController();
-  final TextEditingController centerDescriptionController =
-  TextEditingController();
-  final TextEditingController portalAddressController =
-  TextEditingController();
+  final TextEditingController centerDescriptionController = TextEditingController();
+  final TextEditingController portalAddressController = TextEditingController();
   final TextEditingController latitudeController = TextEditingController();
   final TextEditingController longitudeController = TextEditingController();
-  final TextEditingController centerCapacityController =
-  TextEditingController();
+  final TextEditingController centerCapacityController = TextEditingController();
   final TextEditingController localAreaController = TextEditingController();
   final TextEditingController pinCodeController = TextEditingController();
   final TextEditingController landmarkController = TextEditingController();
-  final TextEditingController railwayStationNameController =
-  TextEditingController();
-  final TextEditingController busStationNameController =
-  TextEditingController();
-  final TextEditingController metroStationNameController =
-  TextEditingController();
+  final TextEditingController railwayStationNameController = TextEditingController();
+  final TextEditingController busStationNameController = TextEditingController();
+  final TextEditingController metroStationNameController = TextEditingController();
   final TextEditingController airportNameController = TextEditingController();
 
   String? selectedCenterType;
@@ -57,8 +54,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
   String? selectedMetroDistance;
   String? selectedAirportDistance;
 
-  // ✅ Lift availability (Yes/No)
-  bool? isLiftAvailable; // null / true / false
+  bool? isLiftAvailable;
 
   // ✅ Sample dropdown data
   final List<String> centerTypes = ['Online'];
@@ -229,9 +225,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     super.dispose();
   }
 
-  bool _isNumeric(String value) {
-    return double.tryParse(value) != null;
-  }
+
 
   Future<PlatformFile?> _pickImageFile() async {
     final result = await FilePicker.platform.pickFiles(
@@ -392,162 +386,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     }
   }
 
-  // void _validateAndNext() {
-  //   // 🟥 BASIC TEXT FIELDS
-  //   if (centerNameController.text.trim().isEmpty) {
-  //     AppToast.showError(context, "Please enter Center Name");
-  //     return;
-  //   }
-  //
-  //   if (centerDescriptionController.text.trim().isEmpty) {
-  //     AppToast.showError(context, "Please enter Center Description");
-  //     return;
-  //   }
-  //
-  //   if (selectedCenterType == null) {
-  //     AppToast.showError(context, "Please select Center Type");
-  //     return;
-  //   }
-  //
-  //   if (portalAddressController.text.trim().isEmpty) {
-  //     AppToast.showError(context, "Please enter Portal Address");
-  //     return;
-  //   }
-  //
-  //   // 🟥 LAT / LONG
-  //   if (latitudeController.text.trim().isEmpty) {
-  //     AppToast.showError(context, "Please enter Center Latitude");
-  //     return;
-  //   }
-  //   if (!_isNumeric(latitudeController.text.trim())) {
-  //     AppToast.showError(context, "Latitude must be a valid number");
-  //     return;
-  //   }
-  //
-  //   if (longitudeController.text.trim().isEmpty) {
-  //     AppToast.showError(context, "Please enter Center Longitude");
-  //     return;
-  //   }
-  //   if (!_isNumeric(longitudeController.text.trim())) {
-  //     AppToast.showError(context, "Longitude must be a valid number");
-  //     return;
-  //   }
-  //
-  //   // 🟥 CAPACITY
-  //   if (centerCapacityController.text.trim().isEmpty) {
-  //     AppToast.showError(context, "Please enter Center Capacity");
-  //     return;
-  //   }
-  //   if (!_isNumeric(centerCapacityController.text.trim())) {
-  //     AppToast.showError(context, "Center Capacity must be a valid number");
-  //     return;
-  //   }
-  //
-  //   // 🟥 COUNTRY / STATE / CITY / AREA / PINCODE
-  //   if (selectedCountry == null) {
-  //     AppToast.showError(context, "Please select Country");
-  //     return;
-  //   }
-  //   if (selectedState == null) {
-  //     AppToast.showError(context, "Please select State");
-  //     return;
-  //   }
-  //   if (selectedCity == null) {
-  //     AppToast.showError(context, "Please select City");
-  //     return;
-  //   }
-  //
-  //   if (localAreaController.text.trim().isEmpty) {
-  //     AppToast.showError(context, "Please enter Area Name");
-  //     return;
-  //   }
-  //
-  //   if (pinCodeController.text.trim().isEmpty) {
-  //     AppToast.showError(context, "Please enter Pincode");
-  //     return;
-  //   }
-  //   if (!_isNumeric(pinCodeController.text.trim()) ||
-  //       pinCodeController.text.trim().length != 6) {
-  //     AppToast.showError(context, "Please enter valid 6 digit Pincode");
-  //     return;
-  //   }
-  //
-  //   // 🟥 CATEGORY + LANDMARK
-  //   if (selectedTestCenterCategory == null) {
-  //     AppToast.showError(context, "Please select Test Center Category");
-  //     return;
-  //   }
-  //
-  //   if (landmarkController.text.trim().isEmpty) {
-  //     AppToast.showError(context, "Please enter nearby Landmark");
-  //     return;
-  //   }
-  //
-  //   // 🟥 LIFT AVAILABILITY
-  //   if (isLiftAvailable == null) {
-  //     AppToast.showError(
-  //       context,
-  //       "Please select if Lift is available for PH candidate",
-  //     );
-  //     return;
-  //   }
-  //
-  //   // 🟥 RAILWAY
-  //   if (railwayStationNameController.text.trim().isEmpty) {
-  //     AppToast.showError(context, "Please enter Railway Station Name");
-  //     return;
-  //   }
-  //   if (selectedRailwayDistance == null) {
-  //     AppToast.showError(
-  //       context,
-  //       "Please select Distance from main Railway Station",
-  //     );
-  //     return;
-  //   }
-  //
-  //   // 🟥 BUS
-  //   if (busStationNameController.text.trim().isEmpty) {
-  //     AppToast.showError(context, "Please enter Bus Station Name");
-  //     return;
-  //   }
-  //   if (selectedBusDistance == null) {
-  //     AppToast.showError(
-  //       context,
-  //       "Please select Distance from Bus Station",
-  //     );
-  //     return;
-  //   }
-  //
-  //   // 🟥 METRO
-  //   if (metroStationNameController.text.trim().isEmpty) {
-  //     AppToast.showError(context, "Please enter Metro Station Name");
-  //     return;
-  //   }
-  //   if (selectedMetroDistance == null) {
-  //     AppToast.showError(
-  //       context,
-  //       "Please select Distance from Metro Station",
-  //     );
-  //     return;
-  //   }
-  //
-  //   // 🟥 AIRPORT
-  //   if (airportNameController.text.trim().isEmpty) {
-  //     AppToast.showError(context, "Please enter Airport Name");
-  //     return;
-  //   }
-  //   if (selectedAirportDistance == null) {
-  //     AppToast.showError(
-  //       context,
-  //       "Please select Distance from main Airport",
-  //     );
-  //     return;
-  //   }
-  //
-  //   // ✅ SAB VALID → NEXT PAGE
-  //   AppToast.showSuccess(context, "All details validated");
-  //   Get.to(() => const CenterDetailsPage2());
-  // }
+
 
   Widget _fileInfoText(String? name, int? sizeBytes) {
     if (name == null || sizeBytes == null) return const SizedBox.shrink();
@@ -642,6 +481,100 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     });
   }
 
+  double _convertDistanceToDouble(String? value) {
+    if (value == null) return 0.0;
+
+    final cleaned = value.replaceAll(RegExp(r'[^0-9.]'), '');
+    return double.tryParse(cleaned) ?? 0.0;
+  }
+  void _saveAndNext() {
+
+    /// ✅ 1. TEXTFIELDS
+    examController.centerName.value = centerNameController.text.trim();
+    examController.centerDescription.value = centerDescriptionController.text.trim();
+    examController.postalAddress.value = portalAddressController.text.trim();
+
+    if (latitudeController.text.trim().isNotEmpty) {
+      examController.addressLat.value =
+          double.parse(latitudeController.text.trim());
+    }
+
+    if (longitudeController.text.trim().isNotEmpty) {
+      examController.addressLong.value =
+          double.parse(longitudeController.text.trim());
+    }
+
+    examController.capacity.value =
+        int.tryParse(centerCapacityController.text.trim()) ?? 0;
+
+    examController.localAreaName.value = localAreaController.text.trim();
+
+
+    examController.nearbyLandmark.value = landmarkController.text.trim();
+
+    examController.nearestRailwayStation.value =
+        railwayStationNameController.text.trim();
+
+    examController.nearestBusStop.value =
+        busStationNameController.text.trim();
+
+    examController.nearestMetroStation.value =
+        metroStationNameController.text.trim();
+
+    examController.nearestAirport.value =
+        airportNameController.text.trim();
+
+    /// ✅ 2. LIFT
+    examController.isLiftAvailable.value = isLiftAvailable ?? false;
+
+    /// ✅ 3. CENTER TYPE (ONLY API TYPE)
+    examController.centerType.value = categoryTypes ?? "";
+
+    /// ✅ 4. DISTANCES
+    examController.distanceFromRailwayStation.value =
+        _convertDistanceToDouble(selectedRailwayDistance);
+
+    examController.distanceFromBusStop.value =
+        _convertDistanceToDouble(selectedBusDistance);
+
+    examController.distanceFromMetroStation.value =
+        _convertDistanceToDouble(selectedMetroDistance);
+
+    examController.distanceFromAirport.value =
+        _convertDistanceToDouble(selectedAirportDistance);
+
+    /// ✅ 5. LOCATION IDS (API SAFE)
+
+
+    /// ✅ 6. FILES
+    if (entranceFile != null) {
+      examController.entranceFile.value = entranceFile;
+    }
+    if (labPhotoFile != null) {
+      examController.labPhotoFile.value = labPhotoFile;
+    }
+    if (mainGateFile != null) {
+      examController.mainGateFile.value = mainGateFile;
+    }
+    if (serverRoomFile != null) {
+      examController.serverRoomFile.value = serverRoomFile;
+    }
+    if (conferenceRoomFile != null) {
+      examController.conferenceRoomFile.value = conferenceRoomFile;
+    }
+    if (upsGeneratorFile != null) {
+      examController.upsGeneratorFile.value = upsGeneratorFile;
+    }
+    if (walkthroughVideoFile != null) {
+      examController.walkthroughVideoFile.value = walkthroughVideoFile;
+    }
+
+    /// ✅ 7. NEXT PAGE
+    Get.to(() => const CenterDetailsPage2());
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -703,6 +636,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 // 🔹 Center Type
                 Text("Center Type", style: AppTextStyles.centerText),
                 const SizedBox(height: 10),
+
                 CustomDropdown<String>(
                   hintText: "Select Center Type",
                   value: selectedCenterType,
@@ -887,7 +821,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 Text("State", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
 
-                 CustomDropdown<StateModel>(
+                CustomDropdown<StateModel>(
                   hintText: "Select State",
                   value: selectedState,
                   items: stateList,
@@ -908,7 +842,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 Text("City", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
 
-               CustomDropdown<CityModel>(
+                CustomDropdown<CityModel>(
                   hintText: "Select City",
                   value: selectedCity,
                   items: cityList,
@@ -949,10 +883,8 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 Text("Center Type", style: AppTextStyles.centerText),
                 const SizedBox(height: 10),
 
-                _isCenterTypeLoading
-                    ? CircularProgressIndicator()
-                    : CustomDropdown<String>(
-                  hintText: "Select Center Type",
+                CustomDropdown<String>(
+                  hintText: "Select Category Center Type",
                   value: categoryTypes,
                   items: _categoryTypes,
                   itemLabel: (value) => value,
@@ -1130,9 +1062,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 CustomPrimaryButton(
                   text: "Next",
                   icon: Icons.arrow_right_alt_rounded,
-                  onPressed: (){
-                    Get.to(() => const CenterDetailsPage2());
-                  },
+                  onPressed: _saveAndNext,
                 ),
                 const SizedBox(height: 24),
               ],

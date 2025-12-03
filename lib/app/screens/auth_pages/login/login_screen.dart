@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
+import '../../../controllers/auth_controller.dart';
 import '../../../core/text_style.dart';
 import '../../../widgets/otp_pin_field.dart';
 import '../../../utils/toast_message.dart';
@@ -28,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
+  final AuthController authController = Get.find<AuthController>();
 
   late StreamController<ErrorAnimationType> errorController;
 
@@ -45,37 +47,33 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  void _onLogin() {
+    final phone = _phoneController.text.trim();
+    final mpin = _otpController.text.trim();
 
-  // void _onLogin() {
-  //   final phone = _phoneController.text.trim();
-  //   final mpin = _otpController.text.trim();
-  //
-  //   // Phone validation
-  //   final phoneError = Validators.phone(phone);
-  //   if (phoneError != null) {
-  //     AppToast.showError(context, phoneError);
-  //     return;
-  //   }
-  //
-  //   // MPIN validation
-  //   if (mpin.isEmpty) {
-  //     errorController.add(ErrorAnimationType.shake);
-  //     AppToast.showError(context, 'Please enter your MPIN');
-  //     return;
-  //   }
-  //
-  //   if (mpin.length != 4) {
-  //     errorController.add(ErrorAnimationType.shake);
-  //     AppToast.showError(context, 'MPIN must be 4 digits');
-  //     return;
-  //   }
-  //
-  //   final isValid = _formKey.currentState?.validate() ?? false;
-  //   if (!isValid) return;
-  //
-  //   AppToast.showSuccess(context, 'OTP/MPIN valid!');
-  //   Get.to(CenterDetailsPage1());
-  // }
+    // Phone validation
+    final phoneError = Validators.phone(phone);
+    if (phoneError != null) {
+      AppToast.showError(context, phoneError);
+      return;
+    }
+
+    // MPIN validation
+    if (mpin.isEmpty || mpin.length != 4) {
+      errorController.add(ErrorAnimationType.shake);
+      AppToast.showError(context, 'Please enter a valid 4-digit MPIN');
+      return;
+    }
+
+    if (_formKey.currentState?.validate() ?? false) {
+      authController.login(
+        context: context,  // <- pass context here
+        mobilePhone: phone,
+        mpin: mpin,
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Form(
             key: _formKey,
             autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -104,22 +102,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 15),
 
-                // Title
-                Text(
-                  "Welcome back!",
-                  style: AppTextStyles.topHeading1,
-                  textAlign: TextAlign.center,
-                ),
+                // Titles
+                Text("Welcome back!", style: AppTextStyles.topHeading1, textAlign: TextAlign.center),
                 const SizedBox(height: 10),
-                Text(
-                  "Enter your 4 digit M-Pin to log in",
-                  style: AppTextStyles.topHeading2,
-                ),
+                Text("Enter your 4 digit M-Pin to log in", style: AppTextStyles.topHeading2),
                 const SizedBox(height: 6),
-                Text(
-                  "Good to see you back",
-                  style: AppTextStyles.topHeading3,
-                ),
+                Text("Good to see you back", style: AppTextStyles.topHeading3),
                 const SizedBox(height: 24),
 
                 // Phone input
@@ -134,27 +122,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     LengthLimitingTextInputFormatter(10),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 21),
 
-
+                // MPIN input
                 OtpPinField(
                   controller: _otpController,
                   length: 4,
                   errorController: errorController,
                   onChanged: (value) {},
-
                 ),
                 const SizedBox(height: 24),
 
-
-                CustomPrimaryButton(
-                  text: "Log in",
-                  icon: Icons.arrow_right_alt_rounded,
-                  // onPressed: _onLogin,
-                  onPressed: (){
-                    Get.to(CenterDetailsPage1());
-                  },
-                ),
+            Obx(() {
+              return CustomPrimaryButton(
+                text: "Log in",
+                icon: Icons.arrow_right_alt_rounded,
+                isLoading: authController.isLoading.value, // show spinner
+                onPressed: authController.isLoading.value ? null : _onLogin,
+              );
+            }),
 
                 const SizedBox(height: 15),
 
@@ -173,9 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
-                          Get.to(RegisterScreen());
-                        },
+                        onTap: () => Get.to(RegisterScreen()),
                         child: Text("Sign up", style: AppTextStyles.linkText),
                       ),
                     ],
@@ -183,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 15),
 
-
+                // Forget MPIN
                 Align(
                   alignment: Alignment.center,
                   child: Wrap(
@@ -198,9 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
-                          Get.to(ForgetScreen());
-                        },
+                        onTap: () => Get.to(ForgetScreen()),
                         child: Text("Go", style: AppTextStyles.linkText),
                       ),
                     ],

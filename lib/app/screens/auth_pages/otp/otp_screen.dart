@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
+import '../../../controllers/center_form_controller.dart';
 import '../../../core/app_colors.dart';
 import '../../../core/text_style.dart';
 import '../../../utils/toast_message.dart';
@@ -35,8 +36,8 @@ class _OtpScreenState extends State<OtpScreen> {
 
 
   final TextEditingController _otpController = TextEditingController();
+  final ExamCenterController formController = Get.find<ExamCenterController>();
 
-  // PinCode ke error animation ke liye
   late StreamController<ErrorAnimationType> errorController;
   String currentText = "";
 
@@ -49,21 +50,17 @@ class _OtpScreenState extends State<OtpScreen> {
   void _onVerify() {
     final otp = _otpController.text.trim();
 
-    if (otp.isEmpty) {
+    if (otp.isEmpty || otp.length != 6) {
       errorController.add(ErrorAnimationType.shake);
-      AppToast.showError(context, 'Please enter OTP');
+      AppToast.showError(context, 'Please enter valid 6-digit OTP');
       return;
     }
 
-    if (otp.length != 6) {
-      errorController.add(ErrorAnimationType.shake);
-      AppToast.showError(context, 'OTP must be 6 digits');
-      return;
-    }
+    // ✅ Save OTP in controller
+    formController.otp.value = otp;
 
-    _formKey.currentState?.validate();
-    AppToast.showSuccess(context, 'Sign in successful!');
-    Get.to(MpinScreen());
+    AppToast.showSuccess(context, 'OTP verified successfully!');
+    Get.to(() => MpinScreen());
   }
 
   @override

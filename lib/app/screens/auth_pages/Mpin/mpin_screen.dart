@@ -12,6 +12,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
+import '../../../controllers/center_form_controller.dart';
 import '../../../core/text_style.dart';
 import '../../../utils/toast_message.dart';
 import '../../../widgets/custom_appbar.dart';
@@ -27,7 +28,8 @@ class MpinScreen extends StatefulWidget {
 
 class _MpinScreenState extends State<MpinScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _otpController = TextEditingController();
+  final TextEditingController _mPinController = TextEditingController();
+  final ExamCenterController formController = Get.find<ExamCenterController>();
 
   late StreamController<ErrorAnimationType> errorController;
   String currentText = "";
@@ -39,7 +41,7 @@ class _MpinScreenState extends State<MpinScreen> {
   }
 
   void _onVerify() {
-    final mpin = _otpController.text.trim();
+    final mpin = _mPinController.text.trim();
 
     if (mpin.isEmpty) {
       errorController.add(ErrorAnimationType.shake);
@@ -55,10 +57,13 @@ class _MpinScreenState extends State<MpinScreen> {
 
     _formKey.currentState?.validate();
 
-    AppToast.showSuccess(context, 'MPIN created successfully!');
 
-   Get.off(() => MainScreen());
+    formController.mpin.value = mpin;
+
+    AppToast.showSuccess(context, 'MPIN created successfully!');
+    Get.off(() => MainScreen());
   }
+
 
 
   @override
@@ -66,7 +71,7 @@ class _MpinScreenState extends State<MpinScreen> {
 
     errorController.close();
     super.dispose();
-    _otpController.dispose();
+    _mPinController.dispose();
   }
 
   @override
@@ -140,7 +145,7 @@ class _MpinScreenState extends State<MpinScreen> {
                 const SizedBox(height: 24),
 
                 OtpPinField(
-                  controller: _otpController,
+                  controller: _mPinController,
                   length: 4,
                   errorController: errorController,
                   onChanged: (value) {},

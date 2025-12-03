@@ -6,9 +6,8 @@ import 'package:bmtc_app/app/utils/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import '../../../controllers/center_form_controller.dart';
 import '../../../utils/toast_message.dart';
 import '../../../widgets/custom_appbar.dart';
 import '../../../widgets/custom_button.dart';
@@ -27,44 +26,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _nameController  = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final ExamCenterController formController = Get.put(ExamCenterController());
 
   String _selectedCountryCode = '+91';
   bool _agreedToTerms = false;
 
-  // void _onSignUp() {
-  //   final nameError  = Validators.name(_nameController.text);
-  //   final emailError = Validators.email(_emailController.text);
-  //   final phoneError = Validators.phone(_phoneController.text);
-  //
-  //   if (nameError != null) {
-  //     AppToast.showError(context, nameError);
-  //     return;
-  //   }
-  //   if (emailError != null) {
-  //     AppToast.showError(context, emailError);
-  //     return;
-  //   }
-  //   if (phoneError != null) {
-  //     AppToast.showError(context, phoneError);
-  //     return;
-  //   }
-  //
-  //   if (!_agreedToTerms) {
-  //     AppToast.showError(context, 'Please agree to Terms & Privacy Policy');
-  //     return;
-  //   }
-  //
-  //   _formKey.currentState?.validate();
-  //
-  //   AppToast.showSuccess(context, 'OTP sent successful!');
-  //   Get.to(
-  //         () => OtpScreen(
-  //       mobileNumber: _phoneController.text,
-  //       name: _nameController.text,
-  //       countryCode: _selectedCountryCode,
-  //     ),
-  //   );
-  // }
+
+  bool _isLoading = false;
+  void _onSignUp() async {
+    final nameError  = Validators.name(_nameController.text);
+    final emailError = Validators.email(_emailController.text);
+    final phoneError = Validators.phone(_phoneController.text);
+
+    if (nameError != null) {
+      AppToast.showError(context, nameError);
+      return;
+    }
+    if (emailError != null) {
+      AppToast.showError(context, emailError);
+      return;
+    }
+    if (phoneError != null) {
+      AppToast.showError(context, phoneError);
+      return;
+    }
+
+    if (!_agreedToTerms) {
+      AppToast.showError(context, 'Please agree to Terms & Privacy Policy');
+      return;
+    }
+
+    // ✅ Save data in controller
+    formController.name.value = _nameController.text.trim();
+    formController.email.value = _emailController.text.trim();
+    formController.mobilePhone.value = _phoneController.text.trim();
+    formController.countryCode.value = _selectedCountryCode;
+    formController.isAgree.value = _agreedToTerms;
+
+
+    Get.to(() => OtpScreen(
+      mobileNumber: formController.mobilePhone.value,
+      countryCode: formController.countryCode.value,
+      name: formController.name.value,
+    ));
+  }
+
+
+
+
 
   @override
   void dispose() {
@@ -73,6 +82,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _phoneController.dispose();
     super.dispose();
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -89,11 +101,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           child: Form(
             key: _formKey,
-            autovalidateMode: AutovalidateMode.onUserInteraction, // realtime
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 🔹 Logo
+
                 Center(
                   child: SizedBox(
                     height: 170,
@@ -106,8 +118,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
 
-
-
                 const SizedBox(height: 24),
 
                 Text(
@@ -115,6 +125,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: AppTextStyles.topHeading1,
                 ),
                 const SizedBox(height: 6),
+
                 Text(
                   "You are just a few steps away, please give us your details",
                   style: AppTextStyles.topHeading3,
@@ -122,7 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 24),
 
-                // 🔹 NAME FIELD
+
                 AppTextField(
                   controller: _nameController,
                   label: "Full name",
@@ -136,7 +147,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 16),
 
-                // 🔹 EMAIL FIELD
                 AppTextField(
                   controller: _emailController,
                   label: "Email",
@@ -147,7 +157,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 16),
 
-                // 🔹 PHONE + COUNTRY CODE
                 Row(
                   children: [
                     Container(
@@ -169,14 +178,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               value: '+91',
                               child: Text('Ind (+91)'),
                             ),
-                            DropdownMenuItem(
-                              value: '+1',
-                              child: Text('US (+1)'),
-                            ),
-                            DropdownMenuItem(
-                              value: '+44',
-                              child: Text('UK (+44)'),
-                            ),
                           ],
                           onChanged: (value) {
                             if (value == null) return;
@@ -185,7 +186,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                     ),
+
                     const SizedBox(width: 8),
+
                     Expanded(
                       child: AppTextField(
                         controller: _phoneController,
@@ -203,7 +206,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
 
                 const SizedBox(height: 21),
-
 
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,6 +225,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                     ),
                     const SizedBox(width: 4),
+
                     Expanded(
                       child: Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
@@ -236,14 +239,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () {
-                              // TODO: Terms screen
-                            },
+                            onTap: () {},
                             child: Text(
                               "Terms & Service",
                               style: AppTextStyles.linkText,
-
-
                             ),
                           ),
                           Text(
@@ -255,8 +254,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () {
-                            },
+                            onTap: () {},
                             child: Text(
                               "Privacy Policy",
                               style: AppTextStyles.linkText,
@@ -271,18 +269,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 35),
 
                 CustomPrimaryButton(
-                  text: "Sign up",
+                  text: "Sign Up",
                   icon: Icons.arrow_right_alt_rounded,
-                  onPressed: () {
-                    Get.to(OtpScreen(mobileNumber:  _phoneController.text,name: _nameController.text,));
-                  },
+                  isLoading: _isLoading,
+                  onPressed: _isLoading ? null : _onSignUp,
                 ),
-                SizedBox(height: 15,),
+
+                const SizedBox(height: 15),
+
                 Align(
                   alignment: Alignment.center,
                   child: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-
                     children: [
                       Text(
                         "Already have an account?\t",
@@ -301,7 +298,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           style: AppTextStyles.linkText,
                         ),
                       ),
-
                     ],
                   ),
                 ),

@@ -9,7 +9,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../core/app_colors.dart';
 import '../../../core/text_style.dart';
-import '../../../services/auth_services.dart';
+
 import '../../../utils/toast_message.dart';
 import '../../../widgets/custom_textformfield.dart';
 
@@ -207,19 +207,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const Spacer(),
 
                   GestureDetector(
-                    onTap: () async {
-                      bool success = await AuthService.logout();
-                      if (success) {
-                        AppToast.showSuccess(context, "Logged out successfully");
-
-
-                        Future.delayed(const Duration(seconds: 1), () {
-                          Get.offAll(RegisterScreen());
-                        });
-                      } else {
-                        AppToast.showError(context, "Logout failed. Try again.");
-                      }
-                    },
+                    // onTap: () async {
+                    //   bool success = await AuthService.logout();
+                    //   if (success) {
+                    //     AppToast.showSuccess(context, "Logged out successfully");
+                    //
+                    //
+                    //     Future.delayed(const Duration(seconds: 1), () {
+                    //       Get.offAll(RegisterScreen());
+                    //     });
+                    //   } else {
+                    //     AppToast.showError(context, "Logout failed. Try again.");
+                    //   }
+                    // },
                     child: Image.asset(
                       "assets/icons/Delete.png",
                       height: 40,

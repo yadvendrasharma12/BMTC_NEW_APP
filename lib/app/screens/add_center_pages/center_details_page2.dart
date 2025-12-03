@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../controllers/center_form_controller.dart';
 import '../../core/app_colors.dart';
 import '../../core/text_style.dart';
 import '../../widgets/custom_button.dart';
@@ -17,8 +18,10 @@ class CenterDetailsPage2 extends StatefulWidget {
 }
 
 class _CenterDetailsPage2State extends State<CenterDetailsPage2> {
+
+  final ExamCenterController examController = Get.find<ExamCenterController>();
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController designationController = TextEditingController(); // (unused – agar nahi chahiye to hata sakte ho)
+  final TextEditingController designationController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController altPhoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -77,85 +80,57 @@ class _CenterDetailsPage2State extends State<CenterDetailsPage2> {
     return true;
   }
 
-  // void _validateAndNext() {
-  //   // 🔹 Point of Contact
-  //   if (nameController.text.trim().isEmpty) {
-  //     AppToast.showError(context, "Please enter Point of Contact Name");
-  //     return;
-  //   }
-  //
-  //   if (!_isValidPhone(phoneController.text)) {
-  //     AppToast.showError(context, "Please enter valid 10 digit Phone Number");
-  //     return;
-  //   }
-  //
-  //   if (altPhoneController.text.trim().isNotEmpty &&
-  //       !_isValidPhone(altPhoneController.text)) {
-  //     AppToast.showError(
-  //         context, "Please enter valid 10 digit Alternate Phone Number");
-  //     return;
-  //   }
-  //
-  //   if (!_isValidEmail(emailController.text)) {
-  //     AppToast.showError(
-  //         context, "Please enter valid Email (e.g. example@gmail.com)");
-  //     return;
-  //   }
-  //
-  //   // 🔹 Center Superintendent details
-  //   if (name2Controller.text.trim().isEmpty) {
-  //     AppToast.showError(context, "Please enter Superintendent Name");
-  //     return;
-  //   }
-  //
-  //   if (!_isValidPhone(phone2Controller.text)) {
-  //     AppToast.showError(
-  //         context, "Please enter valid 10 digit Superintendent Phone Number");
-  //     return;
-  //   }
-  //
-  //   if (!_isValidEmail(email2Controller.text)) {
-  //     AppToast.showError(
-  //         context, "Please enter valid Superintendent Email (@gmail.com)");
-  //     return;
-  //   }
-  //
-  //   // 🔹 IT Manager details
-  //   if (name3Controller.text.trim().isEmpty) {
-  //     AppToast.showError(context, "Please enter IT Manager Name");
-  //     return;
-  //   }
-  //
-  //   if (!_isValidPhone(phone3Controller.text)) {
-  //     AppToast.showError(
-  //         context, "Please enter valid 10 digit IT Manager Phone Number");
-  //     return;
-  //   }
-  //
-  //   if (!_isValidEmail(email3Controller.text)) {
-  //     AppToast.showError(
-  //         context, "Please enter valid IT Manager Email (@gmail.com)");
-  //     return;
-  //   }
-  //
-  //   // 🔹 Emergency Contact numbers
-  //   if (!_isValidPhone(phone4Controller.text)) {
-  //     AppToast.showError(
-  //         context, "Please enter valid 10 digit Emergency Phone Number");
-  //     return;
-  //   }
-  //
-  //   if (landLineController.text.trim().isNotEmpty &&
-  //       !_isValidPhone(landLineController.text)) {
-  //     AppToast.showError(
-  //         context, "Please enter valid 10 digit Alternate Emergency Number");
-  //     return;
-  //   }
-  //
-  //   // ✅ All good
-  //   AppToast.showSuccess(context, "All contact details validated");
-  //   Get.to(() => const CenterDetailsPage3());
-  // }
+  void _validateAndNext() {
+
+    if (nameController.text.isEmpty) {
+      AppToast.showError(context, "Enter Point of Contact Name");
+      return;
+    }
+
+    if (!_isValidPhone(phoneController.text)) {
+      AppToast.showError(context, "Enter valid Phone Number");
+      return;
+    }
+
+    if (!_isValidEmail(emailController.text)) {
+      AppToast.showError(context, "Enter valid Email");
+      return;
+    }
+
+    if (name2Controller.text.isEmpty || !_isValidPhone(phone2Controller.text)) {
+      AppToast.showError(context, "Enter Superintendent Details");
+      return;
+    }
+
+    if (name3Controller.text.isEmpty || !_isValidPhone(phone3Controller.text)) {
+      AppToast.showError(context, "Enter IT Manager Details");
+      return;
+    }
+
+    if (!_isValidPhone(phone4Controller.text)) {
+      AppToast.showError(context, "Enter Emergency Phone");
+      return;
+    }
+
+    /// ✅ SAVE DATA TO CONTROLLER
+    examController.pointOfContact.value = nameController.text;
+    examController.contactPhoneNumber.value = phoneController.text;
+    examController.contactAlternatePhoneNumber.value = altPhoneController.text;
+    examController.contactEmail.value = emailController.text;
+
+    examController.superintendentName.value = name2Controller.text;
+    examController.superintendentNumber.value = phone2Controller.text;
+    examController.superintendentEmail.value = email2Controller.text;
+    examController.assistantManagerEmail.value = email3Controller.text;
+    examController.assistantManagerName.value = name3Controller.text;
+    examController.assistantManagerPhoneNumber.value = phone3Controller.text;
+
+    examController.emergencyLandlineNumber.value = phone4Controller.text;
+
+    /// ✅ NEXT PAGE
+    Get.to(() =>  CenterDetailsPage3());
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -390,9 +365,7 @@ class _CenterDetailsPage2State extends State<CenterDetailsPage2> {
                             child: CustomPrimaryButton(
                               icon: Icons.arrow_right_alt_rounded,
                               text: "Next",
-                              onPressed: (){
-                                Get.to(() => const CenterDetailsPage3());
-                              },
+                              onPressed: _validateAndNext,
                             ),
                           ),
                         ],

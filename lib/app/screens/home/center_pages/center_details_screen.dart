@@ -151,7 +151,7 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
 
 
     AppToast.showSuccess(context, "Exam infrastructure details saved");
-    Get.to(() => const CenterDetailsPage4());
+    Get.to(() =>  CenterDetailsPage4());
   }
 
   Widget _buildLabBox(int index) {
