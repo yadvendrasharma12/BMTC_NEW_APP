@@ -76,7 +76,7 @@ class DashboardTopBar extends StatelessWidget implements PreferredSizeWidget {
             indicatorColor: AppColors.primaryColor,
             automaticIndicatorColorAdjustment: true,
             tabs: const [
-              Tab(text: 'Active Booking'),
+              Tab(text: 'Total Booking'),
               Tab(text: 'In Review'),
               Tab(text: 'Confirmed Bookings'),
             ],

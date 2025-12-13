@@ -8,6 +8,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
+import '../../../controllers/auth_controller.dart';
 import '../../../core/app_colors.dart';
 import '../../../core/text_style.dart';
 import '../../../utils/toast_message.dart';
@@ -29,6 +30,8 @@ class _ForgetOtpScreenState extends State<ForgetOtpScreen> {
 
 
   final TextEditingController _otpController = TextEditingController();
+
+  final AuthController authController = Get.find<AuthController>();
 
   late StreamController<ErrorAnimationType> errorController;
   String currentText = "";
@@ -54,10 +57,13 @@ class _ForgetOtpScreenState extends State<ForgetOtpScreen> {
       return;
     }
 
-    _formKey.currentState?.validate();
-    AppToast.showSuccess(context, 'Sign in successful!');
-    Get.to(MpinScreen());
+    // ✅ REAL API CALL
+    authController.verifyOtp(
+      context: context,
+      otp: otp,
+    );
   }
+
 
   @override
   void dispose() {
@@ -129,11 +135,14 @@ class _ForgetOtpScreenState extends State<ForgetOtpScreen> {
                 const SizedBox(height: 21),
 
 
-                CustomPrimaryButton(
-                  text: "Verify OTP",
-                  icon: Icons.arrow_right_alt_rounded,
-                  onPressed: () =>_onVerify(),
-                ),
+                Obx(() {
+                  return CustomPrimaryButton(
+                    text: "Verify OTP",
+                    icon: Icons.arrow_right_alt_rounded,
+                    isLoading: authController.isLoading.value,
+                    onPressed: authController.isLoading.value ? null : _onVerify,
+                  );
+                }),
                 SizedBox(height: 14,),
                 CustomPrimaryButton(
                   text: "Back To Previous Page",

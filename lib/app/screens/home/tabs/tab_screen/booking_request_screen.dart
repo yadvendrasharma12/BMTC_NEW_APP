@@ -1,15 +1,15 @@
-import 'package:bmtc_app/app/screens/home/center_pages/center_details_screen.dart';
-import 'package:bmtc_app/app/screens/home/center_pages/center_page_screen.dart';
-import 'package:bmtc_app/app/screens/home/self_booking/self_booking_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import '../../../../controllers/dashboard_controller.dart';
 import '../../../../core/app_colors.dart';
 import '../../../../core/text_style.dart';
+import '../../../../models/dashboard_modal.dart';
 import '../../../../widgets/custom_textformfield.dart';
-import '../../exam_details/exam_details_screen.dart';
+import '../../exam_details/counsling_form_screen.dart';
 import '../../widgets/action_button_card.dart';
 import '../../widgets/status_summary_card.dart';
+import '../../self_booking/self_booking_screen.dart';
+import '../../center_pages/center_page_screen.dart';
 
 class BookingRequestScreen extends StatefulWidget {
   const BookingRequestScreen({super.key});
@@ -20,340 +20,268 @@ class BookingRequestScreen extends StatefulWidget {
 
 class _BookingRequestScreenState extends State<BookingRequestScreen> {
   final TextEditingController searchController = TextEditingController();
+  final controller = Get.put(DashboardController());
 
   bool headerChecked = false;
+  List<bool> rowCheckedList = [];
+
   String _selectedYear = "1Y";
   String _selectedYears = "1Y";
 
-  final int _rowCount = 5;
-
-
-  late List<bool> _rowCheckedList;
+  List<TotalBookingRequest> filteredRequests = [];
 
   @override
   void initState() {
     super.initState();
-    _rowCheckedList = List<bool>.filled(_rowCount, false);
+    searchController.addListener(_filterRequests);
+  }
+
+  void _filterRequests() {
+    final query = searchController.text.toLowerCase();
+
+    final allData = controller.dashboardModel.value?.data;
+    final requests = allData?.totalBookingRequest ?? [];
+
+    setState(() {
+      filteredRequests = requests
+          .where((item) =>
+          (item.examName ?? "").toLowerCase().contains(query))
+          .toList();
+
+      rowCheckedList = List<bool>.filled(filteredRequests.length, false);
+      headerChecked = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.borderColor,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 10.0),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: StatusSummaryCard(
-                  title: "Total bookings",
-                  currentCount: 58,
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final data = controller.dashboardModel.value?.data;
+
+        if (filteredRequests.isEmpty) {
+          filteredRequests = data?.totalBookingRequest ?? [];
+        }
+
+        if (rowCheckedList.length != filteredRequests.length) {
+          rowCheckedList =
+          List<bool>.filled(filteredRequests.length, false);
+        }
+
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: [
+                StatusSummaryCard(
+                  title: "Total Bookings",
+                  currentCount: data?.totalBookingReqCount ?? 0,
                   percentage: 64.54,
                   iconPath: "assets/icons/check.png",
                   showYearDropdown: true,
                   selectedYear: _selectedYears,
                   onYearChanged: (val) {
-                    setState(() {
-                      _selectedYears = val ?? "1Y";
-                    });
+                    setState(() => _selectedYears = val ?? "1Y");
                   },
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 20.0,
-                  right: 20.0,
-                  top: 10.0,
-                ),
-                child: StatusSummaryCard(
+
+                const SizedBox(height: 10),
+
+                StatusSummaryCard(
                   title: "Seats Booked",
-                  currentCount: 67,
+                  currentCount: data?.numberOfSeats ?? 0,
                   percentage: 64,
                   iconPath: "assets/icons/seat_booked.png",
                   showYearDropdown: true,
                   selectedYear: _selectedYear,
                   onYearChanged: (val) {
-                    setState(() {
-                      _selectedYear = val ?? "1Y";
-                    });
+                    setState(() => _selectedYear = val ?? "1Y");
                   },
                 ),
-              ),
 
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 20.0,
-                  right: 20.0,
-                  top: 10.0,
-                ),
-                child: ActionButtonsCard(
+                const SizedBox(height: 20),
+
+                ActionButtonsCard(
                   primaryText: "Custom booking",
                   secondaryText: "Edit Center profile",
-                  onPrimaryTap: () {
-                    Get.to(SelfBookingScreen());
-                  },
-                  onSecondaryTap: () {
-                    Get.to(CenterPageScreen());
-                  },
+                  onPrimaryTap: () => Get.to(SelfBookingScreen()),
+                  onSecondaryTap: () => Get.to(CenterPageScreen()),
                 ),
-              ),
 
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 20.0,
-                  right: 20.0,
-                  top: 12.0,
-                  bottom: 10,
+                const SizedBox(height: 20),
+
+                AppTextField(
+                  controller: searchController,
+                  keyboardType: TextInputType.text,
+                  label: 'Search by Exam Name',
+                  prefix: const Icon(Icons.search),
                 ),
-                child: Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.background,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.grey73),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // 🔍 Search + Export row
-                          Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 3,
-                                  child: AppTextField(
-                                    controller: searchController,
-                                    keyboardType: TextInputType.number,
-                                    label: 'Search here',
-                                    prefix: const Icon(Icons.search),
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: _onExportTap,
-                                    child: Container(
-                                      height: 42,
-                                      color: AppColors.blackColor,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            "Export",
-                                            textAlign: TextAlign.center,
-                                            style: AppTextStyles.button,
-                                          ),
-                                          Icon(
-                                            Icons.file_download_outlined,
-                                            size: 20,
-                                            color: AppColors.background,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
 
-                          const Divider(height: 1),
+                const SizedBox(height: 20),
 
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8.0,
-                                    vertical: 8,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Checkbox(
-                                        value: headerChecked,
-                                        onChanged: (val) {
-                                          setState(() {
-                                            headerChecked = val ?? false;
-                                            for (int i = 0;
-                                            i < _rowCheckedList.length;
-                                            i++) {
-                                              _rowCheckedList[i] =
-                                                  headerChecked;
-                                            }
-                                          });
-                                        },
-                                      ),
-                                      const SizedBox(width: 5),
-                                      Text(
-                                        "Exam Name",
-                                        style: AppTextStyles.centerSubTitle,
-                                      ),
-                                      const SizedBox(width: 28),
-                                      Text(
-                                        "From",
-                                        style: AppTextStyles.centerSubTitle,
-                                      ),
-                                      const SizedBox(width: 76),
-                                      Text(
-                                        "Duration",
-                                        style: AppTextStyles.centerSubTitle,
-                                      ),
-                                      const SizedBox(width: 25),
-                                      Text(
-                                        "Exam Date",
-                                        style: AppTextStyles.centerSubTitle,
-                                      ),
-                                      const SizedBox(width: 70),
-                                      Text(
-                                        "Seats",
-                                        style: AppTextStyles.centerSubTitle,
-                                      ),
-                                      const SizedBox(width: 25),
-                                      Text(
-                                        "Pricing",
-                                        style: AppTextStyles.centerSubTitle,
-                                      ),
-                                      const SizedBox(width: 50),
-                                      Text(
-                                        "Status",
-                                        style: AppTextStyles.centerSubTitle,
-                                      ),
-                                      const SizedBox(width: 55),
-                                      Text(
-                                        "Action",
-                                        style: AppTextStyles.centerSubTitle,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                const Divider(height: 1),
-
-
-                                Column(
-                                  children: List.generate(_rowCount, (index) {
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0,
-                                        vertical: 4,
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Checkbox(
-                                            value: _rowCheckedList[index],
-                                            onChanged: (val) {
-                                              setState(() {
-                                                _rowCheckedList[index] =
-                                                    val ?? false;
-
-                                                // 🔹 Check karo kya saare rows selected hain?
-                                                final allSelected =
-                                                _rowCheckedList.every(
-                                                        (e) => e == true);
-                                                headerChecked = allSelected;
-                                              });
-                                            },
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            "Bar Council",
-                                            style: AppTextStyles.tableText,
-                                          ),
-                                          const SizedBox(width: 20),
-                                          Text(
-                                            "Testpan India",
-                                            style: AppTextStyles.tableText,
-                                          ),
-                                          const SizedBox(width: 20),
-                                          Text(
-                                            "2 days",
-                                            style: AppTextStyles.tableText,
-                                          ),
-                                          const SizedBox(width: 20),
-                                          Text(
-                                            "Mar 3th - 4th, 2025",
-                                            style: AppTextStyles.tableText,
-                                          ),
-                                          const SizedBox(width: 20),
-                                          Text(
-                                            "470",
-                                            style: AppTextStyles.tableText,
-                                          ),
-                                          const SizedBox(width: 20),
-                                          Text(
-                                            "Rs. 60/seat",
-                                            style: AppTextStyles.tableText,
-                                          ),
-                                          const SizedBox(width: 20),
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.yellow.shade100,
-                                              borderRadius:
-                                              BorderRadius.circular(10),
-                                            ),
-                                            height: 30,
-                                            width: 98,
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              "Active",
-                                              style: AppTextStyles
-                                                  .centerSubTitle,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 15),
-                                          GestureDetector(
-                                            onTap: () {
-                                              Get.to(ExamDetailsScreen());
-                                            },
-                                            child: Container(
-                                              height: 32,
-                                              width: 65,
-                                              decoration: BoxDecoration(
-                                                color: AppColors.blackColor,
-                                                borderRadius:
-                                                BorderRadius.circular(10),
-                                              ),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                "View",
-                                                style: AppTextStyles.button,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 30),
-            ],
+                _buildContainerTable(),
+              ],
+            ),
           ),
+        );
+      }),
+    );
+  }
+
+  // ----------------------------------------------------------
+  // TABLE UI
+  // ----------------------------------------------------------
+
+  Widget _buildContainerTable() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.grey73),
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Column(
+          children: [
+            _buildHeaderRow(),
+            const Divider(height: 1),
+            filteredRequests.isEmpty
+                ? const Padding(
+              padding: EdgeInsets.all(20),
+              child: Text("No bookings available"),
+            )
+                : Column(
+              children: List.generate(
+                filteredRequests.length,
+                    (i) => _buildDataRow(i),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  void _onExportTap() async {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Export started...')));
+  // ---------------------- HEADER -----------------------------
+
+  Widget _buildHeaderRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 40,
+            child: Checkbox(
+              value: headerChecked,
+              onChanged: (val) {
+                setState(() {
+                  headerChecked = val ?? false;
+                  rowCheckedList =
+                  List<bool>.filled(filteredRequests.length, headerChecked);
+                });
+              },
+            ),
+          ),
+          _headerCell("Exam Name", 150),
+          _headerCell("Client", 150),
+          _headerCell("Duration", 100),
+          _headerCell("Exam Date", 150),
+          _headerCell("Seats", 100),
+          _headerCell("Pricing", 100),
+          _headerCell("Status", 100),
+          _headerCell("Action", 100),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------- ROW -----------------------------
+
+  Widget _buildDataRow(int index) {
+    final booking = filteredRequests[index];
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 40,
+            child: Checkbox(
+              value: rowCheckedList[index],
+              onChanged: (val) {
+                setState(() {
+                  rowCheckedList[index] = val ?? false;
+                  headerChecked = rowCheckedList.every((e) => e);
+                });
+              },
+            ),
+          ),
+
+          _dataCell(booking.examName ?? "-", 150),
+          _dataCell(booking.clientName ?? "-", 150),
+          _dataCell(booking.examReqDays ?? "-", 100),
+
+          /// Start - End Date in one cell
+          _dataCell(
+              "${booking.startDate ?? '-'} to ${booking.endDate ?? '-'}",
+              150),
+
+          _dataCell(booking.numberOfSeats ?? "-", 100),
+          _dataCell(booking.pricePerSeat ?? "-", 100),
+          _dataCell(booking.status ?? "-", 100),
+
+          /// Action Button (Fixed width)
+          Container(
+            width: 100,
+            alignment: Alignment.center,
+            child: GestureDetector(
+              onTap: () {
+                final projectId = booking.projectId ?? "";
+                Get.to(
+                  CounslingFormScreen(),
+                  arguments: {"project_id": projectId},
+                );
+              },
+              child: Container(
+                height: 32,
+                width: 70,
+                decoration: BoxDecoration(
+                  color: AppColors.blackColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                alignment: Alignment.center,
+                child: Text("View", style: AppTextStyles.button),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------- CELLS -----------------------------
+
+  Widget _headerCell(String title, double width) {
+    return Container(
+      width: width,
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      child: Text(title, style: AppTextStyles.centerSubTitle),
+    );
+  }
+
+  Widget _dataCell(String value, double width) {
+    return Container(
+      width: width,
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      child: Text(value, style: AppTextStyles.tableText),
+    );
   }
 }

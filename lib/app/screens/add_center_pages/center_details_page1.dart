@@ -56,7 +56,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
 
   bool? isLiftAvailable;
 
-  // ✅ Sample dropdown data
+
   final List<String> centerTypes = ['Online'];
   final List<String> countries = ['India', 'USA', 'UK'];
   final List<String> states = ['Karnataka', 'Maharashtra', 'Delhi'];
@@ -452,6 +452,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
       isCountryLoading = false;
     });
   }
+
   Future<void> _loadStatesByCountry(String countryId) async {
     setState(() {
       isStateLoading = true;
@@ -467,6 +468,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
       isStateLoading = false;
     });
   }
+
   Future<void> _loadCitiesByState(String stateId) async {
     setState(() {
       isCityLoading = true;
@@ -481,12 +483,15 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     });
   }
 
+
   double _convertDistanceToDouble(String? value) {
     if (value == null) return 0.0;
 
     final cleaned = value.replaceAll(RegExp(r'[^0-9.]'), '');
     return double.tryParse(cleaned) ?? 0.0;
   }
+
+
   void _saveAndNext() {
 
     /// ✅ 1. TEXTFIELDS
@@ -494,6 +499,8 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     examController.centerDescription.value = centerDescriptionController.text.trim();
     examController.postalAddress.value = portalAddressController.text.trim();
 
+    examController.pinCode.value = pinCodeController.text.trim();
+    examController.centerType.value = selectedCenterType ?? "";
     if (latitudeController.text.trim().isNotEmpty) {
       examController.addressLat.value =
           double.parse(latitudeController.text.trim());
@@ -525,10 +532,24 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
         airportNameController.text.trim();
 
     /// ✅ 2. LIFT
+
     examController.isLiftAvailable.value = isLiftAvailable ?? false;
 
     /// ✅ 3. CENTER TYPE (ONLY API TYPE)
-    examController.centerType.value = categoryTypes ?? "";
+    examController.typeOfCenter.value = categoryTypes ?? "";
+
+    examController.countryId.value =
+        examController.countryId.value = selectedCountry != null
+        ? int.tryParse(selectedCountry!.id.toString()) ?? 0
+        : 0;
+
+    examController.stateId.value = selectedState != null
+        ? int.tryParse(selectedState!.id.toString()) ?? 0
+        : 0;
+
+    examController.cityId.value = selectedCity != null
+        ? int.tryParse(selectedCity!.id.toString()) ?? 0
+        : 0;
 
     /// ✅ 4. DISTANCES
     examController.distanceFromRailwayStation.value =
@@ -568,7 +589,39 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     if (walkthroughVideoFile != null) {
       examController.walkthroughVideoFile.value = walkthroughVideoFile;
     }
-
+    print("===== Exam Center Step 1 Data =====");
+    print("Center Name: ${examController.centerName.value}");
+    print("Center Name: ${examController.centerType.value}");
+    print("Center Description: ${examController.centerDescription.value}");
+    print("Postal Address: ${examController.postalAddress.value}");
+    print("Latitude: ${examController.addressLat.value}");
+    print("Longitude: ${examController.addressLong.value}");
+    print("Capacity: ${examController.capacity.value}");
+    print("Local Area Name: ${examController.localAreaName.value}");
+    print("Nearby Landmark: ${examController.nearbyLandmark.value}");
+    print("Lift Available: ${examController.isLiftAvailable.value}");
+    print("Center Type: ${examController.centerType.value}");
+    print("Nearest Railway Station: ${examController.nearestRailwayStation.value}");
+    print("Distance From Railway: ${examController.distanceFromRailwayStation.value}");
+    print("Nearest Bus Stop: ${examController.nearestBusStop.value}");
+    print("Distance From Bus: ${examController.distanceFromBusStop.value}");
+    print("Nearest Metro: ${examController.nearestMetroStation.value}");
+    print("Distance From Metro: ${examController.distanceFromMetroStation.value}");
+    print("Nearest Airport: ${examController.nearestAirport.value}");
+    print("Distance From Airport: ${examController.distanceFromAirport.value}");
+    print("Entrance File: ${examController.entranceFile.value?.path}");
+    print("Lab Photo File: ${examController.labPhotoFile.value?.path}");
+    print("Main Gate File: ${examController.mainGateFile.value?.path}");
+    print("Server Room File: ${examController.serverRoomFile.value?.path}");
+    print("Conference Room File: ${examController.conferenceRoomFile.value?.path}");
+    print("UPS/Generator File: ${examController.upsGeneratorFile.value?.path}");
+    print("Walkthrough Video File: ${examController.walkthroughVideoFile.value?.path}");
+    print("Country ID: ${examController.countryId.value}");
+    print("State ID: ${examController.stateId.value}");
+    print("City ID: ${examController.cityId.value}");
+    print("CENTER TYPE: ${examController.centerType.value}");
+    print("TYPE OF CENTER: ${examController.typeOfCenter.value}");
+    print("===== End of Step 1 Data =====");
     /// ✅ 7. NEXT PAGE
     Get.to(() => const CenterDetailsPage2());
   }
@@ -880,21 +933,22 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 const SizedBox(height: 16),
 
                 // 🔹 Center Type
-                Text("Center Type", style: AppTextStyles.centerText),
+                Text("Type Center Type", style: AppTextStyles.centerText),
                 const SizedBox(height: 10),
 
                 CustomDropdown<String>(
                   hintText: "Select Category Center Type",
-                  value: categoryTypes,
-                  items: _categoryTypes,
+                  value: categoryTypes,          // ✅ Selected single value
+                  items: _categoryTypes,         // ✅ API se aayi list
                   itemLabel: (value) => value,
                   onChanged: (value) {
                     setState(() {
-                      categoryTypes = value;
+                      categoryTypes = value;     // ✅ Selected value save ho rahi
                     });
                   },
                   validator: (_) {},
                 ),
+
 
                 const SizedBox(height: 17),
 

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:path/path.dart';
 import '../models/examCenter_Model.dart';
 import '../services/exam_center_service.dart';
+import '../utils/shared_preferances.dart';
 
 class LabDetail {
   RxString floor = ''.obs;
@@ -15,13 +16,12 @@ class LabDetail {
   RxString ethernetCompany = ''.obs;
   RxString switchCategory = ''.obs;
   RxString ethernetPorts = ''.obs;
-  TextEditingController computersController = TextEditingController();
+  final TextEditingController computersController = TextEditingController();
 
   void dispose() {
     computersController.dispose();
   }
 }
-
 class ExamCenterController extends GetxController {
   // ================= BASIC INFO =================
   var name = ''.obs;
@@ -43,6 +43,8 @@ class ExamCenterController extends GetxController {
   var cityId = 0.obs;
   var localAreaName = ''.obs;
   var postalAddress = ''.obs;
+  var pinCode = ''.obs;
+
   var addressLat = 0.0.obs;
   var addressLong = 0.0.obs;
   var nearbyLandmark = ''.obs;
@@ -91,18 +93,22 @@ class ExamCenterController extends GetxController {
   var assistantManagerEmail = ''.obs;
   var emergencyLandlineNumber = ''.obs;
   var emergencyPhoneNumber = ''.obs;
-
+  var partitionInEachLab = 0.obs;
+  var acInEachLab = 0.obs;
+  var fireExtinguisherInEachLab = 0.obs;
   // ================= LAB DETAILS =================
   RxList<LabDetail> labs = <LabDetail>[].obs;
+
   var totalNumberOfLab = 0.obs;
   var totalNumberOfSystem = 0.obs;
   var labAreConnectToSingleNetwork = false.obs;
   var totalNetwork = 0.obs;
-  RxList<int> partitionInEachLab = <int>[].obs;
-  var isNetworkPrinterAvailable = false.obs;
+
+  var isNetworkPrinterAvailabel = false.obs;
   var isThereProjectorInEachLab = false.obs;
   var isThereSoundSystemInEachLab = false.obs;
-  RxList<int> fireExtinguisherInEachLab = <int>[].obs;
+
+
   var isThereALockerFacilityInLab = false.obs;
   var isThereADrinkingWaterFacilityInLab = false.obs;
 
@@ -133,36 +139,50 @@ class ExamCenterController extends GetxController {
   var mouFile = Rxn<File>();
   var panCardFile = Rxn<File>();
 
-  // ================= LAB DYNAMIC METHODS =================
   void updateLabs(int count) {
+    print("🔹 Updating labs to count: $count");
     totalNumberOfLab.value = count;
+
     while (labs.length < count) {
       labs.add(LabDetail());
-      partitionInEachLab.add(0);
-      fireExtinguisherInEachLab.add(0);
+      print("✅ Added new LabDetail, total labs: ${labs.length}");
     }
+
     while (labs.length > count) {
       labs.last.dispose();
       labs.removeLast();
-      partitionInEachLab.removeLast();
-      fireExtinguisherInEachLab.removeLast();
+      print("❌ Removed LabDetail, total labs: ${labs.length}");
     }
   }
 
+
   // ================= FINAL SUBMIT =================
+
+
+
   Future<void> submitExamCenter() async {
-    List<String> centerEntrances =
-    entranceFile.value != null ? [basename(entranceFile.value!.path)] : [];
-    List<String> labPhotos =
-    labPhotoFile.value != null ? [basename(labPhotoFile.value!.path)] : [];
-    List<String> mainGateImages =
-    mainGateFile.value != null ? [basename(mainGateFile.value!.path)] : [];
-    List<String> serverRoomImages =
-    serverRoomFile.value != null ? [basename(serverRoomFile.value!.path)] : [];
-    List<String> observerRoomImages =
-    conferenceRoomFile.value != null ? [basename(conferenceRoomFile.value!.path)] : [];
-    List<String> upsGeneratorImages =
-    upsGeneratorFile.value != null ? [basename(upsGeneratorFile.value!.path)] : [];
+    print("🔹 Preparing ExamCenter data for submission...");
+
+    List<String> getSingleFilePath(Rxn<File>? file) {
+      return (file != null && file.value != null) ? [file.value!.path] : [];
+    }
+
+// ================= FIXED FILE LISTS =================
+    List<String> centerEntrances = getSingleFilePath(entranceFile);
+    List<String> labPhotos = getSingleFilePath(labPhotoFile);
+    List<String> mainGateImages = getSingleFilePath(mainGateFile);
+    List<String> serverRoomImages = getSingleFilePath(serverRoomFile);
+    List<String> observerRoomImages = getSingleFilePath(conferenceRoomFile);
+    List<String> upsGeneratorImages = getSingleFilePath(upsGeneratorFile);
+
+    print("   File names prepared:");
+    print("     Center Entrances: $centerEntrances");
+    print("     Lab Photos: $labPhotos");
+    print("     Main Gate: $mainGateImages");
+    print("     Server Room: $serverRoomImages");
+    print("     Conference Room: $observerRoomImages");
+    print("     UPS/Generator: $upsGeneratorImages");
+
 
     ExamCenter center = ExamCenter(
       name: name.value,
@@ -230,11 +250,13 @@ class ExamCenterController extends GetxController {
       totalNumberOfSystem: totalNumberOfSystem.value,
       labAreConnectToSingleNetwork: labAreConnectToSingleNetwork.value,
       totalNetwork: totalNetwork.value,
-      partitionInEachLab: partitionInEachLab,
-      isNetworkPrinterAvailable: isNetworkPrinterAvailable.value,
+      partitionInEachLab: partitionInEachLab.value,
+      acInEachLab: acInEachLab.value,
+      howManyFireExtinguisherInEachLab: fireExtinguisherInEachLab.value,
+      isNetworkPrinterAvailabel: isNetworkPrinterAvailabel.value,
       isThereProjectorInEachLab: isThereProjectorInEachLab.value,
       isThereSoundSystemInEachLab: isThereSoundSystemInEachLab.value,
-      howManyFireExtinguisherInEachLab: fireExtinguisherInEachLab,
+
       isThereALockerFacilityInLab: isThereALockerFacilityInLab.value,
       isThereADrinkingWaterFacilityInLab: isThereADrinkingWaterFacilityInLab.value,
       primaryInfrastructure: primaryInfrastructure.value,
@@ -266,9 +288,29 @@ class ExamCenterController extends GetxController {
       hasMsme: hasMsme.value,
     );
 
+    print("🔹 Data prepared, calling API...");
     var response = await ExamCenterService.storeExamCenter(center);
+
     if (response != null) {
       print("✅ Exam Center submitted successfully: $response");
+
+      final centerId = response['center_id'].toString();
+      await MySharedPrefs.save(centerId);
+
+      await MySharedPrefs.saveLoginData(
+        mobilePhone: mobilePhone.value,
+        mpin: mpin.value,
+      );
+      final loginData = await MySharedPrefs.getLoginData();
+      print("✅ Mobile: ${loginData['mobile_phone']}");
+      print("✅ MPIN: ${loginData['mpin']}");
+      print("✅ OTP: ${loginData['otp']}");
+      print("✅ Center ID: $centerId");
+
+      print("💾 Center ID saved in SharedPreferences: $centerId");
+      print("💾 Mobile saved in SharedPreferences: ${mobilePhone.value}");
+      print("💾 MPIN saved in SharedPreferences: ${mpin.value}");
+      print("💾 Center ID saved in SharedPreferences: $centerId");
     } else {
       print("❌ Submission failed!");
     }
@@ -276,6 +318,7 @@ class ExamCenterController extends GetxController {
 
   @override
   void onClose() {
+    print("🔹 Controller is closing, disposing labs...");
     for (var lab in labs) {
       lab.dispose();
     }

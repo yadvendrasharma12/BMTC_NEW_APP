@@ -1,39 +1,59 @@
-import 'package:bmtc_app/app/screens/add_center_pages/center_details_page1.dart';
-import 'package:bmtc_app/app/screens/add_center_pages/center_details_page3.dart';
+import 'dart:io';
+import 'package:bmtc_app/app/controllers/profile_update_controller.dart';
+import 'package:bmtc_app/app/controllers/project_controller.dart';
+import 'package:bmtc_app/app/controllers/self_booking_controller.dart';
+import 'package:bmtc_app/app/controllers/view_self_booking_controller.dart';
 import 'package:bmtc_app/app/screens/auth_pages/register/register_screen.dart';
+import 'package:bmtc_app/app/screens/home/dashboard_page/dashBoard_page_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'app/controllers/auth_controller.dart';
-import 'app/controllers/center_form_controller.dart';
-import 'app/screens/add_center_pages/center_details_page4.dart';
-import 'app/services/connection_service/connectvity_service.dart';
-import 'app/utils/toast_message.dart';
-import 'app/screens/auth_pages/splash/splash_screen.dart';
+import 'app/controllers/profile_data_controller.dart';
+import 'app/controllers/center_form_controller.dart'; // remove if unused
 
-void main() {
-  Get.lazyPut(() => ExamCenterController());
-  Get.put(AuthController());
+import 'app/utils/shared_preferances.dart';
+
+/// ✅ Allow self-signed certificates for staging
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  HttpOverrides.global = MyHttpOverrides();
+
+  Get.put(AuthController());
+
+  Get.lazyPut(() => ExamCenterController());
+  Get.lazyPut(() => ViewSelfBookingController());
+  Get.lazyPut(() => ProfileDataController());
+  Get.lazyPut(() => ProfileUpdateController());
+  Get.lazyPut(() => SelfBookingController());
+  Get.lazyPut(() => ProjectController());
+
+
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
+  Future<Widget> _getInitialScreen() async {
+    final centerId = await MySharedPrefs.get();
+    print("🔥 AUTO LOGIN CHECK CENTER ID: $centerId");
 
-class _MyAppState extends State<MyApp> {
-  final connectivityService = ConnectivityService();
-
-
-
-  @override
-  void dispose() {
-    connectivityService.dispose();
-    super.dispose();
+    if (centerId != null && centerId.isNotEmpty) {
+      return const DashboardPageScreen();
+    } else {
+      return const RegisterScreen();
+    }
   }
 
   @override
@@ -41,7 +61,21 @@ class _MyAppState extends State<MyApp> {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'BookMyTestCenter',
-      home: RegisterScreen(),
+
+      home: FutureBuilder<Widget>(
+        future: _getInitialScreen(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          return snapshot.data!;
+        },
+      ),
     );
   }
 }
+
+

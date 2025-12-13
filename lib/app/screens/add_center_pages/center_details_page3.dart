@@ -8,7 +8,7 @@ import '../../core/text_style.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_textformfield.dart';
 import '../../widgets/custom_dropdown.dart';
-import '../../utils/toast_message.dart';
+
 import 'center_details_page4.dart';
 
 class CenterDetailsPage3 extends StatefulWidget {
@@ -102,12 +102,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
     super.dispose();
   }
 
-  void _updateLabs(String value) {
-    int? totalLabs = int.tryParse(value);
-    if (totalLabs != null && totalLabs > 0) {
-      examController.updateLabs(totalLabs);
-    }
-  }
+
 
   Widget _buildLabBox(int index) {
     final lab = examController.labs[index];
@@ -281,6 +276,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
     ));
   }
 
+
   @override
   void initState() {
     super.initState();
@@ -293,6 +289,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
     }
   }
 
+  final List<String> partitionOptions = List.generate(10, (index) => "${index + 1}");
 
   @override
   Widget build(BuildContext context) {
@@ -344,10 +341,14 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                   keyboardType: TextInputType.number,
                   label: '',
                   onChanged: (v) {
-                    examController.totalNumberOfLab.value = int.tryParse(v) ?? 1;
-                    examController.updateLabs(examController.totalNumberOfLab.value);
+                    int count = int.tryParse(v) ?? 1;
+                    if (count < 1) count = 1; // minimum 1 lab
+                    totalLabsController.text = count.toString();
+                    examController.totalNumberOfLab.value = count;
+                    examController.updateLabs(count); // <-- this updates the lab list
                   },
                 ),
+
 
                 const SizedBox(height: 15),
                 Text("Total number of systems",
@@ -364,18 +365,16 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                 Text("Are all labs connected through a single network?",
                     style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
-                CustomDropdown<String>(
+                Obx(() => CustomDropdown<String>(
                   hintText: "Select",
-
-                  items: yesNoOptions,
+                  items: yesNoOptions, // ['Yes', 'No']
                   itemLabel: (v) => v,
+                  value: examController.labAreConnectToSingleNetwork.value ? "Yes" : "No",
                   onChanged: (v) {
                     examController.labAreConnectToSingleNetwork.value = (v == 'Yes');
                   },
-                  value: examController.labAreConnectToSingleNetwork.value ? "Yes" : "No",
-
                   validator: (value) {},
-                ),
+                )),
                 const SizedBox(height: 15),
                 Text("Total Network", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
@@ -390,43 +389,51 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
 
 
                 const SizedBox(height: 15),
-                Text("Is there a partition in each System",
+                Text("Is there a partition in each lab",
                     style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
-                CustomDropdown<String>(
-                  hintText: "Select",
 
-                  items: yesNoOptions,
+                Obx(() => CustomDropdown<String>(
+                  hintText: "Select partitions",
+                  items: partitionOptions,
                   itemLabel: (v) => v,
+                  value: examController.partitionInEachLab.value == 0
+                      ? null
+                      : examController.partitionInEachLab.value.toString(),
                   onChanged: (v) {
-                    int value = v == "Yes" ? 1 : 0;
                     examController.partitionInEachLab.value =
-                        List.generate(examController.totalNumberOfLab.value, (_) => value);
+                        int.tryParse(v ?? '0') ?? 0;
                   },
-                  value: examController.partitionInEachLab.isNotEmpty
-                      ? (examController.partitionInEachLab.first == 1 ? "Yes" : "No")
-                      : null,
                   validator: (value) {},
-                ),
+                )),
+
+
 
                 const SizedBox(height: 15),
                 Text("Is there an AC in each lab?",
                     style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
-                CustomDropdown<String>(
-                  hintText: "Select",
-                  value: selectedAC,
-                  items: yesNoOptions,
+                Obx(() => CustomDropdown<String>(
+                  hintText: "Select AC units",
+                  items: List.generate(11, (index) => index.toString()),
                   itemLabel: (v) => v,
-                  onChanged: (v) {},
-
+                  value: examController.acInEachLab.value == 0
+                      ? null
+                      : examController.acInEachLab.value.toString(),
+                  onChanged: (v) {
+                    examController.acInEachLab.value =
+                        int.tryParse(v ?? '0') ?? 0;
+                  },
                   validator: (value) {},
-                ),
+                )),
+
+
 
                 const SizedBox(height: 15),
                 Text("Is the Network Printer available?",
                     style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
+
                 CustomDropdown<String>(
                   hintText: "Select",
                   value: selectedPrinter,
@@ -435,7 +442,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
 
                   onChanged: (v) {
                     setState(() => selectedPrinter = v);
-                    examController.isNetworkPrinterAvailable.value = (v == 'Yes');
+                    examController.isNetworkPrinterAvailabel.value = (v == 'Yes');
                   },
                   validator: (value) {},
                 ),
@@ -444,18 +451,15 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                 Text("Is there a projector in each lab?",
                     style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
-                CustomDropdown<String>(
+                Obx(() => CustomDropdown<String>(
                   hintText: "Select",
-                  value: selectedProjector,
                   items: yesNoOptions,
                   itemLabel: (v) => v,
-
+                  value: examController.isThereProjectorInEachLab.value ? "Yes" : "No",
                   onChanged: (v) {
-                    setState(() => selectedProjector = v);
-                    examController.isThereProjectorInEachLab.value = (v == 'Yes');
-                  },
-                  validator: (value) {},
-                ),
+                    examController.isThereProjectorInEachLab.value = (v == "Yes");
+                  }, validator: (value) {  },
+                )),
 
                 const SizedBox(height: 15),
                 Text("Is there a sound system in each lab?",
@@ -477,31 +481,19 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                 Text("How Many Fire Extinguisher in each lab",
                     style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
-                CustomDropdown<String>(
+                Obx(() => CustomDropdown<String>(
                   hintText: "Select",
-                  value: selectedFireExit,
-                  items: [
-                    '0',
-                    '1',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '6',
-                    '7',
-                    '8',
-                    '9',
-                    '10'
-                  ],
+                  items: List.generate(11, (index) => index.toString()),
                   itemLabel: (v) => v,
+                  value: examController.fireExtinguisherInEachLab.value == 0
+                      ? null
+                      : examController.fireExtinguisherInEachLab.value.toString(),
                   onChanged: (v) {
-                    setState(() => selectedFireExit = v);
-                    int value = int.tryParse(v ?? '0') ?? 0;
                     examController.fireExtinguisherInEachLab.value =
-                        List.generate(examController.totalNumberOfLab.value, (_) => value);
+                        int.tryParse(v ?? '0') ?? 0;
                   },
                   validator: (value) {},
-                ),
+                )),
 
                 const SizedBox(height: 15),
                 Text("Is there a Locker facility?",
@@ -564,17 +556,20 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                 Text("Primary ISP Connected Type",
                     style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
-                CustomDropdown<String>(
+                Obx(() => CustomDropdown<String>(
                   hintText: "Select",
-                  value: selectedPrimaryISPType,
-                  items: ispTypes,
+                  items: ['Broadband', 'Lease line', 'Fibre Optics', 'Air Fibre'],
                   itemLabel: (v) => v,
-
+                  value: examController.primaryIspConnectType.value.isNotEmpty
+                      ? examController.primaryIspConnectType.value
+                      : null,
                   onChanged: (v) {
                     examController.primaryIspConnectType.value = v ?? '';
                   },
                   validator: (value) {},
-                ),
+                )),
+
+
 
                 const SizedBox(height: 15),
                 Text("Primary Internet Speed",
@@ -593,18 +588,22 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Expanded(
-                      child: CustomDropdown<String>(
-                        hintText: "Unit",
-                        value: selectedPrimarySpeed,
-                        items: speeds,
-                        itemLabel: (v) => v,
-                        onChanged: (v) {
-                          examController.primaryInternetSpeedUnit.value = v ?? '';
-                        },
-                        validator: (value) {},
-                      ),
-                    ),
+              Expanded(
+                child: Obx(() => CustomDropdown<String>(
+                  hintText: "Unit",
+                  items: speeds,
+                  itemLabel: (v) => v,
+                  value: examController.primaryInternetSpeedUnit.value.isNotEmpty
+                      ? examController.primaryInternetSpeedUnit.value
+                      : null,
+                  onChanged: (v) {
+                    examController.primaryInternetSpeedUnit.value = v ?? '';
+                  },
+                  validator: (value) {},
+                )),
+              )
+
+
                   ],
                 ),
 
@@ -624,17 +623,19 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                 Text("Secondary ISP Connected Type",
                     style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
-                CustomDropdown<String>(
+                Obx(() => CustomDropdown<String>(
                   hintText: "Select",
-                  value: selectedSecondaryISPType,
                   items: ispTypes,
                   itemLabel: (v) => v,
-
+                  value: examController.secondaryIspConnectType.value.isNotEmpty
+                      ? examController.secondaryIspConnectType.value
+                      : null,
                   onChanged: (v) {
                     examController.secondaryIspConnectType.value = v ?? '';
                   },
                   validator: (value) {},
-                ),
+                )),
+
 
                 const SizedBox(height: 15),
                 Text("Secondary Internet Speed",
@@ -654,96 +655,113 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: CustomDropdown<String>(
+                      child: Obx(() => CustomDropdown<String>(
                         hintText: "Unit",
-                        value: selectedSecondarySpeed,
                         items: speeds,
                         itemLabel: (v) => v,
-
+                        value: examController.secondaryInternetSpeedUnit.value.isNotEmpty
+                            ? examController.secondaryInternetSpeedUnit.value
+                            : null,
                         onChanged: (v) {
                           examController.secondaryInternetSpeedUnit.value = v ?? '';
                         },
                         validator: (value) {},
-                      ),
-                    ),
+                      )),
+                    )
+
                   ],
                 ),
 
                 const SizedBox(height: 15),
                 Text("Generator Available", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
-                CustomDropdown<String>(
-                  hintText: "Select",
+                Obx(() => Column(
+                  children: [
+                    CustomDropdown<String>(
+                      hintText: "Select",
+                      items: yesNoOptions,
+                      itemLabel: (v) => v,
+                      value: examController.isGeneratorBackup.value ? "Yes" : "No",
+                      onChanged: (v) {
+                        examController.isGeneratorBackup.value = (v == "Yes");
+                      },
+                      validator: (value) {},
+                    ),
 
-                  items: yesNoOptions,
-                  itemLabel: (v) => v,
-                  onChanged: (v) {
-                    examController.isGeneratorBackup.value = (v == "Yes");
-                  },
-                  value: examController.isGeneratorBackup.value ? "Yes" : "No",
+                    // Show generator fields only if Yes
+                    if (examController.isGeneratorBackup.value) ...[
+                      const SizedBox(height: 15),
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Text("Generator Capacity (in KVA)",
+                            style: AppTextStyles.centerText),
+                      ),
+                      const SizedBox(height: 8),
+                      AppTextField(
+                        controller: generatorCapacityController,
+                        keyboardType: TextInputType.number,
+                        label: '',
+                        onChanged: (v) =>
+                        examController.generatorBackupCapacity.value = double.tryParse(v) ?? 0,
+                      ),
 
-                  validator: (value) {},
-                ),
+                      const SizedBox(height: 15),
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Text("Generator full tank Capacity (ltr)",
+                            style: AppTextStyles.centerText),
+                      ),
+                      const SizedBox(height: 8),
+                      CustomDropdown<String>(
+                        hintText: "Select",
+                        items: tankCapacityLtr,
+                        itemLabel: (v) => v,
+                        value: examController.generatorFuelTankCapacity.value > 0
+                            ? "${examController.generatorFuelTankCapacity.value % 1 == 0
+                            ? examController.generatorFuelTankCapacity.value.toInt()
+                            : examController.generatorFuelTankCapacity.value} ltr"
+                            : null,
+                        onChanged: (v) {
+                          examController.generatorFuelTankCapacity.value =
+                              double.tryParse(v?.replaceAll(" ltr", "") ?? "0") ?? 0;
+                        },
+                        validator: (value) => null,
+                      )
+                    ],
+                  ],
+                )),
 
-                if (selectedGenerator == "Yes") ...[
-                  const SizedBox(height: 15),
-                  Text("Generator Capacity (in KVA)",
-                      style: AppTextStyles.centerText),
-                  const SizedBox(height: 8),
-                  AppTextField(
-                    controller: generatorCapacityController,
-                    keyboardType: TextInputType.number,
-                    label: '',
-                    onChanged: (v) =>
-                    examController.generatorBackupCapacity.value = double.tryParse(v) ?? 0,
-                  ),
-
-                  const SizedBox(height: 15),
-                  Text("Generator full tank Capacity (ltr)",
-                      style: AppTextStyles.centerText),
-                  const SizedBox(height: 8),
-                  CustomDropdown<String>(
-                    hintText: "Select",
-                    value: tankCapacityLtrTime,
-                    items: tankCapacityLtr,
-                    itemLabel: (v) => v,
-                    onChanged: (v) {
-                      examController.generatorFuelTankCapacity.value =
-                          double.tryParse(v?.replaceAll(" ltr", "") ?? "0") ?? 0;
-                    },
-                    validator: (value) => null,
-                  ),
-                ],
 
                 const SizedBox(height: 15),
                 Text("UPS Backup", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
                 AppTextField(
                   controller: upsBackupController,
-                  keyboardType: TextInputType.text,
+                  keyboardType: TextInputType.number,
                   label: '',
                   onChanged: (v) {
                     examController.upsBackup.value = v.toLowerCase() == "yes";
                   },
-
                 ),
                 const SizedBox(height: 15),
                 Text("Ups Backup time (in mins)",
                     style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
-                CustomDropdown<String>(
-                  hintText: "Select",
-                  value: selectedUPSBackupTime,
-                  items: upsBackupTimeOptions,
-                  itemLabel: (v) => v,
+              Obx(() => CustomDropdown<String>(
+                hintText: "Select",
+                items: upsBackupTimeOptions,
+                itemLabel: (v) => v,
+                value: examController.upsBackupTime.value > 0
+                    ? "${examController.upsBackupTime.value.toInt()} mins"
+                    : null,
+                onChanged: (v) {
+                  examController.upsBackupTime.value =
+                      double.tryParse(v?.replaceAll(" mins", "") ?? "0") ?? 0;
+                },
+                validator: (value) => null,
+              )),
 
-                  onChanged: (v) {
-                    examController.upsBackupTime.value =
-                        double.tryParse(v?.replaceAll(" mins", "") ?? "0") ?? 0;
-                  },
-                  validator: (value) => null,
-                ),
-                const SizedBox(height: 30),
+              const SizedBox(height: 30),
                 Text("Lab Details",
                     style: GoogleFonts.karla(
                         fontSize: 18, fontWeight: FontWeight.bold)),
@@ -786,6 +804,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                         icon: Icons.arrow_right_alt_rounded,
                         text: "Next",
                         onPressed: (){
+                          _printStep3Data();
                           Get.to(() =>  CenterDetailsPage4());
                         },
                       ),
@@ -800,4 +819,58 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
       ),
     );
   }
+  void _printStep3Data() {
+    print("========== STEP 3 DATA DEBUG START ==========");
+
+    print("Total Labs: ${examController.totalNumberOfLab.value}");
+    print("Total Systems: ${examController.totalNumberOfSystem.value}");
+    print("Total Network: ${examController.totalNetwork.value}");
+    print("Single Network: ${examController.labAreConnectToSingleNetwork.value}");
+
+    print("Partition In Each Lab: ${examController.partitionInEachLab}");
+    print("Partition In Each Lab: ${examController.acInEachLab}");
+    print("Fire Extinguisher In Each Lab: ${examController.fireExtinguisherInEachLab.value}");
+
+    print("Network Printer: ${examController.isNetworkPrinterAvailabel.value}");
+    print("Projector: ${examController.isThereProjectorInEachLab.value}");
+    print("Sound System: ${examController.isThereSoundSystemInEachLab.value}");
+    print("Locker Facility: ${examController.isThereALockerFacilityInLab.value}");
+    print("Drinking Water: ${examController.isThereADrinkingWaterFacilityInLab.value}");
+
+    print("------ INTERNET DETAILS ------");
+    print("Primary ISP Name: ${examController.primaryInfrastructure.value}");
+    print("Primary ISP Type: ${examController.primaryIspConnectType.value}");
+    print("Primary Speed: ${examController.primaryIspSpeed.value} ${examController.primaryInternetSpeedUnit.value}");
+
+    print("Secondary ISP Name: ${examController.secondaryInfrastructure.value}");
+    print("Secondary ISP Type: ${examController.secondaryIspConnectType.value}");
+    print("Secondary Speed: ${examController.secondaryIspSpeed.value} ${examController.secondaryInternetSpeedUnit.value}");
+
+    print("------ POWER BACKUP ------");
+    print("Generator Available: ${examController.isGeneratorBackup.value}");
+    print("Generator Capacity: ${examController.generatorBackupCapacity.value}");
+    print("Generator Tank Capacity: ${examController.generatorFuelTankCapacity.value}");
+
+    print("UPS Backup: ${examController.upsBackup.value}");
+    print("UPS Backup Time: ${examController.upsBackupTime.value}");
+
+    print("------ LAB DETAILS ------");
+    for (int i = 0; i < examController.labs.length; i++) {
+      final lab = examController.labs[i];
+      print("---- LAB ${i + 1} ----");
+      print("Floor: ${lab.floor.value}");
+      print("Total Computers: ${lab.computersController.text}");
+      print("Processor: ${lab.processor.value}");
+      print("Monitor: ${lab.monitor.value}");
+      print("OS: ${lab.os.value}");
+      print("RAM: ${lab.ram.value}");
+      print("HDD: ${lab.hdd.value}");
+      print("Ethernet Company: ${lab.ethernetCompany.value}");
+      print("Switch Category: ${lab.switchCategory.value}");
+      print("Ethernet Ports: ${lab.ethernetPorts.value}");
+    }
+
+    print("========== STEP 3 DATA DEBUG END ==========");
+  }
+
 }

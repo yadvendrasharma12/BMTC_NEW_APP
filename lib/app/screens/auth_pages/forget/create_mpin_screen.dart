@@ -1,12 +1,7 @@
 
 import 'dart:async';
 
-import 'package:bmtc_app/app/core/app_colors.dart';
-import 'package:bmtc_app/app/screens/add_center_pages/center_details_page1.dart';
-import 'package:bmtc_app/app/screens/auth_pages/main_page/main_screen.dart';
-import 'package:bmtc_app/app/screens/auth_pages/register/register_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,23 +9,26 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../../controllers/auth_controller.dart';
 import '../../../controllers/center_form_controller.dart';
+import '../../../core/app_colors.dart';
 import '../../../core/text_style.dart';
+import '../../../utils/shared_preferances.dart';
 import '../../../utils/toast_message.dart';
 import '../../../widgets/custom_appbar.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/otp_pin_field.dart';
+import '../register/register_screen.dart';
 
-class MpinScreen extends StatefulWidget {
-  const MpinScreen({super.key});
+class CreateMpinScreen extends StatefulWidget {
+  const CreateMpinScreen({super.key});
 
   @override
-  State<MpinScreen> createState() => _MpinScreenState();
+  State<CreateMpinScreen> createState() => _CreateMpinScreenState();
 }
 
-class _MpinScreenState extends State<MpinScreen> {
+class _CreateMpinScreenState extends State<CreateMpinScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _mPinController = TextEditingController();
-  final ExamCenterController formController = Get.find<ExamCenterController>();
+
   final AuthController authController = Get.put(AuthController());
 
   late StreamController<ErrorAnimationType> errorController;
@@ -41,15 +39,8 @@ class _MpinScreenState extends State<MpinScreen> {
     super.initState();
     errorController = StreamController<ErrorAnimationType>();
   }
-  void _onVerify() {
+  void _onVerify() async {
     final mpin = _mPinController.text.trim();
-
-    // 🔹 DEBUG: Print controller data before setting MPIN
-    print("Data before saving MPIN:");
-    print("Name: ${formController.name.value}");
-    print("Email: ${formController.email.value}");
-    print("Phone: ${formController.mobilePhone.value}");
-    print("MPIN (input): $mpin");
 
     if (mpin.isEmpty) {
       errorController.add(ErrorAnimationType.shake);
@@ -63,19 +54,24 @@ class _MpinScreenState extends State<MpinScreen> {
       return;
     }
 
-    formController.mpin.value = mpin;
+    final loginData = await MySharedPrefs.getLoginData();
+    final mobilePhone = loginData['mobile_phone'];
 
-    AppToast.showSuccess(context, 'MPIN created successfully!');
+    if (mobilePhone == null || mobilePhone.isEmpty) {
+      AppToast.showError(context, "Mobile number not found");
+      return;
+    }
 
-    // 🔹 DEBUG: Print after saving MPIN
-    print("Data after saving MPIN:");
-    print("Name: ${formController.name.value}");
-    print("Email: ${formController.email.value}");
-    print("Phone: ${formController.mobilePhone.value}");
-    print("MPIN: ${formController.mpin.value}");
+    print("📞 CALLING MPIN GENERATE API (LOGIN FLOW)");
 
-    Get.off(() => CenterDetailsPage1());
+    await authController.mPinGenerate(
+      context: context,
+      mobilePhone: mobilePhone,
+      mpin: mpin,
+    );
   }
+
+
 
 
 
@@ -169,7 +165,7 @@ class _MpinScreenState extends State<MpinScreen> {
 
 
 
-            const SizedBox(height: 21),
+                const SizedBox(height: 21),
 
 
                 CustomPrimaryButton(

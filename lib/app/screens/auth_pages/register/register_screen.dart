@@ -33,6 +33,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
 
   bool _isLoading = false;
+
+
   void _onSignUp() async {
     final nameError  = Validators.name(_nameController.text);
     final emailError = Validators.email(_emailController.text);
@@ -56,7 +58,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    // ✅ Save data in controller
     formController.name.value = _nameController.text.trim();
     formController.email.value = _emailController.text.trim();
     formController.mobilePhone.value = _phoneController.text.trim();

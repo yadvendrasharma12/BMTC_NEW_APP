@@ -1,8 +1,14 @@
 import 'package:bmtc_app/app/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
+import '../../../controllers/view_self_booking_controller.dart';
 import '../../../core/app_colors.dart';
 import '../../../core/text_style.dart';
+import '../../../models/view_self_booking.dart';
+import '../../../services/create_self_booking.dart';
+import '../../../utils/toast_message.dart';
 import '../../../widgets/custom_dropdown.dart';
 import '../../../widgets/custom_textformfield.dart';
 
@@ -10,12 +16,15 @@ class AddBookingDialog extends StatefulWidget {
   final List<String> examTypeOptions;
   final List<String> labOptions;
   final List<String> yesNoOptions;
+  final Map<String, dynamic>? examData;
+
 
   const AddBookingDialog({
     super.key,
     required this.examTypeOptions,
     required this.labOptions,
     required this.yesNoOptions,
+    this.examData,
   });
 
   @override
@@ -35,7 +44,10 @@ class _AddBookingDialogState extends State<AddBookingDialog> {
   DateTime? selectedExamEndDate;
 
   /// ✅ har batch ke liye time controller list
-  final List<TextEditingController> _batchTimeControllers = [];
+  final List<TextEditingController> _batchTimeControllers = [
+
+
+  ];
 
   final TextEditingController clientNameController = TextEditingController();
   final TextEditingController clientEmailController = TextEditingController();
@@ -80,15 +92,22 @@ class _AddBookingDialogState extends State<AddBookingDialog> {
     }
   }
 
-  /// ✅ kisi batch ke liye time pick karna
-  Future<void> _pickBatchTime(int index) async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      _batchTimeControllers[index].text = _formatTime(picked);
-      setState(() {});
+
+  List<String> apiBatchTimings = [
+
+    "9 AM - 10 AM","10 AM - 11 AM","11 AM - 12 PM","1 PM - 2 PM",
+  ];
+
+  void loadApiBatchTimings() {
+    if (widget.examData != null) {
+      int batchCount = int.tryParse(widget.examData!['exam_batch'].toString()) ?? 0;
+
+      for (int i = 0; i < batchCount; i++) {
+        String key = "batch${i + 1}";
+        if (widget.examData!.containsKey(key)) {
+          apiBatchTimings.add(widget.examData![key]);  // <-- Add to list
+        }
+      }
     }
   }
 
@@ -105,10 +124,63 @@ class _AddBookingDialogState extends State<AddBookingDialog> {
     });
   }
 
-  void _onConfirmPressed() {
-    // TODO: yahan form validate/cart logic lagana hai
-    Navigator.of(context).pop();
+
+  void _onConfirmPressed() async {
+    if (_formKey.currentState?.validate() != true) return;
+
+    if (selectedExamType == null || selectedLabs == null || selectedBatch == null) {
+      AppToast.showError(context, "Please select all dropdowns");
+      return;
+    }
+
+    List<String> batchTimings = _batchTimeControllers.map((c) => c.text).toList();
+
+    // call your service which returns newly created booking id (int?)
+    final bookingId = await createSelfBooking(
+      context: context,
+      startDate: selectedExamDate != null
+          ? "${selectedExamDate!.year}-${selectedExamDate!.month.toString().padLeft(2,'0')}-${selectedExamDate!.day.toString().padLeft(2,'0')}"
+          : "",
+      endDate: selectedExamEndDate != null
+          ? "${selectedExamEndDate!.year}-${selectedExamEndDate!.month.toString().padLeft(2,'0')}-${selectedExamEndDate!.day.toString().padLeft(2,'0')}"
+          : "",
+      clientName: clientNameController.text,
+      clientEmail: clientEmailController.text,
+      clientPhone: clientPhoneController.text,
+      examName: examNameController.text,
+      examType: selectedExamType!,
+      examLocation: examLocationController.text,
+      examDuration: examDurationController.text,
+      seatsBooked: seatsBookedController.text,
+      labsAssigned: selectedLabs!,
+      examBatch: selectedBatch!,
+      batchTimings: batchTimings,
+    );
+
+    if (bookingId != null) {
+      try {
+        final viewController = Get.find<ViewSelfBookingController>();
+
+        await viewController.fetchBookingById(id: bookingId.toString());
+
+
+
+
+
+        Navigator.pop(context, bookingId);
+      } catch (e) {
+        print("❌ Error while fetching newly created booking: $e");
+        AppToast.showError(context, "Unable to fetch newly created booking.");
+        Navigator.of(context).pop(false);
+      }
+    } else {
+
+      AppToast.showError(context, "Failed to create booking");
+    }
   }
+
+
+
 
   @override
   void dispose() {
@@ -125,7 +197,12 @@ class _AddBookingDialogState extends State<AddBookingDialog> {
     totalNetworkController.dispose();
     super.dispose();
   }
+  @override
+  void initState() {
+    super.initState();
 
+    loadApiBatchTimings();
+  }
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -337,7 +414,6 @@ class _AddBookingDialogState extends State<AddBookingDialog> {
 
                   const SizedBox(height: 12),
 
-                  // ✅ DYNAMIC BATCH TIMINGS – SIRF TAB DIKHENGE JAB BATCH SELECT HOGA
                   if (selectedBatch != null && selectedBatch! > 0) ...[
                     for (int i = 0; i < selectedBatch!; i++) ...[
                       Text(
@@ -345,21 +421,26 @@ class _AddBookingDialogState extends State<AddBookingDialog> {
                         style: AppTextStyles.centerText,
                       ),
                       const SizedBox(height: 6),
-                      GestureDetector(
-                        onTap: () => _pickBatchTime(i),
-                        child: AbsorbPointer(
-                          child: AppTextField(
-                            controller: _batchTimeControllers[i],
-                            keyboardType: TextInputType.text,
-                            hintText: 'Select time',
-                            label: '',
-                            suffix: const Icon(Icons.access_time_rounded),
-                          ),
-                        ),
+
+                      CustomDropdown<String>(
+                        hintText: "Select Timing",
+                        value: _batchTimeControllers[i].text.isEmpty
+                            ? null
+                            : _batchTimeControllers[i].text,
+                        items: apiBatchTimings,
+                        itemLabel: (v) => v,
+                        onChanged: (v) {
+                          setState(() {
+                            _batchTimeControllers[i].text = v!;
+                          });
+                        },
+                        validator: (_) => null,
                       ),
+
                       const SizedBox(height: 12),
                     ],
                   ],
+
 
                   const SizedBox(height: 20),
 

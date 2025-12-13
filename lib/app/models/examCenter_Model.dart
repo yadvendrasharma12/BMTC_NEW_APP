@@ -65,11 +65,13 @@ class ExamCenter {
   int totalNumberOfSystem;
   bool labAreConnectToSingleNetwork;
   int totalNetwork;
-  List<int> partitionInEachLab;
-  bool isNetworkPrinterAvailable;
+  int partitionInEachLab;
+  int acInEachLab;
+  int howManyFireExtinguisherInEachLab;
+
+  bool isNetworkPrinterAvailabel;
   bool isThereProjectorInEachLab;
   bool isThereSoundSystemInEachLab;
-  List<int> howManyFireExtinguisherInEachLab;
   bool isThereALockerFacilityInLab;
   bool isThereADrinkingWaterFacilityInLab;
 
@@ -133,6 +135,7 @@ class ExamCenter {
     required this.nearestMetroStation,
     required this.distanceFromMetroStation,
     required this.nearestAirport,
+    required this.acInEachLab,
     required this.distanceFromAirport,
     required this.pointOfContact,
     required this.contactPhoneNumber,
@@ -169,7 +172,7 @@ class ExamCenter {
     required this.labAreConnectToSingleNetwork,
     required this.totalNetwork,
     required this.partitionInEachLab,
-    required this.isNetworkPrinterAvailable,
+    required this.isNetworkPrinterAvailabel,
     required this.isThereProjectorInEachLab,
     required this.isThereSoundSystemInEachLab,
     required this.howManyFireExtinguisherInEachLab,
@@ -225,7 +228,7 @@ class ExamCenter {
     "address_lat": addressLat,
     "address_long": addressLong,
     "nearby_landmark": nearbyLandmark,
-    "is_lift_available": isLiftAvailable,
+    "is_lift_available": isLiftAvailable == true ? "Yes" : "No",
     "nearest_railway_station": nearestRailwayStation,
     "nearest_bus_stop": nearestBusStop,
     "distance_from_railway_station": distanceFromRailwayStation,
@@ -269,7 +272,7 @@ class ExamCenter {
     "lab_are_connect_to_single_network": labAreConnectToSingleNetwork,
     "total_network": totalNetwork,
     "partition_in_each_lab": partitionInEachLab,
-    "is_network_printer_available": isNetworkPrinterAvailable,
+    "is_network_printer_availabel": isNetworkPrinterAvailabel,
     "is_there_projector_in_each_lab": isThereProjectorInEachLab,
     "is_there_sound_system_in_each_lab": isThereSoundSystemInEachLab,
     "how_many_fire_extinguisher_in_each_lab": howManyFireExtinguisherInEachLab,
@@ -278,6 +281,7 @@ class ExamCenter {
     "primary_infrastructure": primaryInfrastructure,
     "primary_isp_connect_type": primaryIspConnectType,
     "primary_isp_speed": primaryIspSpeed,
+    "ac_in_each_lab": acInEachLab,
     "primary_internet_speed_unit": primaryInternetSpeedUnit,
     "secondary_infrastructure": secondaryInfrastructure,
     "secondary_isp_connect_type": secondaryIspConnectType,

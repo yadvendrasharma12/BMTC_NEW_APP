@@ -37,9 +37,7 @@ class _CenterDetailsPage2State extends State<CenterDetailsPage2> {
   final TextEditingController phone4Controller = TextEditingController();
   final TextEditingController landLineController = TextEditingController();
 
-  final TextEditingController phone5Controller = TextEditingController(); // (unused)
-  final TextEditingController name5Controller = TextEditingController();  // (unused)
-  final TextEditingController email5Controller = TextEditingController(); // (unused)
+
 
   @override
   void dispose() {
@@ -60,9 +58,7 @@ class _CenterDetailsPage2State extends State<CenterDetailsPage2> {
     phone4Controller.dispose();
     landLineController.dispose();
 
-    phone5Controller.dispose();
-    name5Controller.dispose();
-    email5Controller.dispose();
+
 
     super.dispose();
   }
@@ -125,8 +121,27 @@ class _CenterDetailsPage2State extends State<CenterDetailsPage2> {
     examController.assistantManagerName.value = name3Controller.text;
     examController.assistantManagerPhoneNumber.value = phone3Controller.text;
 
-    examController.emergencyLandlineNumber.value = phone4Controller.text;
+    examController.emergencyPhoneNumber.value = phone4Controller.text;      // ✅ Emergency Main
+    examController.emergencyLandlineNumber.value = landLineController.text; // ✅ Alternate Emergency
 
+
+    print("===== Exam Center Step 2 Data =====");
+    print("Point of Contact Name: ${examController.pointOfContact.value}");
+    print("Point of Contact Phone: ${examController.contactPhoneNumber.value}");
+    print("Point of Contact Alternate Phone: ${examController.contactAlternatePhoneNumber.value}");
+    print("Point of Contact Email: ${examController.contactEmail.value}");
+
+    print("Superintendent Name: ${examController.superintendentName.value}");
+    print("Superintendent Phone: ${examController.superintendentNumber.value}");
+    print("Superintendent Email: ${examController.superintendentEmail.value}");
+
+    print("IT Manager Name: ${examController.assistantManagerName.value}");
+    print("IT Manager Phone: ${examController.assistantManagerPhoneNumber.value}");
+    print("IT Manager Email: ${examController.assistantManagerEmail.value}");
+
+    print("Emergency Phone: ${examController.emergencyLandlineNumber.value}");
+    print("Alternate Emergency Phone: ${examController.emergencyPhoneNumber.value}");
+    print("===== End of Step 2 Data =====");
     /// ✅ NEXT PAGE
     Get.to(() =>  CenterDetailsPage3());
   }

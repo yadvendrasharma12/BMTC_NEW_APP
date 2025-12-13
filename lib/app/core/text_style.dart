@@ -22,7 +22,11 @@ class AppTextStyles {
     fontWeight: FontWeight.w700,
     color: AppColors.blackColor,
   );
-
+  static TextStyle linkTexts = GoogleFonts.karla(
+    fontSize: 16,
+    fontWeight: FontWeight.w700,
+    color: AppColors.primaryColor,
+  );
 
   static TextStyle topHeading1 = GoogleFonts.karla(
     fontSize: 30,

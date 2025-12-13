@@ -1,6 +1,7 @@
 
 import 'dart:async';
 
+import 'package:bmtc_app/app/controllers/auth_controller.dart';
 import 'package:bmtc_app/app/core/app_colors.dart';
 import 'package:bmtc_app/app/screens/auth_pages/forget/forget_otp_screen.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneController = TextEditingController();
 
+  final AuthController authController = Get.find<AuthController>();
   late StreamController<ErrorAnimationType> errorController;
   String currentText = "";
 
@@ -49,21 +51,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
     super.dispose();
   }
 
-  void _onSignUp() {
-    final phoneError = Validators.phone(_phoneController.text);
 
-    if (phoneError != null) {
-      AppToast.showError(context, phoneError);
-      return;
-    }
-
-    _formKey.currentState?.validate();
-    AppToast.showSuccess(context, 'OTP sent successful!');
-
-    Get.to(
-          () => ForgetOtpScreen(),
-    );
-  }
 
 
 
@@ -113,11 +101,16 @@ class _ForgetScreenState extends State<ForgetScreen> {
 
                 const SizedBox(height: 24),
 
-                CustomPrimaryButton(
-                  text: "Send OTP",
-                  icon: Icons.arrow_right_alt_rounded,
-                  onPressed: () =>_onSignUp(),
-                ),
+            CustomPrimaryButton(
+              text: "Send OTP",
+              isLoading: authController.isLoading.value,
+              onPressed: () {
+                authController.sendOtp(
+                  context: context,
+                  mobilePhone: _phoneController.text.trim(),
+                );
+              },
+            ),
                 const SizedBox(height: 24),
 
                 CustomPrimaryButton(

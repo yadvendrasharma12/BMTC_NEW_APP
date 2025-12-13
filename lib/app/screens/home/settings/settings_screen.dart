@@ -1,15 +1,19 @@
 import 'dart:io';
 
-import 'package:bmtc_app/app/screens/auth_pages/register/register_screen.dart';
+
 import 'package:bmtc_app/app/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+
 import 'package:image_picker/image_picker.dart';
 
+import '../../../controllers/auth_controller.dart';
 import '../../../core/app_colors.dart';
 import '../../../core/text_style.dart';
 
+
+import '../../../utils/shared_preferances.dart';
 import '../../../utils/toast_message.dart';
 import '../../../widgets/custom_textformfield.dart';
 
@@ -54,6 +58,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Profile updated")),
     );
+  }
+  final AuthController authController = Get.put(AuthController());
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Async kaise handle karte hain initState me
+    _loadUserData();
+  }
+
+// Private async function
+  Future<void> _loadUserData() async {
+
+    final loginData = await MySharedPrefs.getLoginData();
+    final centerId = await MySharedPrefs.get();
+
+    final mobile = loginData['mobile_phone'] ?? '';
+    final mpin = loginData['mpin'] ?? '';
+
+    print("📌 InitState Loaded Data:");
+    print("Center ID: $centerId");
+    print("Mobile: $mobile");
+    print("MPIN: $mpin");
+
   }
 
   @override
@@ -207,19 +237,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const Spacer(),
 
                   GestureDetector(
-                    // onTap: () async {
-                    //   bool success = await AuthService.logout();
-                    //   if (success) {
-                    //     AppToast.showSuccess(context, "Logged out successfully");
-                    //
-                    //
-                    //     Future.delayed(const Duration(seconds: 1), () {
-                    //       Get.offAll(RegisterScreen());
-                    //     });
-                    //   } else {
-                    //     AppToast.showError(context, "Logout failed. Try again.");
-                    //   }
-                    // },
+                    onTap: () async {
+                      authController.logout();
+                    },
                     child: Image.asset(
                       "assets/icons/Delete.png",
                       height: 40,
@@ -265,13 +285,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                   ),
                   const Spacer(),
-                  Image.asset(
-                    "assets/logo/Delete.png",
-                    height: 40,
-                    width: 120,
-                    filterQuality: FilterQuality.high,
-                  ),
-                ],
+              GestureDetector(
+                onTap: () async {
+                  await authController.deleteAccount(context: context);
+                },
+                child: Image.asset(
+                  "assets/logo/Delete.png",
+                  height: 40,
+                  width: 120,
+                  filterQuality: FilterQuality.high,
+                ),
+              ),
+
+
+
+              ],
               ),
             ),
 

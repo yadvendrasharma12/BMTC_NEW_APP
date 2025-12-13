@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bmtc_app/app/controllers/auth_controller.dart';
 import 'package:bmtc_app/app/screens/auth_pages/Mpin/mpin_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -37,6 +38,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   final TextEditingController _otpController = TextEditingController();
   final ExamCenterController formController = Get.find<ExamCenterController>();
+final AuthController authController = Get.put(AuthController());
 
   late StreamController<ErrorAnimationType> errorController;
   String currentText = "";
@@ -59,6 +61,7 @@ class _OtpScreenState extends State<OtpScreen> {
     // ✅ Save OTP in controller
     formController.otp.value = otp;
     print("Data in OTP Screen:");
+    print("Name: ${formController.otp.value}");
     print("Name: ${formController.name.value}");
     print("Phone: ${formController.mobilePhone.value}");
 
@@ -114,7 +117,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 const SizedBox(height: 24),
 
                 Text(
-                  "Verify your phone number, ${widget.name}",
+                  "Verify your Name, ${widget.name}",
                   style: AppTextStyles.topHeading2,
                 ),
                 const SizedBox(height: 8),
@@ -164,13 +167,18 @@ class _OtpScreenState extends State<OtpScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
+                          authController.resendOtp(
+                            context: context,
+                            mobile_phone: widget.mobileNumber,
 
+                          );
                         },
                         child: Text(
                           "Resend",
                           style: AppTextStyles.linkText,
                         ),
                       ),
+
                     ],
                   ),
                 ),

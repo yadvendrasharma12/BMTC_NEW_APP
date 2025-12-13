@@ -1,22 +1,18 @@
 import 'dart:async';
-import 'package:bmtc_app/app/core/app_colors.dart';
-import 'package:bmtc_app/app/screens/add_center_pages/center_details_page1.dart';
-import 'package:bmtc_app/app/screens/auth_pages/forget/forget_screen.dart';
-import 'package:bmtc_app/app/screens/auth_pages/register/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-
 import '../../../controllers/auth_controller.dart';
 import '../../../core/text_style.dart';
-import '../../../widgets/otp_pin_field.dart';
 import '../../../utils/toast_message.dart';
 import '../../../utils/validators.dart';
 import '../../../widgets/custom_appbar.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_textformfield.dart';
+import '../../../widgets/otp_pin_field.dart';
+import '../../auth_pages/forget/forget_screen.dart';
+import '../../auth_pages/register/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -51,25 +47,23 @@ class _LoginScreenState extends State<LoginScreen> {
     final phone = _phoneController.text.trim();
     final mpin = _otpController.text.trim();
 
-    // Phone validation
-    final phoneError = Validators.phone(phone);
-    if (phoneError != null) {
-      AppToast.showError(context, phoneError);
+    if (!RegExp(r'^\d{10}$').hasMatch(phone)) {
+      AppToast.showError(context, "Enter a valid 10-digit phone number");
       return;
     }
 
-    // MPIN validation
     if (mpin.isEmpty || mpin.length != 4) {
       errorController.add(ErrorAnimationType.shake);
-      AppToast.showError(context, 'Please enter a valid 4-digit MPIN');
+      AppToast.showError(context, "Please enter a valid 4-digit MPIN");
       return;
     }
 
     if (_formKey.currentState?.validate() ?? false) {
-      authController.login(
-        context: context,  // <- pass context here
+      authController.checkPhoneExistsAndLogin(
+        context: context,
         mobilePhone: phone,
         mpin: mpin,
+        countryCode: "+91",
       );
     }
   }
@@ -79,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar("Welcome to BookMyTestCenter"),
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -89,7 +83,6 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Logo
                 Center(
                   child: SizedBox(
                     height: 180,
@@ -101,16 +94,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 15),
-
-                // Titles
                 Text("Welcome back!", style: AppTextStyles.topHeading1, textAlign: TextAlign.center),
                 const SizedBox(height: 10),
                 Text("Enter your 4 digit M-Pin to log in", style: AppTextStyles.topHeading2),
                 const SizedBox(height: 6),
                 Text("Good to see you back", style: AppTextStyles.topHeading3),
                 const SizedBox(height: 24),
-
-                // Phone input
                 AppTextField(
                   controller: _phoneController,
                   label: "Phone number",
@@ -123,8 +112,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
                 const SizedBox(height: 21),
-
-                // MPIN input
                 OtpPinField(
                   controller: _otpController,
                   length: 4,
@@ -132,32 +119,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   onChanged: (value) {},
                 ),
                 const SizedBox(height: 24),
-
-            Obx(() {
-              return CustomPrimaryButton(
-                text: "Log in",
-                icon: Icons.arrow_right_alt_rounded,
-                isLoading: authController.isLoading.value, // show spinner
-                onPressed: authController.isLoading.value ? null : _onLogin,
-              );
-            }),
-
+                Obx(() {
+                  return CustomPrimaryButton(
+                    text: "Log in",
+                    icon: Icons.arrow_right_alt_rounded,
+                    isLoading: authController.isLoading.value,
+                    onPressed: authController.isLoading.value ? null : _onLogin,
+                  );
+                }),
                 const SizedBox(height: 15),
-
-                // Sign Up
                 Align(
                   alignment: Alignment.center,
                   child: Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      Text(
-                        "Don't have an account? ",
-                        style: GoogleFonts.karla(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                          color: const Color(0xff737373),
-                        ),
-                      ),
+                      Text("Don't have an account? ", style: AppTextStyles.linkText),
                       GestureDetector(
                         onTap: () => Get.to(RegisterScreen()),
                         child: Text("Sign up", style: AppTextStyles.linkText),
@@ -166,24 +142,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 15),
-
-                // Forget MPIN
                 Align(
                   alignment: Alignment.center,
                   child: Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      Text(
-                        "Reset/Forget MPIN ",
-                        style: GoogleFonts.karla(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                          color: const Color(0xff737373),
-                        ),
-                      ),
+                      Text("Reset/Forget MPIN ", style: AppTextStyles.linkText),
                       GestureDetector(
                         onTap: () => Get.to(ForgetScreen()),
-                        child: Text("Go", style: AppTextStyles.linkText),
+                        child: Text("Go", style: AppTextStyles.linkTexts),
                       ),
                     ],
                   ),

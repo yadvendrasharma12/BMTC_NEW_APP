@@ -160,15 +160,43 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
     examController.uidaiNumber.value = uidaiController.text.trim();
     examController.msmeNumber.value = msmeController.text.trim();
 
-    // Optional: Add field validation here if needed
+  _printStep4Data();
+
 
     try {
       await examController.submitExamCenter();
-      AppToast.showSuccess(Get.context!, "Data submitted successfully!");
-      Get.to(videoPageScreen());
+
     } catch (e) {
       AppToast.showError(Get.context!, "Submission failed. Try again.");
     }
+  }
+  void _printStep4Data() {
+    print("========== STEP 4 DATA DEBUG START ==========");
+
+    print("Beneficiary Name: ${examController.beneficiaryName.value}");
+    print("Bank Name: ${examController.bankName.value}");
+    print("Account Number: ${examController.bankAccountNumber.value}");
+    print("IFSC Code: ${examController.bankIfsc.value}");
+
+    print("PAN Number: ${examController.panNumber.value}");
+
+    print("Has GST: ${examController.hasGst.value}");
+    print("GST Number: ${examController.gstNumber.value}");
+    print("GST State Code: ${examController.gstStateCode.value}");
+    print("GST Certificate File: ${examController.gstCertFile.value?.path}");
+
+    print("UIDAI Number: ${examController.uidaiNumber.value}");
+
+    print("Has MSME: ${examController.hasMsme.value}");
+    print("MSME Number: ${examController.msmeNumber.value}");
+
+    print("Cancelled Cheque File: ${examController.cancelledChequeFile.value?.path}");
+    print("Agreement File: ${examController.agreementFile.value?.path}");
+    print("MOU File: ${examController.mouFile.value?.path}");
+    print("PAN Card File: ${examController.panCardFile.value?.path}");
+    print("Udhayam File: ${examController.udhayamFile.value?.path}");
+
+    print("========== STEP 4 DATA DEBUG END ==========");
   }
 
   @override
@@ -247,7 +275,7 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
                   children: [
                     Text("GST Number", style: AppTextStyles.centerText),
                     const SizedBox(height: 8),
-                    AppTextField(controller: gstController, keyboardType: TextInputType.number, onChanged: (val) {}, label: '',),
+                    AppTextField(controller: gstController, keyboardType: TextInputType.multiline, onChanged: (val) {}, label: '',),
                     const SizedBox(height: 15),
                     Text("Upload GST Certificate", style: AppTextStyles.centerText),
                     const SizedBox(height: 8),
@@ -260,6 +288,7 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
                             allowedExtensions: ['doc', 'docx', 'pdf'],
                             onFilePicked: (file) {
                               examController.gstCertFile.value = file;
+                              print("GST Certificate picked: ${file.path}");
                             });
                       },
                     ),
@@ -309,6 +338,7 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
                         allowedExtensions: ['doc', 'docx', 'pdf'],
                         onFilePicked: (file) {
                           examController.cancelledChequeFile.value = file;
+                          print("cancled check picked: ${file.path}");
                         });
                   },
                 ),
@@ -327,6 +357,8 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
                         allowedExtensions: ['doc', 'docx', 'pdf'],
                         onFilePicked: (file) {
                           examController.agreementFile.value = file;
+                          print("upload agriment: ${file.path}");
+
                         });
                   },
                 ),
@@ -345,6 +377,7 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
                         allowedExtensions: ['doc', 'docx', 'pdf'],
                         onFilePicked: (file) {
                           examController.mouFile.value = file;
+                          print("uplaod mOu picked: ${file.path}");
                         });
                   },
                 ),
@@ -363,6 +396,7 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
                         allowedExtensions: ['doc', 'docx', 'pdf'],
                         onFilePicked: (file) {
                           examController.panCardFile.value = file;
+                          print("PanCard picked: ${file.path}");
                         });
                   },
                 ),
@@ -381,6 +415,7 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
                         allowedExtensions: ['doc', 'docx', 'pdf'],
                         onFilePicked: (file) {
                           examController.udhayamFile.value = file;
+                          print("Udhaym cetificate picked: ${file.path}");
                         });
                   },
                 ),
