@@ -149,7 +149,7 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
   }
 
   Future<void> _submit() async {
-    // Update controller values from text controllers
+
     examController.beneficiaryName.value = beneficiaryController.text.trim();
     examController.bankName.value = bankNameController.text.trim();
     examController.bankAccountNumber.value = accountNumberController.text.trim();

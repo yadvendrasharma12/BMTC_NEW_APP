@@ -69,10 +69,10 @@ class ProfileUpdateController extends GetxController {
       "state_id": stateId,
       "city_id": cityId,
       "local_area_name": localAreaName,
-      "postal_address": postalAddress,
+      "address": postalAddress,
       "address_lat": addressLat,
       "address_long": addressLong,
-      "nearby_landmark": nearbyLandmark,
+      "landmark": nearbyLandmark,
       "is_lift_available": isLiftAvailable ? "Yes" : "No",
 
       // Contact Info
@@ -90,6 +90,7 @@ class ProfileUpdateController extends GetxController {
       "emergency_phone_number": emergencyPhoneNumber,
 
       // Center Extra Info
+      "pin_code":pinCode,
       "region_code": regionCode,
       "state_code": stateCode,
       "city_code": cityCode,
@@ -131,13 +132,17 @@ class ProfileUpdateController extends GetxController {
       "td_contact_no": tdContactNo,
       "td_phone_alternate": tdPhoneAlternate,
       "td_email": tdEmail,
+      "emergency_contact_no":EmergencyNumber,
+      "emergency_number_alternate": EmergencyAlt,
       "total_no_system": totalNumberOfSystem,
       "total_no_lab": totalNumberOfLab,
       "partition_in_each_lab": partitionEachLab,
       "connected_single_network": connectedSingleNetwork,
+      "partitaion_each_lab":partitionInEachLab,
       "ac_in_each_lab": acInEachLabExtra,
       "lan_company_name": lanCompanyName,
       "lan_model_number": lanModelNumber,
+      "primary_isp_connect_type":primaryIspConnectType,
       "lan_speed": lanSpeed,
       "lan_managed": lanManaged,
       "primary_isp_name": primaryISPName,
@@ -148,8 +153,12 @@ class ProfileUpdateController extends GetxController {
       "power_back_ups_kv": powerBackUpsKV,
       "power_backup_hour": powerBackupHour,
       "power_backup_unit": powerBackupUnit,
+      "secondary_isp_connect_type":secondaryIspConnectType,
+      "secondary_isp_speed":secondaryIspSpeed,
       "cctv_dvr": cctvDVR,
       "network_printer": networkPrinterExtra,
+      "is_there_projector_in_each_lab":projectorEachLab,
+      "is_there_sound_sytem_in_each_lab":isThereSoundSystemInEachLab,
       "projector_sound_system": projectorSoundSystem,
       "how_many_fire_extinguisher_in_each_lab": fireExtinguisherExtra,
       "parking_facility": parkingFacility,
@@ -169,8 +178,7 @@ class ProfileUpdateController extends GetxController {
       "center_client_name": centerClientName,
       "center_prev_exam_name": centerPrevExamName,
       "udyam_number": udyamNumber,
-
-      // Backup Info
+      "primary_isp_speed":primaryIspSpeed,
       "is_generator_backup": isGeneratorBackup,
       "generator_backup_capacity": generatorBackupCapacity,
       "generator_fuel_tank_capacity": generatorFuelTankCapacity,
@@ -179,6 +187,9 @@ class ProfileUpdateController extends GetxController {
       "total_no_of_connection": totalNoOfConnection,
       "backup_hours": backupHours,
       "backup_minutes": backupMinutes,
+      "primary_internet_speed_unit":primaryInternetSpeedUnit,
+      "secondary_internet_speed_unit":secondaryInternetSpeedUnit,
+
 
       // Bank & Legal Info
       "beneficiary_name": beneficiaryName,
@@ -199,6 +210,7 @@ class ProfileUpdateController extends GetxController {
 
 
       // Media & Files
+      "server_image": labPhotos.map((f) => base64Encode(f.readAsBytesSync())).toList(),
       "lab_photos": labPhotos.map((f) => base64Encode(f.readAsBytesSync())).toList(),
       "canceled_cheque": canceledCheque != null ? base64Encode(canceledCheque!.readAsBytesSync()) : null,
       "agreement": agreementFile != null ? base64Encode(agreementFile!.readAsBytesSync()) : null,
@@ -225,6 +237,7 @@ class ProfileUpdateController extends GetxController {
   double addressLong = 0.0;
   String nearbyLandmark = "";
   bool isLiftAvailable = false;
+  String projectorEachLab = "";
 
   // Contact Info
   String pointOfContact = "";
@@ -272,6 +285,7 @@ class ProfileUpdateController extends GetxController {
   String documentSign = "";
   String photographs = "";
   String csName = "";
+  int? pinCode;
   String csCountryCode = "";
   String csContactNumber = "";
   String csPhoneAlternate = "";
@@ -291,6 +305,8 @@ class ProfileUpdateController extends GetxController {
   String tdContactNo = "";
   String tdPhoneAlternate = "";
   String tdEmail = "";
+  String EmergencyNumber = "";
+  String EmergencyAlt= "";
   String totalNoSystemExtra = "";
   String totalNoLabExtra = "";
   String partitionEachLab = "";
@@ -311,7 +327,7 @@ class ProfileUpdateController extends GetxController {
   String cctvDVR = "";
   String networkPrinterExtra = "";
   String projectorSoundSystem = "";
-  String fireExtinguisherExtra = "";
+  int fireExtinguisherExtra =0;
   String parkingFacility = "";
   int securityGuardMale = 0;
   int securityGuardFemale = 0;
@@ -351,7 +367,7 @@ class ProfileUpdateController extends GetxController {
   String examCenterUrl = "";
   String adminUrl = "";
 
-  // Coupon / Audit
+
   String couponCode = "";
   String couponStatus = "";
   String couponAdd = "";
@@ -378,7 +394,7 @@ class ProfileUpdateController extends GetxController {
   int totalNumberOfSystem = 0;
   bool labAreConnectToSingleNetwork = false;
   int totalNetwork = 0;
-  int partitionInEachLab = 0;
+  int partitionInEachLab =0;
   bool isNetworkPrinterAvailabel = false;
   bool isThereProjectorInEachLab = false;
   bool isThereSoundSystemInEachLab = false;
@@ -389,7 +405,7 @@ class ProfileUpdateController extends GetxController {
   // Network Info
   String primaryInfrastructure = "";
   String primaryIspConnectType = "";
-  double primaryIspSpeed = 0.0;
+  double primaryIspSpeed = 0;
   String acInEachLab = "";
   String primaryInternetSpeedUnit = "";
 
