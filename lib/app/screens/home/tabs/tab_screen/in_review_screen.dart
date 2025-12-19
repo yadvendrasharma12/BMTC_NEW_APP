@@ -199,7 +199,8 @@ class _InReviewScreenState extends State<InReviewScreen> {
           _dataCell(b.endDate ?? "-", 120),
           _dataCell(b.numberOfSeats?.toString() ?? "-", 80),
           _dataCell("₹ ${b.pricePerSeat ?? 200}", 100),
-          _dataCell("In Review", 100),
+          _statusCell("approved", 100),
+
           Container(
             width: 100,
             alignment: Alignment.center,
@@ -262,4 +263,30 @@ class _InReviewScreenState extends State<InReviewScreen> {
       child: Text(value, style: AppTextStyles.tableText),
     );
   }
+
+
+  Widget _statusCell(String status, double width) {
+    Color bgColor;
+    Color textColor;
+    String text;
+
+    if (status.toLowerCase() == "approved") {
+      bgColor = Colors.green.shade100;
+      textColor = Colors.green.shade800;
+      text = "Approved";
+    } else {
+      bgColor = Colors.orange.shade100;
+      textColor = Colors.orange.shade800;
+      text = "In Review";
+    }
+
+    return Text(
+      text,
+      style: AppTextStyles.tableText.copyWith(
+        color: textColor,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
 }

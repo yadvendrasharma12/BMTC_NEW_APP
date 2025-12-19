@@ -28,8 +28,7 @@ class CreateMpinScreen extends StatefulWidget {
 class _CreateMpinScreenState extends State<CreateMpinScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _mPinController = TextEditingController();
-
-  final AuthController authController = Get.put(AuthController());
+  final AuthController authController = Get.find<AuthController>();
 
   late StreamController<ErrorAnimationType> errorController;
   String currentText = "";
@@ -39,6 +38,8 @@ class _CreateMpinScreenState extends State<CreateMpinScreen> {
     super.initState();
     errorController = StreamController<ErrorAnimationType>();
   }
+
+
   void _onVerify() async {
     final mpin = _mPinController.text.trim();
 
@@ -54,15 +55,16 @@ class _CreateMpinScreenState extends State<CreateMpinScreen> {
       return;
     }
 
-    final loginData = await MySharedPrefs.getLoginData();
-    final mobilePhone = loginData['mobile_phone'];
+    // ✅ MOBILE FROM CONTROLLER (OTP FLOW)
+    final mobilePhone = authController.tempMobilePhone;
 
     if (mobilePhone == null || mobilePhone.isEmpty) {
       AppToast.showError(context, "Mobile number not found");
       return;
     }
 
-    print("📞 CALLING MPIN GENERATE API (LOGIN FLOW)");
+    print("📞 CALLING MPIN GENERATE API");
+    print("Mobile: $mobilePhone");
 
     await authController.mPinGenerate(
       context: context,
@@ -70,6 +72,7 @@ class _CreateMpinScreenState extends State<CreateMpinScreen> {
       mpin: mpin,
     );
   }
+
 
 
 

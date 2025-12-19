@@ -70,7 +70,7 @@ class _DashboardPageScreenState extends State<DashboardPageScreen>
       DrawerItem(
         title: "Help & Support",
         iconPath: "assets/icons/Help circle.png",
-        screen: const HelpsSupportScreen(),
+        screen:  HelpsSupportScreen(),
       ),
 
     ];

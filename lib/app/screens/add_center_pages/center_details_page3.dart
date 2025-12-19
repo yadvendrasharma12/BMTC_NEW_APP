@@ -31,7 +31,6 @@ class LabDetail {
   final TextEditingController computersController = TextEditingController();
 
   void dispose() {
-    computersController.dispose();
   }
 }
 
@@ -87,7 +86,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
 
   @override
   void dispose() {
-    totalLabsController.dispose();
+
     totalSystemsController.dispose();
     totalNetworkController.dispose();
     primaryISPController.dispose();
@@ -156,7 +155,9 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
             items: floors,
             itemLabel: (v) => v,
             onChanged: (v) => lab.floor.value = v ?? '',
-            validator: (value) {},
+            validator: (value) {
+              return null;
+            },
           ),
           const SizedBox(height: 15),
           Text("Total Number of computers", style: AppTextStyles.centerText),
@@ -289,7 +290,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
     }
   }
 
-  final List<String> partitionOptions = List.generate(10, (index) => "${index + 1}");
+
 
   @override
   Widget build(BuildContext context) {
@@ -369,12 +370,23 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                   hintText: "Select",
                   items: yesNoOptions, // ['Yes', 'No']
                   itemLabel: (v) => v,
+
+                  // ✅ IMPORTANT PART
                   value: examController.labAreConnectToSingleNetwork.value ? "Yes" : "No",
+
                   onChanged: (v) {
-                    examController.labAreConnectToSingleNetwork.value = (v == 'Yes');
+                    examController.labAreConnectToSingleNetwork.value =
+                    (v == 'Yes');
                   },
-                  validator: (value) {},
+
+                  validator: (value) {
+                    if (value == null) {
+                      return "Please select an option";
+                    }
+                    return null;
+                  },
                 )),
+
                 const SizedBox(height: 15),
                 Text("Total Network", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
@@ -393,20 +405,19 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                     style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
 
-                Obx(() => CustomDropdown<String>(
-                  hintText: "Select partitions",
-                  items: partitionOptions,
-                  itemLabel: (v) => v,
-                  value: examController.partitionInEachLab.value == 0
-                      ? null
-                      : examController.partitionInEachLab.value.toString(),
-                  onChanged: (v) {
-                    examController.partitionInEachLab.value =
-                        int.tryParse(v ?? '0') ?? 0;
-                  },
-                  validator: (value) {},
-                )),
 
+                Obx(() => CustomDropdown<String>(
+                  hintText: "Select",
+                  items: yesNoOptions, // ['Yes','No']
+                  itemLabel: (v) => v,
+                  value: examController.partitionInEachLab.value ? "Yes" : "No",
+                  onChanged: (v) {
+                    examController.partitionInEachLab.value = (v == "Yes");
+                  },
+                  validator: (value) {
+                    return null;
+                  },
+                )),
 
 
                 const SizedBox(height: 15),
@@ -414,15 +425,12 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                     style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
                 Obx(() => CustomDropdown<String>(
-                  hintText: "Select AC units",
-                  items: List.generate(11, (index) => index.toString()),
+                  hintText: "Select",
+                  items: yesNoOptions,
                   itemLabel: (v) => v,
-                  value: examController.acInEachLab.value == 0
-                      ? null
-                      : examController.acInEachLab.value.toString(),
+                  value: examController.acInEachLab.value ? "Yes" : "No",
                   onChanged: (v) {
-                    examController.acInEachLab.value =
-                        int.tryParse(v ?? '0') ?? 0;
+                    examController.acInEachLab.value = (v == "Yes");
                   },
                   validator: (value) {},
                 )),
@@ -444,7 +452,9 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                     setState(() => selectedPrinter = v);
                     examController.isNetworkPrinterAvailabel.value = (v == 'Yes');
                   },
-                  validator: (value) {},
+                  validator: (value) {
+                    return null;
+                  },
                 ),
 
                 const SizedBox(height: 15),
@@ -474,7 +484,9 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                     setState(() => selectedSoundSystem = v);
                     examController.isThereSoundSystemInEachLab.value = (v == 'Yes');
                   },
-                  validator: (value) {},
+                  validator: (value) {
+                    return null;
+                  },
                 ),
 
                 const SizedBox(height: 15),
@@ -492,7 +504,9 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                     examController.fireExtinguisherInEachLab.value =
                         int.tryParse(v ?? '0') ?? 0;
                   },
-                  validator: (value) {},
+                  validator: (value) {
+                    return null;
+                  },
                 )),
 
                 const SizedBox(height: 15),
@@ -509,7 +523,9 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                     setState(() => selectedMemory = v);
                     examController.isThereALockerFacilityInLab.value = (v == 'Yes');
                   },
-                  validator: (value) {},
+                  validator: (value) {
+                    return null;
+                  },
                 ),
 
                 const SizedBox(height: 15),
@@ -526,7 +542,9 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                     setState(() => selectedDrinkingWater = v);
                     examController.isThereADrinkingWaterFacilityInLab.value = (v == 'Yes');
                   },
-                  validator: (value) {},
+                  validator: (value) {
+                    return null;
+                  },
                 ),
 
                 const SizedBox(height: 30),
@@ -766,9 +784,13 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                     style: GoogleFonts.karla(
                         fontSize: 18, fontWeight: FontWeight.bold)),
 
-                // ===== Dynamic Lab Boxes =====
-                ...List.generate(examController.labs.length, (index) => _buildLabBox(index)),
 
+                Obx(() => Column(
+                  children: List.generate(
+                    examController.labs.length,
+                        (index) => _buildLabBox(index),
+                  ),
+                )),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

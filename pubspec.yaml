@@ -27,6 +27,15 @@ dependencies:
   internet_connection_checker: ^3.0.1
   connectivity_plus: ^6.1.5
   cached_network_image: ^3.4.1
+  geocoding: ^4.0.0
+  geolocator: ^14.0.2
+  google_maps_flutter: ^2.14.0
+  flutter_google_places_sdk: ^0.4.2+1
+  flutter_google_maps_webservices: ^1.1.1
+  google_places_flutter: ^2.1.1
+  flutter_google_places_hoc081098: ^2.0.0
+
+
 
 dev_dependencies:
   flutter_test:

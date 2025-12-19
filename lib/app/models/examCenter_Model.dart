@@ -63,13 +63,13 @@ class ExamCenter {
 
   int totalNumberOfLab;
   int totalNumberOfSystem;
-  bool labAreConnectToSingleNetwork;
+  bool? labAreConnectToSingleNetwork;
   int totalNetwork;
-  int partitionInEachLab;
-  int acInEachLab;
+  bool partitionInEachLab;
+  bool acInEachLab;
   int howManyFireExtinguisherInEachLab;
 
-  bool isNetworkPrinterAvailabel;
+  bool? isNetworkPrinterAvailabel;
   bool isThereProjectorInEachLab;
   bool isThereSoundSystemInEachLab;
   bool isThereALockerFacilityInLab;

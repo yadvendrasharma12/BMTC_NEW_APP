@@ -15,6 +15,7 @@ import '../screens/auth_pages/main_page/main_screen.dart';
 
 class AuthController extends GetxController {
   var isLoading = false.obs;
+  String? tempMobilePhone;
 
   Future<void> login({
     required BuildContext context,
@@ -23,8 +24,6 @@ class AuthController extends GetxController {
     String countryCode = "+91",
   }) async {
     print("=== LOGIN START ===");
-    print("Input mobilePhone: $mobilePhone, MPIN: $mpin, CountryCode: $countryCode");
-
     if (mobilePhone.isEmpty || mpin.isEmpty) {
       AppToast.showError(context, "Please enter phone and MPIN");
       return;
@@ -33,7 +32,6 @@ class AuthController extends GetxController {
     isLoading.value = true;
 
     try {
-      print("Sending POST request to ${ApiEndpoints.login}");
       final response = await http.post(
         Uri.parse(ApiEndpoints.login),
         body: {
@@ -43,61 +41,108 @@ class AuthController extends GetxController {
         },
       );
 
-      print("HTTP Status: ${response.statusCode}");
-      print("Response Body: ${response.body}");
-
       if (response.statusCode == 200 && response.body.isNotEmpty) {
         final data = jsonDecode(response.body);
 
         if (data["status"] == "success") {
-          // ✅ Automatically save center_id (user ID) from API response
+
           final centerId = data["data"]?["center_id"]?.toString() ?? '';
           if (centerId.isNotEmpty) {
-            await MySharedPrefs.save(centerId); // save center_id in SharedPreferences
-            print("✅ CenterId saved on login: $centerId");
+            await MySharedPrefs.save(centerId);
+            print("✅ CenterId saved: $centerId");
           }
 
-          // ✅ Save login credentials
+
           await MySharedPrefs.saveLoginData(
             mobilePhone: mobilePhone,
             mpin: mpin,
           );
+          final savedData = await MySharedPrefs.getLoginData();
+          final savedCenterId = await MySharedPrefs.get();
 
+          debugPrint("=== AFTER LOGIN SAVED DATA ===");
+          debugPrint("CenterId: $savedCenterId");
+          debugPrint("LoginData: $savedData");
+          debugPrint("=============================");
           AppToast.showSuccess(context, data["message"] ?? "Login successful");
 
-          // Navigate to Dashboard
-          if (context.mounted) {
+
             Get.offAll(() => DashboardPageScreen());
-          }
+
         } else {
           AppToast.showError(context, data["message"] ?? "Login failed");
         }
       } else {
         AppToast.showError(context, "Server error: ${response.statusCode}");
-        print("❌ Server returned invalid response or empty body");
       }
-    } catch (e, stackTrace) {
-      print("Login Exception: $e");
-      print("StackTrace: $stackTrace");
+    } catch (e) {
       AppToast.showError(context, "Something went wrong: $e");
     } finally {
       isLoading.value = false;
-      print("=== LOGIN END ===\n");
+      print("=== LOGIN END ===");
     }
   }
+
+
+  // Future<void> sendOtp({
+  //   required BuildContext context,
+  //   required String mobilePhone,
+  // }) async {
+  //   print("=== SEND OTP START ===");
+  //   print("Mobile: $mobilePhone");
+  //
+  //   if (mobilePhone.isEmpty) {
+  //     AppToast.showError(context, "Please enter mobile number");
+  //     return;
+  //   }
+  //
+  //   isLoading.value = true;
+  //
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse(ApiEndpoints.sendOtp),
+  //       body: {
+  //         "mobile_phone": mobilePhone,
+  //         "country_code": "+91",
+  //       },
+  //     );
+  //
+  //     print("Status Code: ${response.statusCode}");
+  //     print("Response Body: ${response.body}");
+  //
+  //     final data = jsonDecode(response.body);
+  //
+  //     if (response.statusCode == 200 && data["status"] == "success") {
+  //
+  //
+  //       AppToast.showSuccess(context, data["message"] ?? "OTP Sent");
+  //
+  //       Get.to(() => const ForgetOtpScreen());
+  //     } else {
+  //       AppToast.showError(context, data["message"] ?? "OTP failed");
+  //     }
+  //   } catch (e) {
+  //     print("OTP ERROR: $e");
+  //     AppToast.showError(context, "Server error: $e");
+  //   } finally {
+  //     isLoading.value = false;
+  //     print("=== SEND OTP END ===");
+  //   }
+  // }
 
 
   Future<void> sendOtp({
     required BuildContext context,
     required String mobilePhone,
   }) async {
-    print("=== SEND OTP START ===");
-    print("Mobile: $mobilePhone");
 
     if (mobilePhone.isEmpty) {
       AppToast.showError(context, "Please enter mobile number");
       return;
     }
+
+    // ✅ MOBILE NUMBER TEMP STORE
+    tempMobilePhone = mobilePhone;
 
     isLoading.value = true;
 
@@ -110,26 +155,23 @@ class AuthController extends GetxController {
         },
       );
 
-      print("Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
-
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200 && data["status"] == "success") {
-        AppToast.showSuccess(context, data["message"] ?? "OTP Sent");
+        AppToast.showSuccess(context, "OTP Sent");
+
+        print("Status Code: ${response.statusCode}");
+        print("Response Body: ${response.body}");
+
+
         Get.to(() => const ForgetOtpScreen());
       } else {
-        AppToast.showError(context, data["message"] ?? "OTP failed");
+        AppToast.showError(context, data["message"]);
       }
-    } catch (e) {
-      print("OTP ERROR: $e");
-      AppToast.showError(context, "Server error: $e");
     } finally {
       isLoading.value = false;
-      print("=== SEND OTP END ===");
     }
   }
-
 
 
   Future<void> verifyOtp({
@@ -162,8 +204,8 @@ class AuthController extends GetxController {
 
       if (response.statusCode == 200 && data["status"] == "success") {
         AppToast.showSuccess(context, data["message"] ?? "OTP Verified Successfully");
-
-        // ✅ OTP verify hone ke baad MPIN screen
+        print("Status Code: ${response.statusCode}");
+        print("Response Body: ${response.body}");
         Get.to(() => CreateMpinScreen());
       } else {
         AppToast.showError(context, data["message"] ?? "Invalid OTP");
@@ -245,6 +287,8 @@ class AuthController extends GetxController {
 
         print("✅ Login data cleared but Center ID SAFE");
         await MySharedPrefs.clearLoginData();
+        await MySharedPrefs.clear();
+
         Get.offAll(() => const LoginScreen());
 
         if (Get.context != null) {
@@ -281,12 +325,6 @@ class AuthController extends GetxController {
       final response = await http.post(
         Uri.parse(ApiEndpoints.mPinGenerate),
 
-        // ❌ Content-Type mat bhejo
-        headers: {
-          "Accept": "application/json",
-        },
-
-        // ✅ FORM DATA
         body: {
           "mobile_phone": mobilePhone,
           "country_code": countryCode,
@@ -380,35 +418,43 @@ class AuthController extends GetxController {
       final String? mobilePhone = loginData['mobile_phone'];
       final String? mpin = loginData['mpin'];
 
-      if (centerId == null ||
-          mobilePhone == null ||
-          mpin == null) {
-        AppToast.showError(context, "Missing required information");
+      /// 🔍 DEBUG LOGS
+      debugPrint("=== DELETE ACCOUNT DEBUG ===");
+      debugPrint("CenterId: $centerId");
+      debugPrint("Mobile: $mobilePhone");
+      debugPrint("MPIN: $mpin");
+      debugPrint("===========================");
+
+      if (centerId == null || centerId.isEmpty) {
+        AppToast.showError(context, "Center ID missing");
+        return;
+      }
+
+      if (mpin == null || mpin.isEmpty) {
+        AppToast.showError(context, "MPIN missing");
         return;
       }
 
       final response = await http.post(
         Uri.parse(ApiEndpoints.deleteAccount),
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json",
-        },
-        body: jsonEncode({
-          "center_id": centerId,
+        body: {
           "mobile_phone": mobilePhone,
-          "mpin": mpin,
-        }),
+          "center_id": centerId,
+          "mpin": mpin, // ✅ only required fields
+        },
       );
+
+      debugPrint("Delete API Status: ${response.statusCode}");
+      debugPrint("Delete API Response: ${response.body}");
 
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200 && data["status"] == true) {
-        /// ✅ clear local data
         await MySharedPrefs.clearLoginData();
         await MySharedPrefs.clear();
 
-        /// ✅ navigate to login
         Get.offAll(() => const LoginScreen());
+
         AppToast.showSuccess(
           context,
           data["message"] ?? "Account Deleted Successfully",
@@ -420,7 +466,8 @@ class AuthController extends GetxController {
         );
       }
     } catch (e) {
-      AppToast.showError(context, "Server error: $e");
+      debugPrint("DELETE ACCOUNT ERROR: $e");
+      AppToast.showError(context, "Server error");
     } finally {
       isLoading.value = false;
     }

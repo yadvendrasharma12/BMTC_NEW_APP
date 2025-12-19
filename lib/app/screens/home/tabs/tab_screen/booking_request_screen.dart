@@ -39,7 +39,7 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
   void _filterRequests() {
     final query = searchController.text.toLowerCase();
 
-    final allData = controller.dashboardModel.value?.data;
+    final allData = controller.dashboardModel.value.data;
     final requests = allData?.totalBookingRequest ?? [];
 
     setState(() {
@@ -62,7 +62,7 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final data = controller.dashboardModel.value?.data;
+        final data = controller.dashboardModel.value.data;
 
         if (filteredRequests.isEmpty) {
           filteredRequests = data?.totalBookingRequest ?? [];
@@ -190,7 +190,7 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
           ),
           _headerCell("Exam Name", 150),
           _headerCell("Client", 150),
-          _headerCell("Duration", 100),
+          _headerCell("City", 100),
           _headerCell("Exam Date", 150),
           _headerCell("Seats", 100),
           _headerCell("Pricing", 100),
@@ -225,7 +225,7 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
 
           _dataCell(booking.examName ?? "-", 150),
           _dataCell(booking.clientName ?? "-", 150),
-          _dataCell(booking.examReqDays ?? "-", 100),
+          _dataCell(booking.examCityName ?? "-", 100),
 
           /// Start - End Date in one cell
           _dataCell(
@@ -234,7 +234,7 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
 
           _dataCell(booking.numberOfSeats ?? "-", 100),
           _dataCell(booking.pricePerSeat ?? "-", 100),
-          _dataCell(booking.status ?? "-", 100),
+          _statusCell(booking.status, 100),
 
           /// Action Button (Fixed width)
           Container(
@@ -284,4 +284,33 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
       child: Text(value, style: AppTextStyles.tableText),
     );
   }
+  Widget _statusCell(String? status, double width) {
+    String text;
+    Color color;
+
+    if (status == "1") {
+      text = "Approved";
+      color = Colors.green;
+    } else if (status == "0") {
+      text = "Rejected";
+      color = Colors.red;
+    } else {
+      text = "Pending";
+      color = Colors.orange;
+    }
+
+    return Container(
+      width: width,
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      child: Text(
+        text,
+        style: AppTextStyles.tableText.copyWith(
+          color: color,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
 }

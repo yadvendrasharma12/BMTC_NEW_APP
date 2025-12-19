@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -81,11 +82,14 @@ class SelfBookingController extends GetxController {
 
       if (response.statusCode == 200 && responseData['status'] == "success") {
         Get.snackbar(
+          backgroundColor: Colors.green,
             snackPosition: SnackPosition.BOTTOM,
 
-            "Success", responseData['message']);
+            "Success", responseData['message'],colorText: Colors.white);
         selectedBooking.value = updatedData;
+
         print("✅ Booking updated successfully");
+        Get.back();
       } else {
         Get.snackbar("Error", responseData['message'] ?? "Failed to update booking");
         print("❌ Failed to update booking → ${responseData['message']}");

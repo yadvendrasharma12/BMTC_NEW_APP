@@ -1,3 +1,4 @@
+import 'package:bmtc_app/app/screens/home/exam_details/confim_popup.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../controllers/dashboard_controller.dart';
@@ -38,7 +39,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
 
   void _filterBookings() {
     final query = searchController.text.toLowerCase();
-    final bookings = controller.dashboardModel.value?.data?.totalConfirmBooking ?? [];
+    final bookings = controller.dashboardModel.value.data?.totalConfirmBooking ?? [];
 
     setState(() {
       filteredBookings = bookings
@@ -56,6 +57,8 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final dashboardData = controller.dashboardModel.value.data;
+    final totalSeatsBooked = dashboardData?.numberOfSeats ?? 0;
     return Scaffold(
       backgroundColor: AppColors.borderColor,
       body: Obx(() {
@@ -63,7 +66,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final bookings = controller.dashboardModel.value?.data?.totalConfirmBooking ?? [];
+        final bookings = controller.dashboardModel.value.data?.totalConfirmBooking ?? [];
 
         /// First time: Load all
         if (filteredBookings.isEmpty) {
@@ -89,7 +92,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
 
                 StatusSummaryCard(
                   title: "Seats Booked",
-                  currentCount: 0,
+                  currentCount: totalSeatsBooked,
                   showYearDropdown: true,
                   selectedYear: _selectedYear,
                   onYearChanged: (val) => setState(() => _selectedYear = val ?? "1Y"),
@@ -182,7 +185,7 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
 
           _headerCell("Exam Name", 150),
           _headerCell("City", 150),
-          _headerCell("Duration", 100),
+          _headerCell("Client Name", 100),
           _headerCell("Exam Date", 150),
           _headerCell("Seats", 100),
           _headerCell("Pricing", 100),
@@ -216,26 +219,42 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
 
           _dataCell(b['exam_name'] ?? "-", 150),
           _dataCell(b['exam_city_name'] ?? "-", 150),
-          _dataCell(b['exam_req_days'] ?? "-", 100),
+          _dataCell(b['client_name'] ?? "-", 100),
 
           _dataCell("${b['start_date']} to ${b['end_date']}", 150),
 
           _dataCell(b['exam_required_seat']?.toString() ?? "-", 100),
           _dataCell("₹ ${b['price_per_seat']}", 100),
 
-          _dataCell("Confirmed", 100),
+          _statusCell("approved", 100),
 
-          // Action Button
           Container(
             width: 100,
             alignment: Alignment.center,
             child: GestureDetector(
               onTap: () {
-                Get.to(
-                  CounslingFormScreen(),
-                  arguments: {"project_id": b['project_id']},
+                final projectId = b['project_id'] ?? '';
+
+                if (projectId.isEmpty) {
+                  Get.snackbar('Error', 'Project ID not available');
+                  return;
+                }
+
+                showDialog(
+                  context: context,
+                  barrierDismissible: true,
+                  builder: (_) {
+                    return Dialog(
+                      insetPadding: const EdgeInsets.all(12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: ConfimPopup(projectId: projectId),
+                    );
+                  },
                 );
               },
+
               child: Container(
                 height: 32,
                 width: 70,
@@ -271,4 +290,38 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
       child: Text(value, style: AppTextStyles.tableText),
     );
   }
+
+  Widget _statusCell(String status, double width) {
+    Color bgColor;
+    Color textColor;
+    String text;
+
+    if (status.toLowerCase() == "approved") {
+      bgColor = Colors.white;
+      textColor = Colors.green.shade800;
+      text = "Approved";
+    } else {
+      bgColor = Colors.orange.shade100;
+      textColor = Colors.orange.shade800;
+      text = "In Review";
+    }
+
+    return Container(
+      width: width,
+      height: 30,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        text,
+        style: AppTextStyles.tableText.copyWith(
+          color: textColor,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
 }

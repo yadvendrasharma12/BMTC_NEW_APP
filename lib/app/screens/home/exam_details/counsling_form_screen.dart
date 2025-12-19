@@ -29,17 +29,7 @@ class _CounslingFormScreenState extends State<CounslingFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: AppColors.background,
-        title: Text("Bar Counseling Exam", style: AppTextStyles.topHeading2),
-        actions: [
-          IconButton(
-            onPressed: () => Get.back(),
-            icon: const Icon(Icons.close),
-          ),
-        ],
-      ),
+     
       body: Obx(() {
         if (projectController.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -51,183 +41,197 @@ class _CounslingFormScreenState extends State<CounslingFormScreen> {
           return const Center(child: Text("No project details available"));
         }
 
-        return Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        return SafeArea(
+          child: Column(
+
+            children: [
+              Column(children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            CircleAvatar(
-                              radius: 15,
-                              backgroundColor: Colors.green.shade800,
-                              child: Icon(Icons.check, color: AppColors.background, size: 18),
-                            ),
-                            SizedBox(width: 10),
-
-                            // Label + Date in a Column
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("Booking Received Date", style: AppTextStyles.topHeading3),
-                                Text(
-                                  data.startDate ?? '',
-                                  style: AppTextStyles.topHeading2,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-
-                        SizedBox(height: 20),
-
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            CircleAvatar(
-                              radius: 15,
-                              backgroundColor: Colors.yellow.shade600,
-                              child: Icon(Icons.access_time_filled, color: Colors.black, size: 18),
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                "Booking in review. Please wait for confirmation",
-                                style: AppTextStyles.topHeading3,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                  IconButton(
+                    onPressed: () => Get.back(),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],),
+                Divider(),
+                SizedBox(height: 8,),
+              ],),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.only(left: 16,right: 16,bottom: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(data.examName ?? '',style: AppTextStyles.dashBordButton2,),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+          
+          
+          
+                              Text("Booking Received Date", style: AppTextStyles.topHeading3),
+                              SizedBox(width: 7,),
+                              Text(
+                                data.bookingReceived ?? '',
+                                style: AppTextStyles.centerText,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
+                          SizedBox(height: 12,),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+
+                              CircleAvatar(
+                                backgroundColor: Colors.red.shade800,
+                                radius: 16,
+                                child: Icon(Icons.close,color: Colors.white,),
+                              ),
+                              SizedBox(width: 10,),
+                              Text("Booking cancelled on", style: AppTextStyles.topHeading3),
+                              SizedBox(width: 7,),
+                              Text(
+                                data.centerBookingAcceptDate ?? '',
+                                style: AppTextStyles.centerText,
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 12,),
+                          Divider(),
+                          SizedBox(height: 16,),
+                          Text("1. Project Details", style: AppTextStyles.dashBordButton3),
+          
+                        ],
+                      ),
+          
+                      const SizedBox(height: 0),
+                      _buildField("Exam Date", data.startDate ?? ''),
+                      _buildField("Exam Name", data.examName ?? ''),
+                      _buildField("Exam City", data.examCityName ?? ''),
+                      _buildField("Seats", data.numberOfSeats ?? ''),
+                      _buildField("Exam Type", data.examType ?? ''),
+                      _buildField("Pricing", data.pricePerSeat ?? ''),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        child: Text(
+                          "2. Software & Hardware requirements",
+                          style: AppTextStyles.dashBordButton3,
                         ),
-                      ],
-                    ),
+                      ),
+                      _buildField("Exam Mode", data.examMode ?? ''),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(
+                          "Computer configuration",
+                          style: AppTextStyles.dashBordButton3,
+                        ),
+                      ),
+                      _buildField("Operating System", data.inetModeOs ?? ''),
+                      _buildField("RAM", data.inetModeRam ?? ''),
+                      _buildField("Processor", data.inetModeProcessor ?? ''),
+                      _buildField(
+                        "Display Resolution",
+                        data.inetModeDisplay ?? '',
+                      ),
+                      _buildField(
+                        "Internet on each device",
+                        data.inetModeInternetEach ?? '',
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(
+                          "Amenity requirements",
+                          style: AppTextStyles.dashBordButton3,
+                        ),
+                      ),
+                      _buildField("Parking Facility", data.parkingFacility ?? ''),
+                      _buildField("Security Guard", data.securityGuard ?? ''),
+                      _buildField("AC in Lab", data.acInLab ?? ''),
+                      _buildField("Lockers", data.lockerFacility ?? ''),
+                      _buildField("Waiting area", data.waitingArea ?? ''),
+                      _buildField("Power Backup", data.powerBackup ?? ''),
+                      _buildField("PH Handicapped", data.phHandicaped ?? ''),
+                      _buildField("Printer", data.printer ?? ''),
+                      _buildField("Rough Sheet", data.roughSheet ?? ''),
+                      _buildField("Partition", data.partitionInLab ?? ''),
+                      _buildField("Ac in Each Lab", data.acInLab ?? ''),
+                      _buildField("CCTV Required", data.cctvRequired ?? ''),
+          
+                      const SizedBox(height: 30),
+                    ],
+                  ),
+                ),
+              ),
 
-                    const SizedBox(height: 16),
-                    _buildField("Exam Date", data.startDate ?? ''),
-                    _buildField("Exam Name", data.examName ?? ''),
-                    _buildField("Exam City", data.examCityName ?? ''),
-                    _buildField("Seats", data.numberOfSeats ?? ''),
-                    _buildField("Exam Type", data.examType ?? ''),
-                    _buildField("Pricing", data.pricePerSeat ?? ''),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(
-                        "Software & Hardware requirements",
-                        style: AppTextStyles.dashBordButton3,
-                      ),
-                    ),
-                    _buildField("Exam Mode", data.examMode ?? ''),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(
-                        "Computer configuration",
-                        style: AppTextStyles.topHeading2,
-                      ),
-                    ),
-                    _buildField("Operating System", data.inetModeOs ?? ''),
-                    _buildField("RAM", data.inetModeRam ?? ''),
-                    _buildField("Processor", data.inetModeProcessor ?? ''),
-                    _buildField(
-                      "Display Resolution",
-                      data.inetModeDisplay ?? '',
-                    ),
-                    _buildField(
-                      "Internet on each device",
-                      data.inetModeInternetEach ?? '',
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(
-                        "Amenity requirements",
-                        style: AppTextStyles.dashBordButton3,
-                      ),
-                    ),
-                    _buildField("Parking Facility", data.parkingFacility ?? ''),
-                    _buildField("Security Guard", data.securityGuard ?? ''),
-                    _buildField("AC in Lab", data.acInLab ?? ''),
-                    _buildField("Lockers", data.lockerFacility ?? ''),
-                    _buildField("Waiting area", data.waitingArea ?? ''),
-                    _buildField("Power Backup", data.powerBackup ?? ''),
-                    _buildField("PH Handicapped", data.phHandicaped ?? ''),
-                    _buildField("Printer", data.printer ?? ''),
-                    _buildField("Rough Sheet", data.roughSheet ?? ''),
-                    _buildField("Partition", data.partitionInLab ?? ''),
-                    _buildField("Ac in Each Lab", data.acInLab ?? ''),
-                    _buildField("CCTV Required", data.cctvRequired ?? ''),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          var resp = await projectController.acceptBooking();
 
-                    const SizedBox(height: 30),
+                          if (resp['status'] == true) {
+                            AppToast.showSuccess(context, resp['message']);
+                          } else {
+                            AppToast.showError(context, resp['message']);
+                          }
+                        },
+
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green.shade800,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Text("Accept", style: AppTextStyles.button),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          var resp = await projectController.rejectBooking();
+
+                          if (resp['status'] == true) {
+                            AppToast.showSuccess(context, resp['message']);
+                          } else {
+                            AppToast.showError(context, resp['message']);
+                          }
+                        },
+
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red.shade800,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Text("Reject", style: AppTextStyles.button),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        var resp = await projectController.acceptBooking();
-
-                        if (resp['status'] == true) {
-                          AppToast.showSuccess(context, resp['message']);
-                        } else {
-                          AppToast.showError(context, resp['message']);
-                        }
-                      },
-
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green.shade800,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: Text("Accept", style: AppTextStyles.button),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        var resp = await projectController.rejectBooking();
-
-                        if (resp['status'] == true) {
-                          AppToast.showSuccess(context, resp['message']);
-                        } else {
-                          AppToast.showError(context, resp['message']);
-                        }
-                      },
-
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red.shade800,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: Text("Reject", style: AppTextStyles.button),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         );
       }),
     );
   }
 
   Widget _buildField(String label, String value) {
+    // Convert 0/1 to No/Yes
+    String displayValue = value;
+    if (value == '0') displayValue = 'No';
+    else if (value == '1') displayValue = 'Yes';
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
@@ -238,7 +242,6 @@ class _CounslingFormScreenState extends State<CounslingFormScreen> {
           Container(
             height: 40,
             width: double.infinity,
-
             decoration: BoxDecoration(
               color: AppColors.background,
               border: Border.all(color: Colors.grey),
@@ -248,7 +251,7 @@ class _CounslingFormScreenState extends State<CounslingFormScreen> {
               padding: const EdgeInsets.only(left: 8.0, top: 8),
               child: Text(
                 textAlign: TextAlign.start,
-                value,
+                displayValue,
                 style: AppTextStyles.centerText,
               ),
             ),
@@ -257,4 +260,5 @@ class _CounslingFormScreenState extends State<CounslingFormScreen> {
       ),
     );
   }
+
 }

@@ -7,8 +7,7 @@ import '../utils/shared_preferances.dart';
 
 class ProfileDataController extends GetxController {
   var isLoading = false.obs;
-  var profileDataModel = Rxn<ProfileDataModel>();
-
+  var profileDataModel = Rxn<CenterResponse>();
 
   @override
   void onInit() {
@@ -18,34 +17,36 @@ class ProfileDataController extends GetxController {
 
   Future<void> fetchCenterDetails() async {
     try {
-      isLoading(true);
+      isLoading.value = true;
 
-      String? centerId = await MySharedPrefs.get();
+
+      String? centerId = await MySharedPrefs.get(); // ensure MySharedPrefs.get() returns String?
       if (centerId == null || centerId.isEmpty) {
         print("❌ Center ID not found in SharedPreferences");
-        isLoading.value = false;
         return;
       }
 
-      final url =
-      Uri.parse("${ApiEndpoints.baseUrl}/my-center?center_id=$centerId");
+      final url = Uri.parse("${ApiEndpoints.baseUrl}/my-center?center_id=$centerId");
       final response = await http.get(url);
 
       print("✅ API RESPONSE: ${response.body}");
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
-        profileDataModel.value = ProfileDataModel.fromJson(jsonData);
-        print(
-            "✅ TOTAL LABS: ${profileDataModel.value!.data.labs.length}");
+        if (jsonData['status'] == true && jsonData['data'] != null) {
+          profileDataModel.value = CenterResponse.fromJson(jsonData);
+          print("✅ Total Labs: ${profileDataModel.value?.data.labs.length ?? 0}");
+        } else {
+          print("❌ API returned false status or empty data");
+        }
       } else {
-        print(
-            "❌ Failed to fetch center details: ${response.statusCode}");
+        print("❌ Failed to fetch center details: ${response.statusCode}");
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       print("❌ ERROR: $e");
+      print(stackTrace);
     } finally {
-      isLoading(false);
+      isLoading.value = false;
     }
   }
 }

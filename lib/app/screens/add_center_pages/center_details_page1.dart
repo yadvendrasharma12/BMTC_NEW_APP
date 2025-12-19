@@ -1,8 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
-
+import 'package:bmtc_app/app/maps_page/maps_location_screen.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../controllers/center_form_controller.dart';
 import '../../models/city_modal.dart';
@@ -33,17 +39,22 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
 
   // ✅ Text Controllers
   final TextEditingController centerNameController = TextEditingController();
-  final TextEditingController centerDescriptionController = TextEditingController();
+  final TextEditingController centerDescriptionController =
+      TextEditingController();
   final TextEditingController portalAddressController = TextEditingController();
   final TextEditingController latitudeController = TextEditingController();
   final TextEditingController longitudeController = TextEditingController();
-  final TextEditingController centerCapacityController = TextEditingController();
+  final TextEditingController centerCapacityController =
+      TextEditingController();
   final TextEditingController localAreaController = TextEditingController();
   final TextEditingController pinCodeController = TextEditingController();
   final TextEditingController landmarkController = TextEditingController();
-  final TextEditingController railwayStationNameController = TextEditingController();
-  final TextEditingController busStationNameController = TextEditingController();
-  final TextEditingController metroStationNameController = TextEditingController();
+  final TextEditingController railwayStationNameController =
+      TextEditingController();
+  final TextEditingController busStationNameController =
+      TextEditingController();
+  final TextEditingController metroStationNameController =
+      TextEditingController();
   final TextEditingController airportNameController = TextEditingController();
 
   String? selectedCenterType;
@@ -56,14 +67,10 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
 
   bool? isLiftAvailable;
 
-
   final List<String> centerTypes = ['Online'];
   final List<String> countries = ['India', 'USA', 'UK'];
   final List<String> states = ['Karnataka', 'Maharashtra', 'Delhi'];
   final List<String> cities = ['Bangalore', 'Mysore', 'Mumbai', 'Delhi'];
-
-
-
 
   final List<String> distanceOptions = [
     '100 Meters',
@@ -212,8 +219,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     centerNameController.dispose();
     centerDescriptionController.dispose();
     portalAddressController.dispose();
-    latitudeController.dispose();
-    longitudeController.dispose();
+
     centerCapacityController.dispose();
     localAreaController.dispose();
     pinCodeController.dispose();
@@ -225,7 +231,20 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _fetchCenterTypes();
+    _loadCountries();
 
+    ever(examController.addressLat, (lat) {
+      latitudeController.text = lat.toString();
+    });
+
+    ever(examController.addressLong, (lng) {
+      longitudeController.text = lng.toString();
+    });
+  }
 
   Future<PlatformFile?> _pickImageFile() async {
     final result = await FilePicker.platform.pickFiles(
@@ -386,8 +405,6 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     }
   }
 
-
-
   Widget _fileInfoText(String? name, int? sizeBytes) {
     if (name == null || sizeBytes == null) return const SizedBox.shrink();
     final sizeInKB = sizeBytes / 1024;
@@ -400,11 +417,9 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     );
   }
 
-
   String? categoryTypes;
   List<String> _categoryTypes = [];
   bool _isCenterTypeLoading = false;
-
 
   List<CountryModel> countryList = [];
   List<StateModel> stateList = [];
@@ -417,14 +432,6 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
   bool isCountryLoading = false;
   bool isStateLoading = false;
   bool isCityLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchCenterTypes();
-    _loadCountries();
-
-  }
 
   Future<void> _fetchCenterTypes() async {
     setState(() {
@@ -483,7 +490,6 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     });
   }
 
-
   double _convertDistanceToDouble(String? value) {
     if (value == null) return 0.0;
 
@@ -491,24 +497,25 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     return double.tryParse(cleaned) ?? 0.0;
   }
 
-
   void _saveAndNext() {
-
     /// ✅ 1. TEXTFIELDS
     examController.centerName.value = centerNameController.text.trim();
-    examController.centerDescription.value = centerDescriptionController.text.trim();
+    examController.centerDescription.value = centerDescriptionController.text
+        .trim();
     examController.postalAddress.value = portalAddressController.text.trim();
 
     examController.pinCode.value = pinCodeController.text.trim();
     examController.centerType.value = selectedCenterType ?? "";
     if (latitudeController.text.trim().isNotEmpty) {
-      examController.addressLat.value =
-          double.parse(latitudeController.text.trim());
+      examController.addressLat.value = double.parse(
+        latitudeController.text.trim(),
+      );
     }
 
     if (longitudeController.text.trim().isNotEmpty) {
-      examController.addressLong.value =
-          double.parse(longitudeController.text.trim());
+      examController.addressLong.value = double.parse(
+        longitudeController.text.trim(),
+      );
     }
 
     examController.capacity.value =
@@ -516,20 +523,18 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
 
     examController.localAreaName.value = localAreaController.text.trim();
 
-
     examController.nearbyLandmark.value = landmarkController.text.trim();
 
-    examController.nearestRailwayStation.value =
-        railwayStationNameController.text.trim();
+    examController.nearestRailwayStation.value = railwayStationNameController
+        .text
+        .trim();
 
-    examController.nearestBusStop.value =
-        busStationNameController.text.trim();
+    examController.nearestBusStop.value = busStationNameController.text.trim();
 
-    examController.nearestMetroStation.value =
-        metroStationNameController.text.trim();
+    examController.nearestMetroStation.value = metroStationNameController.text
+        .trim();
 
-    examController.nearestAirport.value =
-        airportNameController.text.trim();
+    examController.nearestAirport.value = airportNameController.text.trim();
 
     /// ✅ 2. LIFT
 
@@ -538,8 +543,8 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     /// ✅ 3. CENTER TYPE (ONLY API TYPE)
     examController.typeOfCenter.value = categoryTypes ?? "";
 
-    examController.countryId.value =
-        examController.countryId.value = selectedCountry != null
+    examController.countryId.value = examController.countryId.value =
+        selectedCountry != null
         ? int.tryParse(selectedCountry!.id.toString()) ?? 0
         : 0;
 
@@ -552,20 +557,23 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
         : 0;
 
     /// ✅ 4. DISTANCES
-    examController.distanceFromRailwayStation.value =
-        _convertDistanceToDouble(selectedRailwayDistance);
+    examController.distanceFromRailwayStation.value = _convertDistanceToDouble(
+      selectedRailwayDistance,
+    );
 
-    examController.distanceFromBusStop.value =
-        _convertDistanceToDouble(selectedBusDistance);
+    examController.distanceFromBusStop.value = _convertDistanceToDouble(
+      selectedBusDistance,
+    );
 
-    examController.distanceFromMetroStation.value =
-        _convertDistanceToDouble(selectedMetroDistance);
+    examController.distanceFromMetroStation.value = _convertDistanceToDouble(
+      selectedMetroDistance,
+    );
 
-    examController.distanceFromAirport.value =
-        _convertDistanceToDouble(selectedAirportDistance);
+    examController.distanceFromAirport.value = _convertDistanceToDouble(
+      selectedAirportDistance,
+    );
 
     /// ✅ 5. LOCATION IDS (API SAFE)
-
 
     /// ✅ 6. FILES
     if (entranceFile != null) {
@@ -601,33 +609,41 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     print("Nearby Landmark: ${examController.nearbyLandmark.value}");
     print("Lift Available: ${examController.isLiftAvailable.value}");
     print("Center Type: ${examController.centerType.value}");
-    print("Nearest Railway Station: ${examController.nearestRailwayStation.value}");
-    print("Distance From Railway: ${examController.distanceFromRailwayStation.value}");
+    print(
+      "Nearest Railway Station: ${examController.nearestRailwayStation.value}",
+    );
+    print(
+      "Distance From Railway: ${examController.distanceFromRailwayStation.value}",
+    );
     print("Nearest Bus Stop: ${examController.nearestBusStop.value}");
     print("Distance From Bus: ${examController.distanceFromBusStop.value}");
     print("Nearest Metro: ${examController.nearestMetroStation.value}");
-    print("Distance From Metro: ${examController.distanceFromMetroStation.value}");
+    print(
+      "Distance From Metro: ${examController.distanceFromMetroStation.value}",
+    );
     print("Nearest Airport: ${examController.nearestAirport.value}");
     print("Distance From Airport: ${examController.distanceFromAirport.value}");
     print("Entrance File: ${examController.entranceFile.value?.path}");
     print("Lab Photo File: ${examController.labPhotoFile.value?.path}");
     print("Main Gate File: ${examController.mainGateFile.value?.path}");
     print("Server Room File: ${examController.serverRoomFile.value?.path}");
-    print("Conference Room File: ${examController.conferenceRoomFile.value?.path}");
+    print(
+      "Conference Room File: ${examController.conferenceRoomFile.value?.path}",
+    );
     print("UPS/Generator File: ${examController.upsGeneratorFile.value?.path}");
-    print("Walkthrough Video File: ${examController.walkthroughVideoFile.value?.path}");
+    print(
+      "Walkthrough Video File: ${examController.walkthroughVideoFile.value?.path}",
+    );
     print("Country ID: ${examController.countryId.value}");
     print("State ID: ${examController.stateId.value}");
     print("City ID: ${examController.cityId.value}");
     print("CENTER TYPE: ${examController.centerType.value}");
     print("TYPE OF CENTER: ${examController.typeOfCenter.value}");
     print("===== End of Step 1 Data =====");
+
     /// ✅ 7. NEXT PAGE
     Get.to(() => const CenterDetailsPage2());
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -741,16 +757,17 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                   ),
                   controller: longitudeController,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 16),
 
-                // 🔹 Location buttons
                 Row(
                   children: [
                     Expanded(
                       child: CustomContainer(
                         icon: Icons.my_location,
                         text: "Get Current Location",
-                        onTap: () {},
+                        onTap: () {
+                          _getCurrentLocation();
+                        },
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -758,11 +775,25 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                       child: CustomContainer(
                         icon: Icons.location_on_outlined,
                         text: "Get Location By Map",
-                        onTap: () {},
+                        onTap: () async {
+                          final LatLng? result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => MapsLocationScreen(),
+                            ),
+                          );
+
+                          if (result != null) {
+                            latitudeController.text = result.latitude.toString();
+                            longitudeController.text = result.longitude.toString();
+                          }
+                        },
+
                       ),
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 12),
 
                 // 🔹 Capacity
@@ -781,7 +812,8 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 const SizedBox(height: 10),
                 UploadingContainer(
                   buttonText: "Upload File",
-                  infoText: "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                  infoText:
+                      "Max Each file size: 1 MB | File type: jpg, png, jpeg",
                   onPressed: _pickEntranceFile,
                 ),
                 _fileInfoText(entranceFileName, entranceFileSizeBytes),
@@ -792,7 +824,8 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 const SizedBox(height: 8),
                 UploadingContainer(
                   buttonText: "Upload File",
-                  infoText: "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                  infoText:
+                      "Max Each file size: 1 MB | File type: jpg, png, jpeg",
                   onPressed: _pickLabPhotoFile,
                 ),
                 _fileInfoText(labPhotoFileName, labPhotoFileSizeBytes),
@@ -801,7 +834,8 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 const SizedBox(height: 8),
                 UploadingContainer(
                   buttonText: "Upload File",
-                  infoText: "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                  infoText:
+                      "Max Each file size: 1 MB | File type: jpg, png, jpeg",
                   onPressed: _pickMainGateFile,
                 ),
                 _fileInfoText(mainGateFileName, mainGateFileSizeBytes),
@@ -811,34 +845,45 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 const SizedBox(height: 8),
                 UploadingContainer(
                   buttonText: "Upload File",
-                  infoText: "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                  infoText:
+                      "Max Each file size: 1 MB | File type: jpg, png, jpeg",
                   onPressed: _pickServerRoomFile,
                 ),
                 _fileInfoText(serverRoomFileName, serverRoomFileSizeBytes),
 
                 const SizedBox(height: 16),
-                Text("Observer/Conference room", style: AppTextStyles.centerText),
+                Text(
+                  "Observer/Conference room",
+                  style: AppTextStyles.centerText,
+                ),
                 const SizedBox(height: 8),
                 UploadingContainer(
                   buttonText: "Upload File",
-                  infoText: "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                  infoText:
+                      "Max Each file size: 1 MB | File type: jpg, png, jpeg",
                   onPressed: _pickConferenceRoomFile,
                 ),
                 _fileInfoText(
-                    conferenceRoomFileName, conferenceRoomFileSizeBytes),
+                  conferenceRoomFileName,
+                  conferenceRoomFileSizeBytes,
+                ),
 
                 const SizedBox(height: 16),
                 Text("UPS & Generator photo", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
                 UploadingContainer(
                   buttonText: "Upload File",
-                  infoText: "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                  infoText:
+                      "Max Each file size: 1 MB | File type: jpg, png, jpeg",
                   onPressed: _pickUpsGeneratorFile,
                 ),
                 _fileInfoText(upsGeneratorFileName, upsGeneratorFileSizeBytes),
 
                 const SizedBox(height: 16),
-                Text("Center Walkthrough video", style: AppTextStyles.centerText),
+                Text(
+                  "Center Walkthrough video",
+                  style: AppTextStyles.centerText,
+                ),
                 const SizedBox(height: 8),
                 UploadingContainer(
                   buttonText: "Upload File",
@@ -846,9 +891,14 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                   onPressed: _pickWalkthroughVideoFile,
                 ),
                 _fileInfoText(
-                    walkthroughVideoFileName, walkthroughVideoFileSizeBytes),
+                  walkthroughVideoFileName,
+                  walkthroughVideoFileSizeBytes,
+                ),
                 const SizedBox(height: 22),
-                Text("Where is your Center Located?", style: AppTextStyles.dashBordButton2),
+                Text(
+                  "Where is your Center Located?",
+                  style: AppTextStyles.dashBordButton2,
+                ),
                 const SizedBox(height: 15),
 
                 Text("Country", style: AppTextStyles.centerText),
@@ -878,7 +928,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                   hintText: "Select State",
                   value: selectedState,
                   items: stateList,
-                  itemLabel: (item) => item.name,   // ya item.stateName
+                  itemLabel: (item) => item.name, // ya item.stateName
                   onChanged: (value) {
                     setState(() {
                       selectedState = value;
@@ -890,7 +940,6 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                   validator: (_) {},
                 ),
                 const SizedBox(height: 16),
-
 
                 Text("City", style: AppTextStyles.centerText),
                 const SizedBox(height: 8),
@@ -908,7 +957,6 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                   validator: (_) {},
                 ),
                 const SizedBox(height: 16),
-
 
                 // 🔹 Area Name
                 Text("Area Name", style: AppTextStyles.centerText),
@@ -938,17 +986,16 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
 
                 CustomDropdown<String>(
                   hintText: "Select Category Center Type",
-                  value: categoryTypes,          // ✅ Selected single value
-                  items: _categoryTypes,         // ✅ API se aayi list
+                  value: categoryTypes, // ✅ Selected single value
+                  items: _categoryTypes, // ✅ API se aayi list
                   itemLabel: (value) => value,
                   onChanged: (value) {
                     setState(() {
-                      categoryTypes = value;     // ✅ Selected value save ho rahi
+                      categoryTypes = value; // ✅ Selected value save ho rahi
                     });
                   },
                   validator: (_) {},
                 ),
-
 
                 const SizedBox(height: 17),
 
@@ -999,7 +1046,10 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 ),
                 const SizedBox(height: 16),
 
-                Text("Name of Railway Station", style: AppTextStyles.centerText),
+                Text(
+                  "Name of Railway Station",
+                  style: AppTextStyles.centerText,
+                ),
                 const SizedBox(height: 8),
                 AppTextField(
                   label: "",
@@ -1009,8 +1059,10 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 ),
                 const SizedBox(height: 16),
 
-                Text("Distance from the main Railway Station",
-                    style: AppTextStyles.centerText),
+                Text(
+                  "Distance from the main Railway Station",
+                  style: AppTextStyles.centerText,
+                ),
                 const SizedBox(height: 8),
                 CustomDropdown<String>(
                   hintText: "Select Distance",
@@ -1039,8 +1091,10 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 ),
                 const SizedBox(height: 16),
 
-                Text("Distance from the nearby Bus Station",
-                    style: AppTextStyles.centerText),
+                Text(
+                  "Distance from the nearby Bus Station",
+                  style: AppTextStyles.centerText,
+                ),
                 const SizedBox(height: 8),
                 CustomDropdown<String>(
                   hintText: "Select Distance",
@@ -1067,8 +1121,10 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 ),
                 const SizedBox(height: 16),
 
-                Text("Distance from the main Metro Station",
-                    style: AppTextStyles.centerText),
+                Text(
+                  "Distance from the main Metro Station",
+                  style: AppTextStyles.centerText,
+                ),
                 const SizedBox(height: 8),
                 CustomDropdown<String>(
                   hintText: "Select Distance",
@@ -1095,8 +1151,10 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                 ),
                 const SizedBox(height: 16),
 
-                Text("Distance from the main Airport",
-                    style: AppTextStyles.centerText),
+                Text(
+                  "Distance from the main Airport",
+                  style: AppTextStyles.centerText,
+                ),
                 const SizedBox(height: 8),
                 CustomDropdown<String>(
                   hintText: "Select Distance",
@@ -1126,4 +1184,148 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
       ),
     );
   }
+
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+    print("🔥 Get Current Location tapped");
+    // 🔹 Check location service
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      AppToast.showError(context, "Location service is disabled");
+      return;
+    }
+
+    // 🔹 Check permission
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        AppToast.showError(context, "Location permission denied");
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      AppToast.showError(context, "Location permission permanently denied");
+      return;
+    }
+
+    // 🔹 Get current position
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    // 🔹 Fill TextFields
+    latitudeController.text = position.latitude.toString();
+    longitudeController.text = position.longitude.toString();
+
+    // 🔹 Save in GetX controller also (important)
+    examController.addressLat.value = position.latitude;
+    examController.addressLong.value = position.longitude;
+
+    AppToast.showSuccess(context, "Current location fetched");
+  }
+
+
+  void _openMapDialog(BuildContext context) {
+    LatLng selectedLatLng = const LatLng(28.6139, 77.2090); // Delhi
+    GoogleMapController? mapController;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Select Location"),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 420,
+            child: Column(
+              children: [
+                // 🔍 SEARCH FIELD
+                GooglePlaceAutoCompleteTextField(
+
+                  textEditingController: TextEditingController(),
+                  googleAPIKey: "AIzaSyDhzH8bgVZJs5LFUlpAvIjYHU4w8fdOmE0",
+                  debounceTime: 800,
+                  countries: const ["in"],
+                  isLatLngRequired: true,
+                  getPlaceDetailWithLatLng: (prediction) {
+                    final lat = double.parse(prediction.lat!);
+                    final lng = double.parse(prediction.lng!);
+
+                    selectedLatLng = LatLng(lat, lng);
+
+                    mapController?.animateCamera(
+                      CameraUpdate.newLatLngZoom(selectedLatLng, 16),
+                    );
+                  },
+                  itemClick: (prediction) {
+                    FocusScope.of(context).unfocus();
+                  },
+                  itemBuilder: (context, index, prediction) {
+                    return ListTile(
+                      leading: const Icon(Icons.location_on),
+                      title: Text(prediction.description ?? ""),
+                    );
+                  },
+                  seperatedBuilder: const Divider(),
+                  isCrossBtnShown: true,
+                ),
+
+                const SizedBox(height: 10),
+
+                // 🗺 MAP
+                Expanded(
+                  child: GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: selectedLatLng,
+                      zoom: 15,
+                    ),
+                    onMapCreated: (controller) {
+                      mapController = controller;
+                    },
+                    markers: {
+                      Marker(
+                        markerId: const MarkerId("selected"),
+                        position: selectedLatLng,
+                        draggable: true,
+                        onDragEnd: (newPos) {
+                          selectedLatLng = newPos;
+                        },
+                      ),
+                    },
+                    onTap: (latLng) {
+                      selectedLatLng = latLng;
+                      mapController?.animateCamera(
+                        CameraUpdate.newLatLng(latLng),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                latitudeController.text =
+                    selectedLatLng.latitude.toString();
+                longitudeController.text =
+                    selectedLatLng.longitude.toString();
+                Navigator.pop(context);
+              },
+              child: const Text("Select"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
 }

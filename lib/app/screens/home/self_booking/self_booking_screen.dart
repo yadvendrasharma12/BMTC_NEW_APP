@@ -234,10 +234,36 @@ class _SelfBookingScreenState extends State<SelfBookingScreen> {
                                 Column(
                                   children: [
 
+                                    // GestureDetector(
+                                    //   onTap: () {
+                                    //     controller.selectedBooking(item);
+                                    //     Get.to(() => const ExamDetailsScreen());
+                                    //   },
+                                    //   child: Container(
+                                    //     height: 30,
+                                    //     width: 65,
+                                    //     margin: const EdgeInsets.all(5),
+                                    //     decoration: BoxDecoration(
+                                    //       color: Colors.black,
+                                    //       borderRadius: BorderRadius.circular(10),
+                                    //     ),
+                                    //     alignment: Alignment.center,
+                                    //     child: Text("View", style: AppTextStyles.button),
+                                    //   ),
+                                    // ),
                                     GestureDetector(
-                                      onTap: () {
+                                      onTap: () async {
                                         controller.selectedBooking(item);
-                                        Get.to(() => const ExamDetailsScreen());
+                                        // Wait for the result from ExamDetailsScreen
+                                        bool? updated = await Get.to(() => const ExamDetailsScreen());
+
+                                        if (updated == true) {
+                                          // Refresh bookings after update
+                                          await controller.fetchSelfBooking();
+                                          setState(() {
+                                            filteredBookings.clear(); // Optional: reset search
+                                          });
+                                        }
                                       },
                                       child: Container(
                                         height: 30,
@@ -251,6 +277,7 @@ class _SelfBookingScreenState extends State<SelfBookingScreen> {
                                         child: Text("View", style: AppTextStyles.button),
                                       ),
                                     ),
+
                                   ],
                                 ),
                               ],
@@ -283,4 +310,5 @@ class _SelfBookingScreenState extends State<SelfBookingScreen> {
       child: Text(text, style: AppTextStyles.tableText),
     );
   }
+
 }

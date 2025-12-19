@@ -294,6 +294,8 @@ class TotalConfirmBooking {
   String? numberOfSeats;
   String? pricePerSeat;
   String? examCityName;
+  String? duration;
+
 
   TotalConfirmBooking({
     this.id,
@@ -324,6 +326,7 @@ class TotalConfirmBooking {
     this.numberOfSeats,
     this.pricePerSeat,
     this.examCityName,
+    this.duration,
   });
 
   factory TotalConfirmBooking.fromJson(Map<String, dynamic> json) =>
@@ -338,6 +341,7 @@ class TotalConfirmBooking {
         examType: json["exam_type"],
         examTypeDetail: json["exam_type_detail"],
         examMode: json["exam_mode"],
+        duration: json["exam_duration"],
 
         inetModeOs: json["inet_mode_os"],
         inetModeRam: json["inet_mode_ram"]?.toString(),

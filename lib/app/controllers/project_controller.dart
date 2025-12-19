@@ -79,12 +79,14 @@ class ProjectController extends GetxController {
 
       request.fields['center_id'] = centerId ?? '';
       request.fields['project_id'] = projectId;
-
+      Get.back();
       var response = await http.Response.fromStream(await request.send());
 
       print("📥 Accept Response: ${response.body}");
 
       return jsonDecode(response.body);
+
+
     } catch (e) {
       print("❌ Accept API Error: $e");
       return {"status": false, "message": "Something went wrong"};
@@ -109,7 +111,7 @@ class ProjectController extends GetxController {
 
       request.fields['center_id'] = centerId ?? '';
       request.fields['project_id'] = projectId;
-
+      Get.back();
       var response = await http.Response.fromStream(await request.send());
 
       print("📥 Reject Response: ${response.body}");

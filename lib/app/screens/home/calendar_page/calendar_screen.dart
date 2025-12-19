@@ -61,48 +61,102 @@ class _CalendarScreenState extends State<CalendarScreen> {
             const SizedBox(height: 16),
 
             /// CALENDAR WIDGET
-        Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-        BoxShadow(
-        color: Colors.black.withOpacity(0.15),
-        blurRadius: 12,
-        spreadRadius: 1,
-        offset: const Offset(0, 4),
-        ),
-        ],
-        ),
-        child: TableCalendar(
-        firstDay: DateTime(2020),
-        lastDay: DateTime(2035),
-        focusedDay: _focusedDay,
-        selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.15),
+                    blurRadius: 12,
+                    spreadRadius: 1,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: TableCalendar(
+                firstDay: DateTime(2020),
+                lastDay: DateTime(2035),
+                focusedDay: _focusedDay,
+                selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
 
-        /// ON DAY SELECTED → CALL API
-        onDaySelected: (selectedDay, focusedDay) async {
-        setState(() {
-        _selectedDay = selectedDay;
-        _focusedDay = focusedDay;
-        });
+                /// ON DAY SELECTED → CALL API
+                onDaySelected: (selectedDay, focusedDay) async {
+                  setState(() {
+                    _selectedDay = selectedDay;
+                    _focusedDay = focusedDay;
+                  });
 
-        /// CALL LIVE API
-        await controller.fetchBookingDetails(selectedDay);
+                  /// CALL LIVE API
+                  await controller.fetchBookingDetails(selectedDay);
 
-        /// SHOW POPUP
-        _showEventsDialog(selectedDay);
-        },
+                  /// SHOW POPUP
+                  _showEventsDialog(selectedDay);
+                },
 
-        headerVisible: false,
-        availableGestures: AvailableGestures.none,
-        ),
-        ),
+                headerVisible: false,
+                availableGestures: AvailableGestures.none,
 
+                /// ---------------- Highlight Booked Dates ----------------
+                calendarBuilders: CalendarBuilders(
+                  defaultBuilder: (context, day, focusedDay) {
+                    bool isBooked = controller.bookedDates.any((d) =>
+                    d.year == day.year &&
+                        d.month == day.month &&
+                        d.day == day.day);
 
-        const SizedBox(height: 8),
+                    if (isBooked) {
+                      return Container(
+                        margin: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade400,
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "${day.day}",
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      );
+                    }
+
+                    return null; // fallback to default
+                  },
+                  selectedBuilder: (context, day, focusedDay) {
+                    return Container(
+                      margin: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        "${day.day}",
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    );
+                  },
+                  todayBuilder: (context, day, focusedDay) {
+                    return Container(
+                      margin: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.blue, width: 2),
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        "${day.day}",
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 8),
           ],
         );
       }),
@@ -127,8 +181,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
           value: month,
           child: Text(
             [
-              'January', 'February', 'March', 'April', 'May', 'June',
-              'July', 'August', 'September', 'October', 'November', 'December'
+              'January',
+              'February',
+              'March',
+              'April',
+              'May',
+              'June',
+              'July',
+              'August',
+              'September',
+              'October',
+              'November',
+              'December'
             ][month - 1],
           ),
         ))
@@ -239,7 +303,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-
                               _row("Exam Name", exam["exam_name"]),
                               _row("Client", exam["client_name"]),
                               _row("Seats Booked", exam["seats_booked"]),

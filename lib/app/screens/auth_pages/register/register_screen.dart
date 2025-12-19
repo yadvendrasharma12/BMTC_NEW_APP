@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../controllers/auth_controller.dart';
 import '../../../controllers/center_form_controller.dart';
 import '../../../utils/toast_message.dart';
 import '../../../widgets/custom_appbar.dart';
@@ -27,6 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final ExamCenterController formController = Get.put(ExamCenterController());
+  final AuthController authController = Get.find<AuthController>();
 
   String _selectedCountryCode = '+91';
   bool _agreedToTerms = false;
@@ -79,6 +81,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
 
+  // void _onSignUp() async {
+  //   final nameError  = Validators.name(_nameController.text);
+  //   final emailError = Validators.email(_emailController.text);
+  //   final phoneError = Validators.phone(_phoneController.text);
+  //
+  //   if (nameError != null) {
+  //     AppToast.showError(context, nameError);
+  //     return;
+  //   }
+  //   if (emailError != null) {
+  //     AppToast.showError(context, emailError);
+  //     return;
+  //   }
+  //   if (phoneError != null) {
+  //     AppToast.showError(context, phoneError);
+  //     return;
+  //   }
+  //
+  //   if (!_agreedToTerms) {
+  //     AppToast.showError(context, 'Please agree to Terms & Privacy Policy');
+  //     return;
+  //   }
+  //
+  //   final mobile = _phoneController.text.trim();
+  //
+  //   // ✅ CHECK API CALL
+  //   authController.checkPhoneExistsAndLogin(
+  //     context: context,
+  //     mobilePhone: _phoneController.text.trim(),
+  //     mpin: '',
+  //     countryCode: "+91",
+  //   );
+  //
+  //
+  //
+  //   // ✅ New user → Continue register flow
+  //   formController.name.value = _nameController.text.trim();
+  //   formController.email.value = _emailController.text.trim();
+  //   formController.mobilePhone.value = mobile;
+  //   formController.countryCode.value = _selectedCountryCode;
+  //   formController.isAgree.value = _agreedToTerms;
+  //
+  //   Get.to(() => OtpScreen(
+  //     mobileNumber: mobile,
+  //     countryCode: _selectedCountryCode,
+  //     name: formController.name.value,
+  //   ));
+  // }
 
 
 

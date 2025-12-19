@@ -58,9 +58,9 @@ class MySharedPrefs {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('latest_booking_id', bookingId);
   }
-  static Future<int?> getBookingId() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getInt('latest_booking_id');
-  }
+
+
+
+
 
 }

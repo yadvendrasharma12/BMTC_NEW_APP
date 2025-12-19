@@ -3,7 +3,10 @@ import 'package:bmtc_app/app/controllers/profile_update_controller.dart';
 import 'package:bmtc_app/app/controllers/project_controller.dart';
 import 'package:bmtc_app/app/controllers/self_booking_controller.dart';
 import 'package:bmtc_app/app/controllers/view_self_booking_controller.dart';
+import 'package:bmtc_app/app/screens/add_center_pages/center_details_page3.dart';
+import 'package:bmtc_app/app/screens/auth_pages/login/login_screen.dart';
 import 'package:bmtc_app/app/screens/auth_pages/register/register_screen.dart';
+import 'package:bmtc_app/app/screens/auth_pages/splash/splash_screen.dart';
 import 'package:bmtc_app/app/screens/home/dashboard_page/dashBoard_page_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -12,6 +15,7 @@ import 'app/controllers/auth_controller.dart';
 import 'app/controllers/profile_data_controller.dart';
 import 'app/controllers/center_form_controller.dart'; // remove if unused
 
+import 'app/screens/add_center_pages/center_details_page1.dart';
 import 'app/utils/shared_preferances.dart';
 
 /// ✅ Allow self-signed certificates for staging
@@ -50,9 +54,10 @@ class MyApp extends StatelessWidget {
     print("🔥 AUTO LOGIN CHECK CENTER ID: $centerId");
 
     if (centerId != null && centerId.isNotEmpty) {
-      return const DashboardPageScreen();
+      return const
+      DashboardPageScreen();
     } else {
-      return const RegisterScreen();
+      return SplashScreen();
     }
   }
 

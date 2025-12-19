@@ -2,11 +2,17 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <application
         android:label="BookMyTestCenter"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         tools:ignore="ExtraText">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDhzH8bgVZJs5LFUlpAvIjYHU4w8fdOmE0"/>
         android:usesCleartextTraffic="true"
         <activity
             android:name=".MainActivity"
@@ -33,6 +39,7 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

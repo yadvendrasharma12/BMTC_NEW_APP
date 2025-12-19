@@ -19,11 +19,12 @@ class LabDetail {
   final TextEditingController computersController = TextEditingController();
 
   void dispose() {
-    computersController.dispose();
+
   }
 }
 class ExamCenterController extends GetxController {
   // ================= BASIC INFO =================
+  var centerId = ''.obs;
   var name = ''.obs;
   var email = ''.obs;
   var mobilePhone = ''.obs;
@@ -93,8 +94,8 @@ class ExamCenterController extends GetxController {
   var assistantManagerEmail = ''.obs;
   var emergencyLandlineNumber = ''.obs;
   var emergencyPhoneNumber = ''.obs;
-  var partitionInEachLab = 0.obs;
-  var acInEachLab = 0.obs;
+  var partitionInEachLab  = false.obs;
+  var acInEachLab = false.obs;
   var fireExtinguisherInEachLab = 0.obs;
   // ================= LAB DETAILS =================
   RxList<LabDetail> labs = <LabDetail>[].obs;
@@ -104,13 +105,22 @@ class ExamCenterController extends GetxController {
   var labAreConnectToSingleNetwork = false.obs;
   var totalNetwork = 0.obs;
 
-  var isNetworkPrinterAvailabel = false.obs;
+  // var isNetworkPrinterAvailabel = false.obs;
   var isThereProjectorInEachLab = false.obs;
   var isThereSoundSystemInEachLab = false.obs;
 
 
   var isThereALockerFacilityInLab = false.obs;
   var isThereADrinkingWaterFacilityInLab = false.obs;
+
+
+
+  var isNetworkPrinterAvailabel = RxnBool();
+  // var isThereProjectorInEachLab = RxnBool();
+  // var isThereSoundSystemInEachLab = RxnBool();
+  //
+  // var isThereALockerFacilityInLab = RxnBool();
+  // var isThereADrinkingWaterFacilityInLab = RxnBool();
 
   // ================= PRIMARY / SECONDARY INFRA =================
   var primaryInfrastructure = ''.obs;
@@ -294,8 +304,12 @@ class ExamCenterController extends GetxController {
     if (response != null) {
       print("✅ Exam Center submitted successfully: $response");
 
-      final centerId = response['center_id'].toString();
-      await MySharedPrefs.save(centerId);
+      // final centerId = response['center_id'].toString();
+      // await MySharedPrefs.save(centerId);
+      final id = response['center_id'].toString();
+
+      centerId.value = id;                  // 🔑 CONTROLLER me set
+      await MySharedPrefs.save(id); // 🔑 LOCAL STORAGE
 
       await MySharedPrefs.saveLoginData(
         mobilePhone: mobilePhone.value,
@@ -305,9 +319,8 @@ class ExamCenterController extends GetxController {
       print("✅ Mobile: ${loginData['mobile_phone']}");
       print("✅ MPIN: ${loginData['mpin']}");
       print("✅ OTP: ${loginData['otp']}");
-      print("✅ Center ID: $centerId");
-
-      print("💾 Center ID saved in SharedPreferences: $centerId");
+      print("✅ Center ID: ${centerId.value}");
+      print("💾 Center ID saved in SharedPreferences: ${centerId.value}");
       print("💾 Mobile saved in SharedPreferences: ${mobilePhone.value}");
       print("💾 MPIN saved in SharedPreferences: ${mpin.value}");
       print("💾 Center ID saved in SharedPreferences: $centerId");

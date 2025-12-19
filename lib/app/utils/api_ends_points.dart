@@ -23,4 +23,7 @@ class ApiEndpoints {
   static const String projectDetail = "$baseUrl/project-detail";
   static const String updateBookingStatus = "$baseUrl/update-booking-status";
   static const String rejectBookingStatus = "$baseUrl/reject-booking-status";
+
+  static const String settings = "$baseUrl/settings";
+  static const String updateSettings = "$baseUrl/update-settings";
 }

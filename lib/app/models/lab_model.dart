@@ -1,42 +1,3 @@
-// class Lab {
-//   String floorName;
-//   String noOfComputer;
-//   String monitorType;
-//   String operatingSystem;
-//   String processor;
-//   String ram;
-//   String hardDisk;
-//   String ethernetCompany;
-//   String switchCategory;
-//   String noOfPortEthSwitch;
-//
-//   Lab({
-//     required this.floorName,
-//     required this.noOfComputer,
-//     required this.monitorType,
-//     required this.operatingSystem,
-//     required this.processor,
-//     required this.ram,
-//     required this.hardDisk,
-//     required this.ethernetCompany,
-//     required this.switchCategory,
-//     required this.noOfPortEthSwitch,
-//   });
-//
-//   factory Lab.fromJson(Map<String, dynamic> json) => Lab(
-//     floorName: json["floor_name"] ?? "Basement",
-//     noOfComputer: json["no_of_computer"] ?? "0",
-//     monitorType: json["monitor_type"] ?? "LCD",
-//     operatingSystem: json["operating_system"] ?? "Win 10",
-//     processor: json["processor"] ?? "i3",
-//     ram: json["ram"] ?? "8GB",
-//     hardDisk: json["hard_disk"] ?? "320GB",
-//     ethernetCompany: json["ehternet_swtch_company"] ?? "",
-//     switchCategory: json["switch_category"] ?? "",
-//     noOfPortEthSwitch: json["no_of_port_eth_switch"] ?? "0",
-//   );
-// }
-
 class Lab {
   String id;
   String centerId;
@@ -123,7 +84,7 @@ class Lab {
     noOfPortEthSwitch: json["no_of_port_eth_switch"] ?? "0",
     switchManageStatus: json["switch_manage_status"] ?? "",
     lanSpeed: json["lan_speed"] ?? "",
-    ethernetCompany: json["ehternet_swtch_company"] ?? "",
+    ethernetCompany: json["ethernet_switch_company"] ?? "", // fixed typo
     switchCategory: json["switch_category"] ?? "",
     upsConnected: json["ups_connected"] ?? "",
     windowGeneration: json["window_generation"] ?? "",

@@ -23,15 +23,24 @@ class _CounslingPopupState extends State<CounslingPopup> {
     projectController.fetchProjectDetail();
   }
 
+  /// ================= YES / NO FORMATTER =================
+  String formatYesNo(String? value) {
+    if (value == "1") return "Yes";
+    if (value == "0") return "No";
+    if (value == null || value.isEmpty) return "N/A";
+    return value;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      backgroundColor: Colors.white,
+      insetPadding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
       child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.85,
+        height: MediaQuery.of(context).size.height * 0.90,
         child: Obx(() {
           if (projectController.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
@@ -47,21 +56,10 @@ class _CounslingPopupState extends State<CounslingPopup> {
 
               /// ================= HEADER =================
               Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Row(
-                      children: [
-                      IconButton(onPressed: (){}, icon: Icon(Icons.close)),
-                    ],
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    ),
-                    Text(
-                      "Bar Counseling Exam",
-                      style: AppTextStyles.topHeading2,
-                    ),
                     GestureDetector(
                       onTap: () => Get.back(),
                       child: Container(
@@ -79,6 +77,33 @@ class _CounslingPopupState extends State<CounslingPopup> {
 
               const Divider(height: 1),
 
+              Padding(
+                padding: const EdgeInsets.only(left: 16, top: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      data.examName ?? '',
+                      style: AppTextStyles.dashBordButton2,
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          "Booking Received Date ",
+                          style: AppTextStyles.topHeading3,
+                        ),
+                        Text(
+                          data.bookingReceived ?? '',
+                          style: AppTextStyles.centerText,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 15),
+
               /// ================= BODY =================
               Expanded(
                 child: SingleChildScrollView(
@@ -87,30 +112,106 @@ class _CounslingPopupState extends State<CounslingPopup> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
 
+                      /// Booking Accepted
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 15,
+                            backgroundColor: Colors.green.shade800,
+                            child: const Icon(Icons.check, color: Colors.white),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Booking Accepted on ",
+                            style: AppTextStyles.topHeading3,
+                          ),
+                          Text(
+                            data.centerBookingAcceptDate ?? '',
+                            style: AppTextStyles.centerText,
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 18),
+
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 15,
+                            backgroundColor: const Color(0xffF5F78C),
+                            child: const Icon(Icons.more_horiz),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              "Booking in review. Please wait for confirmation",
+                              style: AppTextStyles.topHeading3,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 12),
+                      const Divider(),
+
+                      /// ================= DETAILS =================
+                      /// Siz
+                      SizedBox(height: 12,),
+                      Text("1. Project Details", style: AppTextStyles.dashBordButton3),
+
+
                       _field("Exam Date", data.startDate),
                       _field("Exam Name", data.examName),
                       _field("Exam City", data.examCityName),
-                      _field("Seats",
-                          data.numberOfSeats?.toString()),
-                      _field("Pricing",
-                          "₹ ${data.pricePerSeat ?? '-'}"),
+                      _field("Seats", data.numberOfSeats?.toString()),
+                      _field("Pricing", "₹ ${data.pricePerSeat ?? '-'}"),
 
                       const SizedBox(height: 14),
-                      Text(
-                        "Software & Hardware requirements",
-                        style: AppTextStyles.dashBordButton3,
-                      ),
+                      Text("02. Software & Hardware requirements",
+                          style: AppTextStyles.dashBordButton3),
 
                       _field("Exam Mode", data.examMode),
+
+                      const SizedBox(height: 14),
+                      Text("03. Computer configuration",
+                          style: AppTextStyles.dashBordButton3),
+
                       _field("Operating System", data.inetModeOs),
                       _field("RAM", data.inetModeRam),
                       _field("Processor", data.inetModeProcessor),
+                      _field("Display Resolution", data.inetModeDisplay),
+                      _field("Internet on each device", data.inetModeInternetEach),
+
+                      const SizedBox(height: 14),
+                      Text("04. Amenity Requirements",
+                          style: AppTextStyles.dashBordButton3),
+
+                      _field("Parking Facility", formatYesNo(data.parkingFacility)),
+                      _field("Security Guard", formatYesNo(data.securityGuard)),
+                      _field("Lockers", formatYesNo(data.lockerFacility)),
+                      _field("Waiting Area", formatYesNo(data.waitingArea)),
+                      _field("Power Backup", formatYesNo(data.powerBackup)),
+                      _field("PH Handicapped", formatYesNo(data.phHandicaped)),
+                      _field("Printer", formatYesNo(data.printer)),
+                      _field("Rough Sheet", formatYesNo(data.roughSheet)),
+                      _field("Partition", formatYesNo(data.partitionInLab)),
+                      _field("AC in each Lab", formatYesNo(data.acInLab)),
+                      _field("CCTV Required", formatYesNo(data.cctvRequired)),
+
+                      const SizedBox(height: 10),
+                      Divider(),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("Have a question? ", style: AppTextStyles.centerText),
+                          Text("Contact us", style: AppTextStyles.linkTexts),
+                        ],
+                      ),
                     ],
                   ),
                 ),
               ),
-
-
             ],
           );
         }),
@@ -118,7 +219,7 @@ class _CounslingPopupState extends State<CounslingPopup> {
     );
   }
 
-  /// ================= FIELD =================
+  /// ================= FIELD WIDGET =================
   Widget _field(String label, String? value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -138,7 +239,7 @@ class _CounslingPopupState extends State<CounslingPopup> {
               color: AppColors.background,
             ),
             child: Text(
-              (value != null && value.isNotEmpty) ? value : "N/A",
+              formatYesNo(value),
               style: AppTextStyles.centerText,
             ),
           ),
