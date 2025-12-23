@@ -6,8 +6,13 @@
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
         <string>Location access required</string>
-		<key>CFBundleDisplayName</key>
-		<string>BookMyTestCenter</string>
+         <key>NSLocationWhenInUseUsageDescription</key>
+         <string>Location access required to show nearby test centers</string>
+         <key>NSLocationAlwaysUsageDescription</key>
+         <string>Location access required even in background to provide accurate directions</string>
+
+		<key>GMSApiKey</key>
+		<string>AIzaSyAaEUKGNSlJ3VaQhi8xt8GOiSe1IfpkKpw</string>
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
 		<key>CFBundleIdentifier</key>

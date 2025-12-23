@@ -166,7 +166,7 @@ class ExamCenterService {
         }
       }
 
-      addArray("floor_number", center.floorNumber);
+      addArray("floor_name", center.floorNumber);
       addArray("total_computers", center.totalComputers);
       addArray("window_generation", center.windowGeneration);
       addArray("monitor_type", center.monitorType);

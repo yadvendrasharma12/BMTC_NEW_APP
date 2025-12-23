@@ -1,15 +1,11 @@
-import 'dart:convert';
+
 import 'dart:io';
 import 'package:bmtc_app/app/maps_page/maps_location_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_places_flutter/google_places_flutter.dart';
-import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-
 import '../../controllers/center_form_controller.dart';
 import '../../models/city_modal.dart';
 import '../../models/country_modal.dart';
@@ -497,7 +493,23 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     return double.tryParse(cleaned) ?? 0.0;
   }
 
+  String? liftError;
+  final _formKey = GlobalKey<FormState>();
+
   void _saveAndNext() {
+
+
+    if (!_formKey.currentState!.validate()) {
+      AppToast.showError(context, "Please fill all required fields");
+      return;
+    }
+    if (isLiftAvailable == null) {
+      setState(() {
+        liftError = "Please select Yes or No";
+      });
+      return;
+    }
+
     /// ✅ 1. TEXTFIELDS
     examController.centerName.value = centerNameController.text.trim();
     examController.centerDescription.value = centerDescriptionController.text
@@ -650,534 +662,681 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 16, left: 12, right: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 🔹 Top Heading
-                SizedBox(
-                  width: double.infinity,
-                  child: Column(
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 16, left: 12, right: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 🔹 Top Heading
+                  SizedBox(
+                    width: double.infinity,
+                    child: Column(
+                      children: [
+                        Text("Step 1", style: AppTextStyles.bodyStepText),
+                        const SizedBox(height: 2),
+                        Text(
+                          "Center details",
+                          style: AppTextStyles.centerDetailsTopTitle,
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          "Please enter all the details of the center",
+                          style: AppTextStyles.centerSubTitle,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // 🔹 Center Name
+                  Text("Center Name", style: AppTextStyles.centerText),
+                  const SizedBox(height: 10),
+                  AppTextField(
+                    controller: centerNameController,
+                    keyboardType: TextInputType.text,
+                    label: "",
+                    hintText: "Center Name",
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Center Name is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+
+                  // 🔹 Center Description
+                  Text(
+                    "Center Description (About Center)",
+                    style: AppTextStyles.centerText,
+                  ),
+                  const SizedBox(height: 10),
+                  AppTextField(
+                    controller: centerDescriptionController,
+                    keyboardType: TextInputType.text,
+                    label: "",
+                    hintText: "Center Description",
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Center Description is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+
+                  // 🔹 Center Type
+                  Text("Center Type", style: AppTextStyles.centerText),
+                  const SizedBox(height: 10),
+
+                  CustomDropdown<String>(
+                    hintText: "Select Center Type",
+                    value: selectedCenterType,
+                    items: centerTypes,
+                    itemLabel: (value) => value,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedCenterType = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return "Please select Center Type";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 17),
+
+                  // 🔹 Portal Address
+                  Text("Center Portal Address?", style: AppTextStyles.centerText),
+                  const SizedBox(height: 10),
+                  AppTextField(
+                    controller: portalAddressController,
+                    keyboardType: TextInputType.text,
+                    label: "",
+                    hintText: "Postal Address",
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Postal Address is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+
+                  // 🔹 Latitude
+                  Text("Center’s Latitude", style: AppTextStyles.centerText),
+                  const SizedBox(height: 10),
+                  AppTextField(
+                    label: "",
+                    hintText: "Latitude",
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                      signed: true,
+                    ),
+                    controller: latitudeController,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Latitude is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+
+                  // 🔹 Longitude
+                  Text("Center’s Longitude", style: AppTextStyles.centerText),
+                  const SizedBox(height: 10),
+                  AppTextField(
+                    label: "",
+                    hintText: "Longitude",
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                      signed: true,
+                    ),
+                    controller: longitudeController,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Longitude is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  Row(
                     children: [
-                      Text("Step 1", style: AppTextStyles.bodyStepText),
-                      const SizedBox(height: 2),
-                      Text(
-                        "Center details",
-                        style: AppTextStyles.centerDetailsTopTitle,
+                      Expanded(
+                        child: CustomContainer(
+                          icon: Icons.my_location,
+                          text: "Get Current Location",
+                          onTap: () {
+                            _getCurrentLocation();
+                          },
+                        ),
                       ),
-                      const SizedBox(height: 5),
-                      Text(
-                        "Please enter all the details of the center",
-                        style: AppTextStyles.centerSubTitle,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: CustomContainer(
+                          icon: Icons.location_on_outlined,
+                          text: "Get Location By Map",
+                          onTap: () async {
+                            final LatLng? result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => MapsLocationScreen(),
+                              ),
+                            );
+
+                            if (result != null) {
+                              latitudeController.text = result.latitude.toString();
+                              longitudeController.text = result.longitude.toString();
+                            }
+                          },
+
+                        ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 20),
 
-                // 🔹 Center Name
-                Text("Center Name", style: AppTextStyles.centerText),
-                const SizedBox(height: 10),
-                AppTextField(
-                  controller: centerNameController,
-                  keyboardType: TextInputType.text,
-                  label: "",
-                  hintText: "",
-                ),
-                const SizedBox(height: 12),
+                  const SizedBox(height: 12),
 
-                // 🔹 Center Description
-                Text(
-                  "Center Description (About Center)",
-                  style: AppTextStyles.centerText,
-                ),
-                const SizedBox(height: 10),
-                AppTextField(
-                  controller: centerDescriptionController,
-                  keyboardType: TextInputType.text,
-                  label: "",
-                  hintText: "",
-                ),
-                const SizedBox(height: 12),
-
-                // 🔹 Center Type
-                Text("Center Type", style: AppTextStyles.centerText),
-                const SizedBox(height: 10),
-
-                CustomDropdown<String>(
-                  hintText: "Select Center Type",
-                  value: selectedCenterType,
-                  items: centerTypes,
-                  itemLabel: (value) => value,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedCenterType = value;
-                    });
-                  },
-                  validator: (_) {},
-                ),
-                const SizedBox(height: 17),
-
-                // 🔹 Portal Address
-                Text("Center Portal Address?", style: AppTextStyles.centerText),
-                const SizedBox(height: 10),
-                AppTextField(
-                  controller: portalAddressController,
-                  keyboardType: TextInputType.text,
-                  label: "",
-                  hintText: "",
-                ),
-                const SizedBox(height: 12),
-
-                // 🔹 Latitude
-                Text("Center’s Latitude", style: AppTextStyles.centerText),
-                const SizedBox(height: 10),
-                AppTextField(
-                  label: "",
-                  hintText: "",
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                    signed: true,
+                  // 🔹 Capacity
+                  Text("Center Capacity", style: AppTextStyles.centerText),
+                  const SizedBox(height: 10),
+                  AppTextField(
+                    label: "",
+                    hintText: "Center Capacity",
+                    keyboardType: TextInputType.number,
+                    controller: centerCapacityController,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Capacity is required";
+                      }
+                      if (int.tryParse(value) == null) {
+                        return "Enter valid number";
+                      }
+                      return null;
+                    },
                   ),
-                  controller: latitudeController,
-                ),
-                const SizedBox(height: 10),
 
-                // 🔹 Longitude
-                Text("Center’s Longitude", style: AppTextStyles.centerText),
-                const SizedBox(height: 10),
-                AppTextField(
-                  label: "",
-                  hintText: "",
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                    signed: true,
+                  const SizedBox(height: 12),
+
+                  // Entrance
+                  Text("Upload Center Entrance", style: AppTextStyles.centerText),
+                  const SizedBox(height: 10),
+                  UploadingContainer(
+                    buttonText: "Upload File",
+                    infoText:
+                        "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                    onPressed: _pickEntranceFile,
                   ),
-                  controller: longitudeController,
-                ),
-                const SizedBox(height: 16),
+                  _fileInfoText(entranceFileName, entranceFileSizeBytes),
 
-                Row(
-                  children: [
-                    Expanded(
-                      child: CustomContainer(
-                        icon: Icons.my_location,
-                        text: "Get Current Location",
-                        onTap: () {
-                          _getCurrentLocation();
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: CustomContainer(
-                        icon: Icons.location_on_outlined,
-                        text: "Get Location By Map",
-                        onTap: () async {
-                          final LatLng? result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => MapsLocationScreen(),
+                  const SizedBox(height: 16),
+
+                  Text("Lab Photos", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  UploadingContainer(
+                    buttonText: "Upload File",
+                    infoText:
+                        "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                    onPressed: _pickLabPhotoFile,
+                  ),
+                  _fileInfoText(labPhotoFileName, labPhotoFileSizeBytes),
+                  const SizedBox(height: 16),
+                  Text("Main Gate/Entrance", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  UploadingContainer(
+                    buttonText: "Upload File",
+                    infoText:
+                        "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                    onPressed: _pickMainGateFile,
+                  ),
+                  _fileInfoText(mainGateFileName, mainGateFileSizeBytes),
+
+                  const SizedBox(height: 16),
+                  Text("Server Room", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  UploadingContainer(
+                    buttonText: "Upload File",
+                    infoText:
+                        "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                    onPressed: _pickServerRoomFile,
+                  ),
+                  _fileInfoText(serverRoomFileName, serverRoomFileSizeBytes),
+
+                  const SizedBox(height: 16),
+                  Text(
+                    "Observer/Conference room",
+                    style: AppTextStyles.centerText,
+                  ),
+                  const SizedBox(height: 8),
+                  UploadingContainer(
+                    buttonText: "Upload File",
+                    infoText:
+                        "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                    onPressed: _pickConferenceRoomFile,
+                  ),
+                  _fileInfoText(
+                    conferenceRoomFileName,
+                    conferenceRoomFileSizeBytes,
+                  ),
+
+                  const SizedBox(height: 16),
+                  Text("UPS & Generator photo", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  UploadingContainer(
+                    buttonText: "Upload File",
+                    infoText:
+                        "Max Each file size: 1 MB | File type: jpg, png, jpeg",
+                    onPressed: _pickUpsGeneratorFile,
+                  ),
+                  _fileInfoText(upsGeneratorFileName, upsGeneratorFileSizeBytes),
+
+                  const SizedBox(height: 16),
+                  Text(
+                    "Center Walkthrough video",
+                    style: AppTextStyles.centerText,
+                  ),
+                  const SizedBox(height: 8),
+                  UploadingContainer(
+                    buttonText: "Upload File",
+                    infoText: "Max Each file size: 5 MB | File type: mp4, webm",
+                    onPressed: _pickWalkthroughVideoFile,
+                  ),
+                  _fileInfoText(
+                    walkthroughVideoFileName,
+                    walkthroughVideoFileSizeBytes,
+                  ),
+                  const SizedBox(height: 22),
+                  Text(
+                    "Where is your Center Located?",
+                    style: AppTextStyles.dashBordButton2,
+                  ),
+                  const SizedBox(height: 15),
+
+                  Text("Country", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+
+                  CustomDropdown<CountryModel>(
+                    hintText: "Select Country",
+                    value: selectedCountry,
+                    items: countryList,
+                    itemLabel: (item) => item.name,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedCountry = value;
+                      });
+                      if (value != null) {
+                        _loadStatesByCountry(value.id);
+                      }
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return "Please select Your Country ";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  Text("State", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+
+                  CustomDropdown<StateModel>(
+                    hintText: "Select State",
+                    value: selectedState,
+                    items: stateList,
+                    itemLabel: (item) => item.name, // ya item.stateName
+                    onChanged: (value) {
+                      setState(() {
+                        selectedState = value;
+                      });
+                      if (value != null) {
+                        _loadCitiesByState(value.id);
+                      }
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return "Please select your State";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  Text("City", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+
+                  CustomDropdown<CityModel>(
+                    hintText: "Select City",
+                    value: selectedCity,
+                    items: cityList,
+                    itemLabel: (item) => item.name,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedCity = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return "Please select Select City";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 🔹 Area Name
+                  Text("Area Name", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(
+                    label: "",
+                    hintText: "Area name",
+                    keyboardType: TextInputType.text,
+                    controller: localAreaController,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Area Name is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 🔹 PinCode
+                  Text("PinCode", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(
+                    label: "",
+                    hintText: "pinCode",
+                    keyboardType: TextInputType.number,
+                    controller: pinCodeController,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Pin Code  is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 🔹 Center Type
+                  Text("Type Center Type", style: AppTextStyles.centerText),
+                  const SizedBox(height: 10),
+
+                  CustomDropdown<String>(
+                    hintText: "Select Category Center Type",
+                    value: categoryTypes, // ✅ Selected single value
+                    items: _categoryTypes, // ✅ API se aayi list
+                    itemLabel: (value) => value,
+                    onChanged: (value) {
+                      setState(() {
+                        categoryTypes = value; // ✅ Selected value save ho rahi
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return "Please select Type Of Center";
+                      }
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 17),
+
+                  const SizedBox(height: 16),
+
+                  Text("Any nearby Landmark", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(
+                    label: "",
+                    hintText: "Nearby Places",
+                    keyboardType: TextInputType.text,
+                    controller: landmarkController,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Nearby Landmark is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 🔹 Lift availability Yes/No
+                  Text(
+                    "Is the Lift available for Physically Handicapped Candidate?",
+                    style: AppTextStyles.centerText,
+                  ),
+                  const SizedBox(height: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: SelectableTile(
+                              value: isLiftAvailable == true,
+                              text: "Yes",
+                              onChanged: (val) {
+                                setState(() {
+                                  isLiftAvailable = true;
+                                  liftError = null; // error clear
+                                });
+                              },
                             ),
-                          );
-
-                          if (result != null) {
-                            latitudeController.text = result.latitude.toString();
-                            longitudeController.text = result.longitude.toString();
-                          }
-                        },
-
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: SelectableTile(
+                              value: isLiftAvailable == false,
+                              text: "No",
+                              onChanged: (val) {
+                                setState(() {
+                                  isLiftAvailable = false;
+                                  liftError = null; // error clear
+                                });
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
 
-                const SizedBox(height: 12),
+                      if (liftError != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6, left: 8),
+                          child: Text(
+                            liftError!,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
 
-                // 🔹 Capacity
-                Text("Center Capacity", style: AppTextStyles.centerText),
-                const SizedBox(height: 10),
-                AppTextField(
-                  label: "",
-                  hintText: "",
-                  keyboardType: TextInputType.number,
-                  controller: centerCapacityController,
-                ),
-                const SizedBox(height: 12),
+                  Text(
+                    "Name of Railway Station",
+                    style: AppTextStyles.centerText,
+                  ),
+                  const SizedBox(height: 8),
+                  AppTextField(
+                    label: "",
+                    hintText: "Railway Station Name ",
+                    keyboardType: TextInputType.text,
+                    controller: railwayStationNameController,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Railway Station is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                // Entrance
-                Text("Upload Center Entrance", style: AppTextStyles.centerText),
-                const SizedBox(height: 10),
-                UploadingContainer(
-                  buttonText: "Upload File",
-                  infoText:
-                      "Max Each file size: 1 MB | File type: jpg, png, jpeg",
-                  onPressed: _pickEntranceFile,
-                ),
-                _fileInfoText(entranceFileName, entranceFileSizeBytes),
+                  Text(
+                    "Distance from the main Railway Station",
+                    style: AppTextStyles.centerText,
+                  ),
+                  const SizedBox(height: 8),
+                  CustomDropdown<String>(
+                    hintText: "Select Distance",
+                    value: selectedRailwayDistance,
+                    items: distanceOptions,
+                    itemLabel: (value) => value,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedRailwayDistance = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return "Please select Distance Railways ";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                const SizedBox(height: 16),
+                  // 🔹 Bus
+                  Text("Name of Bus Station", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(
+                    label: "",
+                    hintText: "Bus Stop Name",
+                    keyboardType: TextInputType.text,
+                    controller: busStationNameController,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Bus Stop is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                Text("Lab Photos", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                UploadingContainer(
-                  buttonText: "Upload File",
-                  infoText:
-                      "Max Each file size: 1 MB | File type: jpg, png, jpeg",
-                  onPressed: _pickLabPhotoFile,
-                ),
-                _fileInfoText(labPhotoFileName, labPhotoFileSizeBytes),
-                const SizedBox(height: 16),
-                Text("Main Gate/Entrance", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                UploadingContainer(
-                  buttonText: "Upload File",
-                  infoText:
-                      "Max Each file size: 1 MB | File type: jpg, png, jpeg",
-                  onPressed: _pickMainGateFile,
-                ),
-                _fileInfoText(mainGateFileName, mainGateFileSizeBytes),
+                  Text(
+                    "Distance from the distance Bus Station",
+                    style: AppTextStyles.centerText,
+                  ),
+                  const SizedBox(height: 8),
+                  CustomDropdown<String>(
+                    hintText: "Select Distance",
+                    value: selectedBusDistance,
+                    items: distanceOptions,
+                    itemLabel: (value) => value,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedBusDistance = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return "Please select Nearest Bus Stop";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                const SizedBox(height: 16),
-                Text("Server Room", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                UploadingContainer(
-                  buttonText: "Upload File",
-                  infoText:
-                      "Max Each file size: 1 MB | File type: jpg, png, jpeg",
-                  onPressed: _pickServerRoomFile,
-                ),
-                _fileInfoText(serverRoomFileName, serverRoomFileSizeBytes),
+                  // 🔹 Metro
+                  Text("Name of Metro Station", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(
+                    label: "",
+                    hintText: "Metro Name ",
+                    keyboardType: TextInputType.text,
+                    controller: metroStationNameController,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Metro Name is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                const SizedBox(height: 16),
-                Text(
-                  "Observer/Conference room",
-                  style: AppTextStyles.centerText,
-                ),
-                const SizedBox(height: 8),
-                UploadingContainer(
-                  buttonText: "Upload File",
-                  infoText:
-                      "Max Each file size: 1 MB | File type: jpg, png, jpeg",
-                  onPressed: _pickConferenceRoomFile,
-                ),
-                _fileInfoText(
-                  conferenceRoomFileName,
-                  conferenceRoomFileSizeBytes,
-                ),
+                  Text(
+                    "Distance from the main Metro Station",
+                    style: AppTextStyles.centerText,
+                  ),
+                  const SizedBox(height: 8),
+                  CustomDropdown<String>(
+                    hintText: "Select Distance",
+                    value: selectedMetroDistance,
+                    items: distanceOptions,
+                    itemLabel: (value) => value,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedMetroDistance = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return "Please select Distance Metro";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                const SizedBox(height: 16),
-                Text("UPS & Generator photo", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                UploadingContainer(
-                  buttonText: "Upload File",
-                  infoText:
-                      "Max Each file size: 1 MB | File type: jpg, png, jpeg",
-                  onPressed: _pickUpsGeneratorFile,
-                ),
-                _fileInfoText(upsGeneratorFileName, upsGeneratorFileSizeBytes),
+                  // 🔹 Airport
+                  Text("Name of Airport", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(
+                    label: "",
+                    hintText: "Airport Name",
+                    keyboardType: TextInputType.text,
+                    controller: airportNameController,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Airport is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                const SizedBox(height: 16),
-                Text(
-                  "Center Walkthrough video",
-                  style: AppTextStyles.centerText,
-                ),
-                const SizedBox(height: 8),
-                UploadingContainer(
-                  buttonText: "Upload File",
-                  infoText: "Max Each file size: 5 MB | File type: mp4, webm",
-                  onPressed: _pickWalkthroughVideoFile,
-                ),
-                _fileInfoText(
-                  walkthroughVideoFileName,
-                  walkthroughVideoFileSizeBytes,
-                ),
-                const SizedBox(height: 22),
-                Text(
-                  "Where is your Center Located?",
-                  style: AppTextStyles.dashBordButton2,
-                ),
-                const SizedBox(height: 15),
+                  Text(
+                    "Distance from the main Airport",
+                    style: AppTextStyles.centerText,
+                  ),
+                  const SizedBox(height: 8),
+                  CustomDropdown<String>(
+                    hintText: "Select Distance",
+                    value: selectedAirportDistance,
+                    items: distanceOptions,
+                    itemLabel: (value) => value,
+                    onChanged: (value) {
+                      setState(() {
+                        selectedAirportDistance = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return "Please select Distance Airport";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
 
-                Text("Country", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-
-                CustomDropdown<CountryModel>(
-                  hintText: "Select Country",
-                  value: selectedCountry,
-                  items: countryList,
-                  itemLabel: (item) => item.name,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedCountry = value;
-                    });
-                    if (value != null) {
-                      _loadStatesByCountry(value.id);
-                    }
-                  },
-                  validator: (_) {},
-                ),
-                const SizedBox(height: 16),
-
-                Text("State", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-
-                CustomDropdown<StateModel>(
-                  hintText: "Select State",
-                  value: selectedState,
-                  items: stateList,
-                  itemLabel: (item) => item.name, // ya item.stateName
-                  onChanged: (value) {
-                    setState(() {
-                      selectedState = value;
-                    });
-                    if (value != null) {
-                      _loadCitiesByState(value.id);
-                    }
-                  },
-                  validator: (_) {},
-                ),
-                const SizedBox(height: 16),
-
-                Text("City", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-
-                CustomDropdown<CityModel>(
-                  hintText: "Select City",
-                  value: selectedCity,
-                  items: cityList,
-                  itemLabel: (item) => item.name,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedCity = value;
-                    });
-                  },
-                  validator: (_) {},
-                ),
-                const SizedBox(height: 16),
-
-                // 🔹 Area Name
-                Text("Area Name", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(
-                  label: "",
-                  hintText: "",
-                  keyboardType: TextInputType.text,
-                  controller: localAreaController,
-                ),
-                const SizedBox(height: 16),
-
-                // 🔹 PinCode
-                Text("PinCode", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(
-                  label: "",
-                  hintText: "",
-                  keyboardType: TextInputType.number,
-                  controller: pinCodeController,
-                ),
-                const SizedBox(height: 16),
-
-                // 🔹 Center Type
-                Text("Type Center Type", style: AppTextStyles.centerText),
-                const SizedBox(height: 10),
-
-                CustomDropdown<String>(
-                  hintText: "Select Category Center Type",
-                  value: categoryTypes, // ✅ Selected single value
-                  items: _categoryTypes, // ✅ API se aayi list
-                  itemLabel: (value) => value,
-                  onChanged: (value) {
-                    setState(() {
-                      categoryTypes = value; // ✅ Selected value save ho rahi
-                    });
-                  },
-                  validator: (_) {},
-                ),
-
-                const SizedBox(height: 17),
-
-                const SizedBox(height: 16),
-
-                Text("Any nearby Landmark", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(
-                  label: "",
-                  hintText: "",
-                  keyboardType: TextInputType.text,
-                  controller: landmarkController,
-                ),
-                const SizedBox(height: 16),
-
-                // 🔹 Lift availability Yes/No
-                Text(
-                  "Is the Lift available for Physically Handicapped Candidate?",
-                  style: AppTextStyles.centerText,
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SelectableTile(
-                        value: isLiftAvailable == true,
-                        text: "Yes",
-                        onChanged: (val) {
-                          setState(() {
-                            isLiftAvailable = true;
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: SelectableTile(
-                        value: isLiftAvailable == false,
-                        text: "No",
-                        onChanged: (val) {
-                          setState(() {
-                            isLiftAvailable = false;
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                Text(
-                  "Name of Railway Station",
-                  style: AppTextStyles.centerText,
-                ),
-                const SizedBox(height: 8),
-                AppTextField(
-                  label: "",
-                  hintText: "",
-                  keyboardType: TextInputType.text,
-                  controller: railwayStationNameController,
-                ),
-                const SizedBox(height: 16),
-
-                Text(
-                  "Distance from the main Railway Station",
-                  style: AppTextStyles.centerText,
-                ),
-                const SizedBox(height: 8),
-                CustomDropdown<String>(
-                  hintText: "Select Distance",
-                  value: selectedRailwayDistance,
-                  items: distanceOptions,
-                  itemLabel: (value) => value,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedRailwayDistance = value;
-                    });
-                  },
-                  validator: (_) {
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // 🔹 Bus
-                Text("Name of Bus Station", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(
-                  label: "",
-                  hintText: "",
-                  keyboardType: TextInputType.text,
-                  controller: busStationNameController,
-                ),
-                const SizedBox(height: 16),
-
-                Text(
-                  "Distance from the nearby Bus Station",
-                  style: AppTextStyles.centerText,
-                ),
-                const SizedBox(height: 8),
-                CustomDropdown<String>(
-                  hintText: "Select Distance",
-                  value: selectedBusDistance,
-                  items: distanceOptions,
-                  itemLabel: (value) => value,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedBusDistance = value;
-                    });
-                  },
-                  validator: (_) {},
-                ),
-                const SizedBox(height: 16),
-
-                // 🔹 Metro
-                Text("Name of Metro Station", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(
-                  label: "",
-                  hintText: "",
-                  keyboardType: TextInputType.text,
-                  controller: metroStationNameController,
-                ),
-                const SizedBox(height: 16),
-
-                Text(
-                  "Distance from the main Metro Station",
-                  style: AppTextStyles.centerText,
-                ),
-                const SizedBox(height: 8),
-                CustomDropdown<String>(
-                  hintText: "Select Distance",
-                  value: selectedMetroDistance,
-                  items: distanceOptions,
-                  itemLabel: (value) => value,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedMetroDistance = value;
-                    });
-                  },
-                  validator: (_) {},
-                ),
-                const SizedBox(height: 16),
-
-                // 🔹 Airport
-                Text("Name of Airport", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(
-                  label: "",
-                  hintText: "",
-                  keyboardType: TextInputType.text,
-                  controller: airportNameController,
-                ),
-                const SizedBox(height: 16),
-
-                Text(
-                  "Distance from the main Airport",
-                  style: AppTextStyles.centerText,
-                ),
-                const SizedBox(height: 8),
-                CustomDropdown<String>(
-                  hintText: "Select Distance",
-                  value: selectedAirportDistance,
-                  items: distanceOptions,
-                  itemLabel: (value) => value,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedAirportDistance = value;
-                    });
-                  },
-                  validator: (_) {},
-                ),
-                const SizedBox(height: 24),
-
-                // ✅ FINAL NEXT BUTTON
-                CustomPrimaryButton(
-                  text: "Next",
-                  icon: Icons.arrow_right_alt_rounded,
-                  onPressed: _saveAndNext,
-                ),
-                const SizedBox(height: 24),
-              ],
+                  // ✅ FINAL NEXT BUTTON
+                  CustomPrimaryButton(
+                    text: "Next",
+                    icon: Icons.arrow_right_alt_rounded,
+                    onPressed: _saveAndNext,
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
             ),
           ),
         ),
@@ -1228,104 +1387,6 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
   }
 
 
-  void _openMapDialog(BuildContext context) {
-    LatLng selectedLatLng = const LatLng(28.6139, 77.2090); // Delhi
-    GoogleMapController? mapController;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Select Location"),
-          content: SizedBox(
-            width: double.maxFinite,
-            height: 420,
-            child: Column(
-              children: [
-                // 🔍 SEARCH FIELD
-                GooglePlaceAutoCompleteTextField(
-
-                  textEditingController: TextEditingController(),
-                  googleAPIKey: "AIzaSyDhzH8bgVZJs5LFUlpAvIjYHU4w8fdOmE0",
-                  debounceTime: 800,
-                  countries: const ["in"],
-                  isLatLngRequired: true,
-                  getPlaceDetailWithLatLng: (prediction) {
-                    final lat = double.parse(prediction.lat!);
-                    final lng = double.parse(prediction.lng!);
-
-                    selectedLatLng = LatLng(lat, lng);
-
-                    mapController?.animateCamera(
-                      CameraUpdate.newLatLngZoom(selectedLatLng, 16),
-                    );
-                  },
-                  itemClick: (prediction) {
-                    FocusScope.of(context).unfocus();
-                  },
-                  itemBuilder: (context, index, prediction) {
-                    return ListTile(
-                      leading: const Icon(Icons.location_on),
-                      title: Text(prediction.description ?? ""),
-                    );
-                  },
-                  seperatedBuilder: const Divider(),
-                  isCrossBtnShown: true,
-                ),
-
-                const SizedBox(height: 10),
-
-                // 🗺 MAP
-                Expanded(
-                  child: GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      target: selectedLatLng,
-                      zoom: 15,
-                    ),
-                    onMapCreated: (controller) {
-                      mapController = controller;
-                    },
-                    markers: {
-                      Marker(
-                        markerId: const MarkerId("selected"),
-                        position: selectedLatLng,
-                        draggable: true,
-                        onDragEnd: (newPos) {
-                          selectedLatLng = newPos;
-                        },
-                      ),
-                    },
-                    onTap: (latLng) {
-                      selectedLatLng = latLng;
-                      mapController?.animateCamera(
-                        CameraUpdate.newLatLng(latLng),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                latitudeController.text =
-                    selectedLatLng.latitude.toString();
-                longitudeController.text =
-                    selectedLatLng.longitude.toString();
-                Navigator.pop(context);
-              },
-              child: const Text("Select"),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
 
 }

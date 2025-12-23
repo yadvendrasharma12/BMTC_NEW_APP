@@ -81,15 +81,17 @@ class SelfBookingController extends GetxController {
       final responseData = jsonDecode(response.body);
 
       if (response.statusCode == 200 && responseData['status'] == "success") {
+
         Get.snackbar(
           backgroundColor: Colors.green,
             snackPosition: SnackPosition.BOTTOM,
 
             "Success", responseData['message'],colorText: Colors.white);
+        Get.back(result: true, closeOverlays: true); // ✅ NOW BACK WORKS
         selectedBooking.value = updatedData;
 
         print("✅ Booking updated successfully");
-        Get.back();
+
       } else {
         Get.snackbar("Error", responseData['message'] ?? "Failed to update booking");
         print("❌ Failed to update booking → ${responseData['message']}");

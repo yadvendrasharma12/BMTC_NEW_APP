@@ -76,9 +76,16 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
                           children: [
 
                             GestureDetector(
-                              onTap: (){
-                                Get.to(EditCenterInformationScreen(apiLabs: labs));
+                              onTap: () async {
+                                final result = await Get.to<bool>(
+                                  EditCenterInformationScreen(apiLabs: labs),
+                                );
+
+                                if (result == true) {
+                                  profileController.fetchCenterDetails(); // 🔥 REFRESH API
+                                }
                               },
+
                               child: Container(
                                 height: 40,
                                 width: 135,
@@ -183,19 +190,26 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
 
     // Map stateId → stateName
     String stateName = states
-        .firstWhere((s) => s.id == center.stateId, orElse: () => api.State(id: '', name: 'N/A'))
+        .firstWhere(
+          (s) => s.id.toString() == center.stateId.toString(),
+      orElse: () => api.State(id: '', name: 'N/A'),
+    )
         .name;
 
     // Map cityId → cityName
     String cityName = cities
-        .firstWhere((c) => c.id == center.cityId, orElse: () => api.City(id: '', name: 'N/A'))
+        .firstWhere(
+          (c) => c.id.toString() == center.cityId.toString(),
+      orElse: () => api.City(id: '', name: 'N/A'),
+    )
         .name;
-
     // Map centerType id → centerTypeName
     String centerTypeName = centerTypes
-        .firstWhere((ct) => ct.id == center.centerType, orElse: () => api.CenterType(id: '', centerType: center.centerType))
+        .firstWhere(
+          (ct) => ct.id.toString() == center.centerType.toString(),
+      orElse: () => api.CenterType(id: '', centerType: 'N/A'),
+    )
         .centerType;
-
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
@@ -270,14 +284,14 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
           ),
           _buildField("AM Name", center.csName,showTitle: false),
           _buildField("AM Contact", center.csContactNumber,showTitle: false),
-          _buildField("AM Email", center.csEmail),
+          _buildField("AM Email", center.csEmail,showTitle: false),
           Padding(
             padding: const EdgeInsets.only(top: 8.0,bottom: 8,left: 16),
             child: Text("IT Manager Details",style: AppTextStyles.centerText,),
           ),
           _buildField("POC Name", center.amName,showTitle: false),
           _buildField("POC Contact", center.amContactNo,showTitle: false),
-          _buildField("POC Mobile Alternate", center.amEmail),
+          _buildField("POC Mobile Alternate", center.amEmail,showTitle: false),
           Padding(
             padding: const EdgeInsets.only(top: 8.0,bottom: 8,left: 16),
             child: Text("Emergency Contact number of the Center",style: AppTextStyles.centerText,),

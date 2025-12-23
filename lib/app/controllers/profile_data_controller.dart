@@ -20,7 +20,7 @@ class ProfileDataController extends GetxController {
       isLoading.value = true;
 
 
-      String? centerId = await MySharedPrefs.get(); // ensure MySharedPrefs.get() returns String?
+      String? centerId = await MySharedPrefs.get();
       if (centerId == null || centerId.isEmpty) {
         print("❌ Center ID not found in SharedPreferences");
         return;

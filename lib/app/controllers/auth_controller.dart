@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:bmtc_app/app/screens/add_center_pages/center_details_page1.dart';
+
 import 'package:bmtc_app/app/screens/auth_pages/forget/create_mpin_screen.dart';
 import 'package:bmtc_app/app/screens/auth_pages/forget/forget_otp_screen.dart';
 import 'package:bmtc_app/app/screens/home/dashboard_page/dashBoard_page_screen.dart';
@@ -11,7 +11,7 @@ import '../screens/auth_pages/login/login_screen.dart';
 import '../utils/api_ends_points.dart';
 import '../utils/toast_message.dart';
 import '../utils/shared_preferances.dart';
-import '../screens/auth_pages/main_page/main_screen.dart';
+
 
 class AuthController extends GetxController {
   var isLoading = false.obs;
@@ -141,7 +141,6 @@ class AuthController extends GetxController {
       return;
     }
 
-    // ✅ MOBILE NUMBER TEMP STORE
     tempMobilePhone = mobilePhone;
 
     isLoading.value = true;

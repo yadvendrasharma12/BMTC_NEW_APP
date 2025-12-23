@@ -49,7 +49,7 @@ class ExamCenter {
   List<String> upsGeneratorImages;
   String walkthroughVideo;
 
-  List<int> floorNumber;
+  List<String> floorNumber;
   List<int> totalComputers;
   List<String> windowGeneration;
   List<String> monitorType;
@@ -274,7 +274,7 @@ class ExamCenter {
     "partition_in_each_lab": partitionInEachLab,
     "is_network_printer_availabel": isNetworkPrinterAvailabel,
     "is_there_projector_in_each_lab": isThereProjectorInEachLab,
-    "is_there_sound_system_in_each_lab": isThereSoundSystemInEachLab,
+    "is_there_sound_sytem_in_each_lab": isThereSoundSystemInEachLab,
     "how_many_fire_extinguisher_in_each_lab": howManyFireExtinguisherInEachLab,
     "is_there_a_locker_facility_in_lab": isThereALockerFacilityInLab,
     "is_there_a_drinking_water_facility_in_lab": isThereADrinkingWaterFacilityInLab,
@@ -290,7 +290,7 @@ class ExamCenter {
     "is_generator_backup": isGeneratorBackup,
     "generator_backup_capacity": generatorBackupCapacity,
     "generator_fuel_tank_capacity": generatorFuelTankCapacity,
-    "ups_backup": upsBackup,
+    "power_back_ups_kv": upsBackup,
     "ups_backup_time": upsBackupTime,
     "total_no_of_connection": totalNoOfConnection,
     "backup_hours": backupHours,
@@ -300,7 +300,7 @@ class ExamCenter {
     "bank_account_number": bankAccountNumber,
     "bank_ifsc": bankIfsc,
     "pannumber": panNumber,
-    "gst_number": gstNumber,
+    "gst_no": gstNumber,
     "gst_state_code": gstStateCode,
     "uidai_number": uidaiNumber,
     "msme_number": msmeNumber,

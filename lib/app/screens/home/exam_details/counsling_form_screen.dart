@@ -173,11 +173,27 @@ class _CounslingFormScreenState extends State<CounslingFormScreen> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
+                        // onPressed: () async {
+                        //   var resp = await projectController.acceptBooking();
+                        //
+                        //   if (resp['status'] == true) {
+                        //     AppToast.showSuccess(context, resp['message']);
+                        //   } else {
+                        //     AppToast.showError(context, resp['message']);
+                        //   }
+                        // },
                         onPressed: () async {
                           var resp = await projectController.acceptBooking();
 
                           if (resp['status'] == true) {
+                            // ✅ Pehle toast dikhao
                             AppToast.showSuccess(context, resp['message']);
+
+                            // ⏳ thoda delay taaki toast dikh sake
+                            await Future.delayed(const Duration(milliseconds: 600));
+
+                            // ✅ ab safely back jao
+                            Get.back(result: true);
                           } else {
                             AppToast.showError(context, resp['message']);
                           }
@@ -196,15 +212,28 @@ class _CounslingFormScreenState extends State<CounslingFormScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton(
+                        // onPressed: () async {
+                        //   var resp = await projectController.rejectBooking();
+                        //
+                        //   if (resp['status'] == true) {
+                        //     AppToast.showSuccess(context, resp['message']);
+                        //   } else {
+                        //     AppToast.showError(context, resp['message']);
+                        //   }
+                        // },
                         onPressed: () async {
                           var resp = await projectController.rejectBooking();
 
                           if (resp['status'] == true) {
+
                             AppToast.showSuccess(context, resp['message']);
+                            await Future.delayed(const Duration(milliseconds: 600));
+                            Get.back(result: true);
                           } else {
                             AppToast.showError(context, resp['message']);
                           }
                         },
+
 
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red.shade800,

@@ -245,7 +245,9 @@ class ExamCenterController extends GetxController {
       walkthroughVideo: walkthroughVideoFile.value != null
           ? basename(walkthroughVideoFile.value!.path)
           : '',
-      floorNumber: labs.map((e) => int.tryParse(e.floor.value) ?? 0).toList(),
+      floorNumber: labs
+          .map((e) => e.floor.value.trim())
+          .toList(),
       totalComputers: labs.map((e) => int.tryParse(e.computersController.text) ?? 0).toList(),
       windowGeneration: labs.map((e) => e.processor.value).toList(),
       monitorType: labs.map((e) => e.monitor.value).toList(),

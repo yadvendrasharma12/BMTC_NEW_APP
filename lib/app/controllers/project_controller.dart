@@ -79,7 +79,6 @@ class ProjectController extends GetxController {
 
       request.fields['center_id'] = centerId ?? '';
       request.fields['project_id'] = projectId;
-      Get.back();
       var response = await http.Response.fromStream(await request.send());
 
       print("📥 Accept Response: ${response.body}");
@@ -111,7 +110,7 @@ class ProjectController extends GetxController {
 
       request.fields['center_id'] = centerId ?? '';
       request.fields['project_id'] = projectId;
-      Get.back();
+
       var response = await http.Response.fromStream(await request.send());
 
       print("📥 Reject Response: ${response.body}");

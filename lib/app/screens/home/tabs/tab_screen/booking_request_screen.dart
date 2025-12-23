@@ -241,13 +241,41 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
             width: 100,
             alignment: Alignment.center,
             child: GestureDetector(
-              onTap: () {
+              // onTap: () {
+              //   final projectId = booking.projectId ?? "";
+              //   Get.to(
+              //     CounslingFormScreen(),
+              //     arguments: {"project_id": projectId},
+              //   );
+              // },
+              onTap: () async {
                 final projectId = booking.projectId ?? "";
-                Get.to(
-                  CounslingFormScreen(),
+
+                bool? updated = await Get.to(
+                      () => const CounslingFormScreen(),
                   arguments: {"project_id": projectId},
                 );
+
+                // 🔴 YAHAN BACK SE AANE KE BAAD CODE CHALEGA
+                if (updated == true) {
+
+                  // API se fresh data
+                  await controller.fetchDashboard();
+
+                  // UI list refresh
+                  final data = controller.dashboardModel.value.data;
+
+                  setState(() {
+                    filteredRequests = data?.totalBookingRequest ?? [];
+                    rowCheckedList =
+                    List<bool>.filled(filteredRequests.length, false);
+                    headerChecked = false;
+                  });
+                }
               },
+
+
+
               child: Container(
                 height: 32,
                 width: 70,

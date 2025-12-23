@@ -21,8 +21,7 @@ class SelfBookingScreen extends StatefulWidget {
 
 class _SelfBookingScreenState extends State<SelfBookingScreen> {
   final TextEditingController searchController = TextEditingController();
-  final SelfBookingController controller = Get.put(SelfBookingController());
-
+  final SelfBookingController controller = Get.find<SelfBookingController>();
   bool headerChecked = false;
   late List<bool> rowCheckedList;
   List<Map<String, dynamic>> filteredBookings = [];

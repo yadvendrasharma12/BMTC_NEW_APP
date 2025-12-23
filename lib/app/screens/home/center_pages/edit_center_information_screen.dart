@@ -2,11 +2,14 @@
 import 'dart:io';
 
 
+import 'package:bmtc_app/app/maps_page/maps_location_screen.dart';
 import 'package:bmtc_app/app/models/profile_data_model.dart' as api;
 import 'package:bmtc_app/app/core/text_style.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
 
@@ -16,12 +19,10 @@ import '../../../core/app_colors.dart';
 import '../../../models/city_modal.dart';
 import '../../../models/country_modal.dart';
 import '../../../models/state_modal.dart';
-import '../../../services/center_services.dart';
 import '../../../services/location_services/location_service.dart';
 import '../../../utils/toast_message.dart';
 import '../../../widgets/custom_container.dart';
 import '../../../widgets/custom_dropdown.dart';
-import '../../../widgets/custom_textformfield.dart';
 import '../../../widgets/uploading_container.dart';
 
 class EditCenterInformationScreen extends StatefulWidget {
@@ -108,14 +109,15 @@ class _EditCenterInformationScreenState
   final TextEditingController upsBackup = TextEditingController();
 
 
-
+  List<api.CenterType> _categoryTypes = [];
+  api.CenterType? selectedCenterType;
 
   @override
   void initState() {
     super.initState();
 
     _loadCountries();
-    _fetchCenterTypes();
+    _loadCenterTypes();
 
 
 
@@ -125,6 +127,7 @@ class _EditCenterInformationScreenState
     Get.put(ProfileUpdateController());
     final labList = controller.profileDataModel.value?.data.labs ?? [];
     addressCtrl.text = center.address ?? '';
+    centerNameCtrl.text = center.centerName ?? '';
     description.text = center.description ?? '';
     centerType.text = center.centerType ?? '';
     centerLat.text = center.addressLat?? '';
@@ -226,6 +229,8 @@ class _EditCenterInformationScreenState
     fireExuter = center.fireExuter;
     selectedRailwayDistance = center.distanceRailw.isNotEmpty ? center.distanceRailw : '';
     selectedBusDistance = center.distanceBus.isNotEmpty ? center.distanceBus : '';
+    selectedMetroDistance = center.distanceFromMetro.isNotEmpty ? center.distanceFromMetro : '';
+    selectedAirportDistance = center.distanceFromAirport.isNotEmpty ? center.distanceFromAirport : '';
     primaryUnit = unites.cast<String?>().firstWhere(
           (e) => e?.toLowerCase() == (center.primaryConnectType ?? '').toLowerCase(),
       orElse: () => null,
@@ -268,23 +273,24 @@ class _EditCenterInformationScreenState
   }
 
 
-  Future<void> _fetchCenterTypes() async {
+  void _loadCenterTypes() {
+    final data = controller.profileDataModel.value!.data;
+    final center = data.center;
+
     setState(() {
-      _isCenterTypeLoading = true;
+      _categoryTypes = data.centerType;
+
+      selectedCenterType = _categoryTypes.firstWhereOrNull(
+            (e) => e.id.toString() == center.centerType.toString(),
+      );
     });
 
-    final list = await CenterService.getCenterTypes();
-    await Future.delayed(const Duration(seconds: 1));
-    if (!mounted) return;
-    setState(() {
-      _categoryTypes = list.map((e) => e.centerType).toList();
-      _isCenterTypeLoading = false;
-    });
+    /// update controller me bhi set kar do
+    if (selectedCenterType != null) {
 
-    if (list.isEmpty) {
-      AppToast.showError(context, "Failed to load Center Types");
     }
   }
+
   Future<void> _loadCountries() async {
     final list = await LocationService.getCountries();
     final center = controller.profileDataModel.value!.data.center;
@@ -423,7 +429,7 @@ class _EditCenterInformationScreenState
 
                               text: "Get Current Location",
                               onTap: () {
-
+                                _getCurrentLocation();
                               },
                             ),
                           ),
@@ -432,9 +438,20 @@ class _EditCenterInformationScreenState
                             child: CustomContainer(
 
                               text: "Get Location By Map",
-                              onTap: () {
+                              onTap: () async {
+                                final LatLng? result = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => MapsLocationScreen(),
+                                  ),
+                                );
 
+                                if (result != null) {
+                                  centerLat.text = result.latitude.toString();
+                                  centerLong.text = result.longitude.toString();
+                                }
                               },
+
                             ),
                           ),
                         ],
@@ -639,18 +656,20 @@ class _EditCenterInformationScreenState
                           child: Text("Type Center Type", style: AppTextStyles.centerText)),
                       const SizedBox(height: 10),
 
-                      CustomDropdown<String>(
+                      CustomDropdown<api.CenterType>(
                         hintText: "Select Category Center Type",
-                        value: categoryTypes,
+                        value: selectedCenterType,
                         items: _categoryTypes,
-                        itemLabel: (value) => value,
+                        itemLabel: (value) => value.centerType ?? "",
                         onChanged: (value) {
                           setState(() {
-                            categoryTypes = value;
+                            selectedCenterType = value;
                           });
+
                         },
                         validator: (_) => null,
                       ),
+
                       SizedBox(height: 10,),
                       _textField(
                         title: "Nearby Landmark",
@@ -1726,8 +1745,6 @@ class _EditCenterInformationScreenState
   }
 
   String? categoryTypes;
-  List<String> _categoryTypes = [];
-  bool _isCenterTypeLoading = false;
 
   List<CountryModel> countryList = [];
   List<StateModel> stateList = [];
@@ -2197,6 +2214,44 @@ class _EditCenterInformationScreenState
       ),
     );
   }
+
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+    print("🔥 Get Current Location tapped");
+    // 🔹 Check location service
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      AppToast.showError(context, "Location service is disabled");
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        AppToast.showError(context, "Location permission denied");
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      AppToast.showError(context, "Location permission permanently denied");
+      return;
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    centerLat.text = position.latitude.toString();
+    centerLong.text = position.longitude.toString();
+
+
+
+    AppToast.showSuccess(context, "Current location fetched");
+  }
+
 
 }
 

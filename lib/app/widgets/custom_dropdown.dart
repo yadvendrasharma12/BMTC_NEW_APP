@@ -12,6 +12,9 @@ class CustomDropdown<T> extends StatelessWidget {
   final Color? fillColor;
   final Color? borderColor;
 
+  // 👇 OPTIONAL validator
+  final String? Function(T?)? validator;
+
   const CustomDropdown({
     super.key,
     required this.hintText,
@@ -23,69 +26,95 @@ class CustomDropdown<T> extends StatelessWidget {
     this.borderRadius = 10,
     this.fillColor,
     this.borderColor,
-    required String? Function(dynamic value) validator,
+    this.validator,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final bool hasValue = value != null;
-
-    return Container(
-      height: 47,
-      padding: padding,
-      decoration: BoxDecoration(
-        color: fillColor ?? Colors.white,
-        borderRadius: BorderRadius.circular(borderRadius),
-        border: Border.all(
-          color: borderColor ?? theme.primaryColor.withOpacity(0.5),
-          width: 1,
-        ),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<T>(
-          isExpanded: true,
-          value: value,
-          hint: Text(
-            hintText,
-            style: GoogleFonts.karla(
-              fontSize: 14,
-              color: Colors.grey.shade500, // 👈 hint halka grey
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          icon: const Icon(
-            Icons.keyboard_arrow_down_rounded,
-            size: 26,
-            color: Colors.black,
-          ),
-
-          // 👇 yeh style selected value ke liye use hota hai
-          style: GoogleFonts.karla(
-            fontSize: 14,
-            color: Colors.black,          // 👈 selected text pure black
-            fontWeight: FontWeight.w600,  // 👈 thoda bold
-          ),
-
-          onChanged: onChanged,
-          items: items.map((item) {
-            final isSelected = item == value;
-            return DropdownMenuItem<T>(
-              value: item,
-              child: Text(
-                itemLabel(item),
-                style: GoogleFonts.karla(
-                  fontSize: 14,
-                  color: isSelected ? Colors.black : Colors.black87,
-                  fontWeight:
-                  isSelected ? FontWeight.w700 : FontWeight.w500,
+    return FormField<T>(
+      validator: validator, // 👈 null allowed
+      builder: (FormFieldState<T> state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 47,
+              padding: padding,
+              decoration: BoxDecoration(
+                color: fillColor ?? Colors.white,
+                borderRadius: BorderRadius.circular(borderRadius),
+                border: Border.all(
+                  color: state.hasError
+                      ? Colors.red
+                      : (borderColor ??
+                      theme.primaryColor.withOpacity(0.5)),
+                  width: 1,
                 ),
               ),
-            );
-          }).toList(),
-        ),
-      ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<T>(
+                  isExpanded: true,
+                  value: value,
+                  hint: Text(
+                    hintText,
+                    style: GoogleFonts.karla(
+                      fontSize: 14,
+                      color: Colors.grey.shade500,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: 26,
+                    color: Colors.black,
+                  ),
+                  style: GoogleFonts.karla(
+                    fontSize: 14,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  onChanged: (val) {
+                    state.didChange(val); // 🔥 IMPORTANT
+                    onChanged(val);
+                  },
+                  items: items.map((item) {
+                    final isSelected = item == value;
+                    return DropdownMenuItem<T>(
+                      value: item,
+                      child: Text(
+                        itemLabel(item),
+                        style: GoogleFonts.karla(
+                          fontSize: 14,
+                          color:
+                          isSelected ? Colors.black : Colors.black87,
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+
+            // ❌ Error text only when validator fails
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(top: 6, left: 8),
+                child: Text(
+                  state.errorText!,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }

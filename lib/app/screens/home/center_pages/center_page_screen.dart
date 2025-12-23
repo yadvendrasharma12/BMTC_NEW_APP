@@ -5,9 +5,12 @@ import 'package:bmtc_app/app/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart' show Get;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../controllers/profile_data_controller.dart';
 import '../../../core/text_style.dart';
+import '../../../maps_page/maps_location_screen.dart';
+import '../../../utils/toast_message.dart';
 
 class CenterPageScreen extends StatefulWidget {
   const CenterPageScreen({super.key});
@@ -96,7 +99,7 @@ class _CenterPageScreenState extends State<CenterPageScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text("Seating",style: AppTextStyles.topHeading3,),
-                                Text("1540",style: AppTextStyles.linkText,)
+                                Text(centerData.capacity ?? "No capacity",style: AppTextStyles.linkText,)
                               ],),
                             SizedBox(height: 10,),
                             Row(
@@ -226,11 +229,11 @@ class _CenterPageScreenState extends State<CenterPageScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      "Zyprus Ltd.",
+                                      centerData.centerName ?? "Center Name Not Define",
                                       style: AppTextStyles.linkText,
                                     ),
                                     Text(
-                                      "Last audited on Oct 10th, 2024",
+                                      centerData.localArea ?? 'Location',
                                       style: AppTextStyles.inputHint,
                                     ),
                                   ],
@@ -238,20 +241,43 @@ class _CenterPageScreenState extends State<CenterPageScreen> {
 
                                 Spacer(),
 
-                                Container(
-                                  height: 30,
-                                  width: 50,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: AppColors.borderColor),
-                                    color: AppColors.background,
-                                    borderRadius: BorderRadius.circular(7),
-                                  ),
-                                  child: Text(
-                                    "View",
-                                    style: AppTextStyles.caption,
+                                GestureDetector(
+                                  onTap: () async {
+                                    if (centerData.addressLat != null && centerData.addressLong != null) {
+                                      final LatLng result = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => MapsLocationScreen(
+                                            initialLat: double.tryParse(centerData.addressLat) ?? 0,
+                                            initialLng: double.tryParse(centerData.addressLong) ?? 0,
+                                            isViewOnly: true, // view mode
+                                          ),
+                                        ),
+                                      );
+                                      // view mode me result nahi chahiye
+                                    } else {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text("Location not available")),
+                                      );
+                                    }
+                                  },
+                                  child: Container(
+                                    height: 30,
+                                    width: 50,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: AppColors.borderColor),
+                                      color: AppColors.background,
+                                      borderRadius: BorderRadius.circular(7),
+                                    ),
+                                    child: Text(
+                                      "View",
+                                      style: AppTextStyles.caption,
+                                    ),
                                   ),
                                 ),
+
+
                               ],
                             ),
                           ),
@@ -272,5 +298,7 @@ class _CenterPageScreenState extends State<CenterPageScreen> {
 
       ),
     );
+
   }
+
 }

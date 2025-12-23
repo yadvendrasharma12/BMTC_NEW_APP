@@ -154,11 +154,11 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
             value: floors.contains(lab.floor.value) ? lab.floor.value : null,
             items: floors,
             itemLabel: (v) => v,
-            onChanged: (v) => lab.floor.value = v ?? '',
-            validator: (value) {
-              return null;
-            },
+              onChanged: (v) => lab.floor.value = v ?? '',
+
           ),
+
+
           const SizedBox(height: 15),
           Text("Total Number of computers", style: AppTextStyles.centerText),
           const SizedBox(height: 8),
@@ -179,7 +179,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
             items: processors,
             itemLabel: (v) => v,
             onChanged: (v) => lab.processor.value = v ?? '',
-            validator: (value) {},
+
           ),
           const SizedBox(height: 15),
           Text("Monitor type", style: AppTextStyles.centerText),
@@ -192,7 +192,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
             items: monitors,
             itemLabel: (v) => v,
             onChanged: (v) => lab.monitor.value = v ?? '',
-            validator: (value) {},
+
           ),
           const SizedBox(height: 15),
           Text("Operating System", style: AppTextStyles.centerText),
@@ -205,7 +205,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
             items: oss,
             itemLabel: (v) => v,
             onChanged: (v) => lab.os.value = v ?? '',
-            validator: (value) {},
+
           ),
           const SizedBox(height: 15),
           Text("RAM (in GB)", style: AppTextStyles.centerText),
@@ -218,7 +218,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
             items: rams,
             itemLabel: (v) => v,
             onChanged: (v) => lab.ram.value = v ?? '',
-            validator: (value) {},
+
           ),
           const SizedBox(height: 15),
           Text("Hard Disk Drive Capacity in GB", style: AppTextStyles.centerText),
@@ -231,7 +231,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
             items: hardDisks,
             itemLabel: (v) => v,
             onChanged: (v) => lab.hdd.value = v ?? '',
-            validator: (value) {},
+
           ),
           const SizedBox(height: 15),
           Text("Ethernet Switch Company", style: AppTextStyles.centerText),
@@ -244,7 +244,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
             items: switchCompanies,
             itemLabel: (v) => v,
             onChanged: (v) => lab.ethernetCompany.value = v ?? '',
-            validator: (value) {},
+
           ),
           const SizedBox(height: 15),
           Text("Switch Category", style: AppTextStyles.centerText),
@@ -257,7 +257,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
             items: switchCategories,
             itemLabel: (v) => v,
             onChanged: (v) => lab.switchCategory.value = v ?? '',
-            validator: (value) {},
+
           ),
           const SizedBox(height: 15),
           Text("No. of part Ethernet switch", style: AppTextStyles.centerText),
@@ -270,7 +270,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
             items: switchParts,
             itemLabel: (v) => v,
             onChanged: (v) => lab.ethernetPorts.value = v ?? '',
-            validator: (value) {},
+
           ),
         ],
       ),
@@ -290,551 +290,634 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
     }
   }
 
-
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Align(
-                  alignment: Alignment.center,
-                  child: Text("Step 3", style: AppTextStyles.bodyStepText),
-                ),
-                const SizedBox(height: 4),
-                Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Exam Infrastructure details",
-                    style: AppTextStyles.centerDetailsTopTitle,
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text("Step 3", style: AppTextStyles.bodyStepText),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Please enter the required information",
-                    style: AppTextStyles.centerSubTitle,
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // ===== General Lab Details =====
-                Text(
-                  "General Lab details",
-                  style: GoogleFonts.karla(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 15),
-
-                Text("Total number of labs", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(
-                  controller: totalLabsController,
-                  keyboardType: TextInputType.number,
-                  label: '',
-                  onChanged: (v) {
-                    int count = int.tryParse(v) ?? 1;
-                    if (count < 1) count = 1; // minimum 1 lab
-                    totalLabsController.text = count.toString();
-                    examController.totalNumberOfLab.value = count;
-                    examController.updateLabs(count); // <-- this updates the lab list
-                  },
-                ),
-
-
-                const SizedBox(height: 15),
-                Text("Total number of systems",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(
-                  controller: totalSystemsController,
-                  keyboardType: TextInputType.number,
-                  label: '',
-                  onChanged: (v) => examController.totalNumberOfSystem.value = int.tryParse(v) ?? 0,
-                ),
-
-                const SizedBox(height: 15),
-                Text("Are all labs connected through a single network?",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                Obx(() => CustomDropdown<String>(
-                  hintText: "Select",
-                  items: yesNoOptions, // ['Yes', 'No']
-                  itemLabel: (v) => v,
-
-                  // ✅ IMPORTANT PART
-                  value: examController.labAreConnectToSingleNetwork.value ? "Yes" : "No",
-
-                  onChanged: (v) {
-                    examController.labAreConnectToSingleNetwork.value =
-                    (v == 'Yes');
-                  },
-
-                  validator: (value) {
-                    if (value == null) {
-                      return "Please select an option";
-                    }
-                    return null;
-                  },
-                )),
-
-                const SizedBox(height: 15),
-                Text("Total Network", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(
-                  controller: totalNetworkController,
-                  keyboardType: TextInputType.number,
-                  label: '',
-                  onChanged: (v) => examController.totalNetwork.value = int.tryParse(v) ?? 0,
-                ),
-
-
-
-
-                const SizedBox(height: 15),
-                Text("Is there a partition in each lab",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-
-
-                Obx(() => CustomDropdown<String>(
-                  hintText: "Select",
-                  items: yesNoOptions, // ['Yes','No']
-                  itemLabel: (v) => v,
-                  value: examController.partitionInEachLab.value ? "Yes" : "No",
-                  onChanged: (v) {
-                    examController.partitionInEachLab.value = (v == "Yes");
-                  },
-                  validator: (value) {
-                    return null;
-                  },
-                )),
-
-
-                const SizedBox(height: 15),
-                Text("Is there an AC in each lab?",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                Obx(() => CustomDropdown<String>(
-                  hintText: "Select",
-                  items: yesNoOptions,
-                  itemLabel: (v) => v,
-                  value: examController.acInEachLab.value ? "Yes" : "No",
-                  onChanged: (v) {
-                    examController.acInEachLab.value = (v == "Yes");
-                  },
-                  validator: (value) {},
-                )),
-
-
-
-                const SizedBox(height: 15),
-                Text("Is the Network Printer available?",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-
-                CustomDropdown<String>(
-                  hintText: "Select",
-                  value: selectedPrinter,
-                  items: yesNoOptions,
-                  itemLabel: (v) => v,
-
-                  onChanged: (v) {
-                    setState(() => selectedPrinter = v);
-                    examController.isNetworkPrinterAvailabel.value = (v == 'Yes');
-                  },
-                  validator: (value) {
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 15),
-                Text("Is there a projector in each lab?",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                Obx(() => CustomDropdown<String>(
-                  hintText: "Select",
-                  items: yesNoOptions,
-                  itemLabel: (v) => v,
-                  value: examController.isThereProjectorInEachLab.value ? "Yes" : "No",
-                  onChanged: (v) {
-                    examController.isThereProjectorInEachLab.value = (v == "Yes");
-                  }, validator: (value) {  },
-                )),
-
-                const SizedBox(height: 15),
-                Text("Is there a sound system in each lab?",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                CustomDropdown<String>(
-                  hintText: "Select",
-                  value: selectedSoundSystem,
-                  items: yesNoOptions,
-                  itemLabel: (v) => v,
-                  onChanged: (v) {
-                    setState(() => selectedSoundSystem = v);
-                    examController.isThereSoundSystemInEachLab.value = (v == 'Yes');
-                  },
-                  validator: (value) {
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 15),
-                Text("How Many Fire Extinguisher in each lab",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                Obx(() => CustomDropdown<String>(
-                  hintText: "Select",
-                  items: List.generate(11, (index) => index.toString()),
-                  itemLabel: (v) => v,
-                  value: examController.fireExtinguisherInEachLab.value == 0
-                      ? null
-                      : examController.fireExtinguisherInEachLab.value.toString(),
-                  onChanged: (v) {
-                    examController.fireExtinguisherInEachLab.value =
-                        int.tryParse(v ?? '0') ?? 0;
-                  },
-                  validator: (value) {
-                    return null;
-                  },
-                )),
-
-                const SizedBox(height: 15),
-                Text("Is there a Locker facility?",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                CustomDropdown<String>(
-                  hintText: "Select",
-                  value: selectedMemory,
-                  items: yesNoOptions,
-                  itemLabel: (v) => v,
-
-                  onChanged: (v) {
-                    setState(() => selectedMemory = v);
-                    examController.isThereALockerFacilityInLab.value = (v == 'Yes');
-                  },
-                  validator: (value) {
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 15),
-                Text("Is there a drinking water facility in/near the labs?",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                CustomDropdown<String>(
-                  hintText: "Select",
-                  value: selectedDrinkingWater,
-                  items: yesNoOptions,
-                  itemLabel: (v) => v,
-
-                  onChanged: (v) {
-                    setState(() => selectedDrinkingWater = v);
-                    examController.isThereADrinkingWaterFacilityInLab.value = (v == 'Yes');
-                  },
-                  validator: (value) {
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 30),
-
-                // ===== Lab Infrastructure =====
-                Text(
-                  "Lab Infrastructure",
-                  style: GoogleFonts.karla(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                const SizedBox(height: 15),
-                Text("Name of the Primary ISP",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(
-                  controller: primaryISPController,
-                  keyboardType: TextInputType.text,
-                  label: '',
-                  onChanged: (v) => examController.primaryInfrastructure.value = v,
-
-                ),
-
-                const SizedBox(height: 15),
-                Text("Primary ISP Connected Type",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                Obx(() => CustomDropdown<String>(
-                  hintText: "Select",
-                  items: ['Broadband', 'Lease line', 'Fibre Optics', 'Air Fibre'],
-                  itemLabel: (v) => v,
-                  value: examController.primaryIspConnectType.value.isNotEmpty
-                      ? examController.primaryIspConnectType.value
-                      : null,
-                  onChanged: (v) {
-                    examController.primaryIspConnectType.value = v ?? '';
-                  },
-                  validator: (value) {},
-                )),
-
-
-
-                const SizedBox(height: 15),
-                Text("Primary Internet Speed",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: AppTextField(
-                        controller: primaryInternetController,
-                        keyboardType: TextInputType.number,
-                        label: '',
-                        onChanged: (v) =>
-                        examController.primaryIspSpeed.value = double.tryParse(v) ?? 0,
-                      ),
+                  const SizedBox(height: 4),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Exam Infrastructure details",
+                      style: AppTextStyles.centerDetailsTopTitle,
                     ),
-                    const SizedBox(width: 10),
-              Expanded(
-                child: Obx(() => CustomDropdown<String>(
-                  hintText: "Unit",
-                  items: speeds,
-                  itemLabel: (v) => v,
-                  value: examController.primaryInternetSpeedUnit.value.isNotEmpty
-                      ? examController.primaryInternetSpeedUnit.value
-                      : null,
-                  onChanged: (v) {
-                    examController.primaryInternetSpeedUnit.value = v ?? '';
-                  },
-                  validator: (value) {},
-                )),
-              )
-
-
-                  ],
-                ),
-
-                const SizedBox(height: 15),
-                Text("Name of the Secondary ISP",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(
-                  controller: secondaryISPController,
-                  keyboardType: TextInputType.text,
-                  label: '',
-                  onChanged: (v) => examController.secondaryInfrastructure.value = v,
-
-                ),
-
-                const SizedBox(height: 15),
-                Text("Secondary ISP Connected Type",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                Obx(() => CustomDropdown<String>(
-                  hintText: "Select",
-                  items: ispTypes,
-                  itemLabel: (v) => v,
-                  value: examController.secondaryIspConnectType.value.isNotEmpty
-                      ? examController.secondaryIspConnectType.value
-                      : null,
-                  onChanged: (v) {
-                    examController.secondaryIspConnectType.value = v ?? '';
-                  },
-                  validator: (value) {},
-                )),
-
-
-                const SizedBox(height: 15),
-                Text("Secondary Internet Speed",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: AppTextField(
-                        controller: secondaryInternetController,
-                        keyboardType: TextInputType.number,
-                        label: '',
-                        onChanged: (v) =>
-                        examController.secondaryIspSpeed.value = double.tryParse(v) ?? 0,
-                      ),
+                  ),
+                  const SizedBox(height: 6),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Please enter the required information",
+                      style: AppTextStyles.centerSubTitle,
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Obx(() => CustomDropdown<String>(
-                        hintText: "Unit",
-                        items: speeds,
-                        itemLabel: (v) => v,
-                        value: examController.secondaryInternetSpeedUnit.value.isNotEmpty
-                            ? examController.secondaryInternetSpeedUnit.value
-                            : null,
-                        onChanged: (v) {
-                          examController.secondaryInternetSpeedUnit.value = v ?? '';
-                        },
-                        validator: (value) {},
-                      )),
-                    )
+                  ),
+                  const SizedBox(height: 20),
 
-                  ],
-                ),
-
-                const SizedBox(height: 15),
-                Text("Generator Available", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                Obx(() => Column(
-                  children: [
-                    CustomDropdown<String>(
-                      hintText: "Select",
-                      items: yesNoOptions,
-                      itemLabel: (v) => v,
-                      value: examController.isGeneratorBackup.value ? "Yes" : "No",
-                      onChanged: (v) {
-                        examController.isGeneratorBackup.value = (v == "Yes");
-                      },
-                      validator: (value) {},
+                  // ===== General Lab Details =====
+                  Text(
+                    "General Lab details",
+                    style: GoogleFonts.karla(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
+                  ),
+                  const SizedBox(height: 15),
 
-                    // Show generator fields only if Yes
-                    if (examController.isGeneratorBackup.value) ...[
-                      const SizedBox(height: 15),
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Text("Generator Capacity (in KVA)",
-                            style: AppTextStyles.centerText),
-                      ),
-                      const SizedBox(height: 8),
-                      AppTextField(
-                        controller: generatorCapacityController,
-                        keyboardType: TextInputType.number,
-                        label: '',
-                        onChanged: (v) =>
-                        examController.generatorBackupCapacity.value = double.tryParse(v) ?? 0,
-                      ),
+                  Text("Total number of labs", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(
+                    controller: totalLabsController,
+                    keyboardType: TextInputType.number,
+                    label: '',
+                    onChanged: (v) {
+                      if (v.isEmpty) {
+                        examController.totalNumberOfLab.value = 0;
+                        return;
+                      }
 
-                      const SizedBox(height: 15),
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Text("Generator full tank Capacity (ltr)",
-                            style: AppTextStyles.centerText),
+                      int count = int.tryParse(v) ?? 1;
+                      if (count < 1) return;
+
+                      examController.totalNumberOfLab.value = count;
+                      examController.updateLabs(count);
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Total labs is required";
+                      }
+                      return null;
+                    },
+                  ),
+
+
+
+                  const SizedBox(height: 15),
+                  Text("Total number of systems",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(
+                    controller: totalSystemsController,
+                    keyboardType: TextInputType.number,
+                    label: '',
+                    onChanged: (v) => examController.totalNumberOfSystem.value = int.tryParse(v) ?? 0,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Total systems is required";
+                      }
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 15),
+                  Text("Are all labs connected through a single network?",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  Obx(() => CustomDropdown<String>(
+                    hintText: "Select",
+                    items: yesNoOptions, // ['Yes', 'No']
+                    itemLabel: (v) => v,
+
+                    // ✅ IMPORTANT PART
+                    value: examController.labAreConnectToSingleNetwork.value == null
+                        ? null
+                        : (examController.labAreConnectToSingleNetwork.value! ? "Yes" : "No"),
+
+
+                    onChanged: (v) {
+                      examController.labAreConnectToSingleNetwork.value =
+                      (v == 'Yes');
+                    },
+
+                    validator: (value) {
+                      if (value == null) {
+                        return "Please select an option";
+                      }
+                      return null;
+                    },
+
+                  )),
+
+                  const SizedBox(height: 15),
+                  Text("Total Network", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(
+                    controller: totalNetworkController,
+                    keyboardType: TextInputType.number,
+                    label: '',
+                    onChanged: (v) => examController.totalNetwork.value = int.tryParse(v) ?? 0,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Total network is required";
+                      }
+                      return null;
+                    },
+                  ),
+
+
+
+
+                  const SizedBox(height: 15),
+                  Text("Is there a partition in each lab",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+
+
+                  Obx(() => CustomDropdown<String>(
+                    hintText: "Select",
+                    items: yesNoOptions, // ['Yes','No']
+                    itemLabel: (v) => v,
+                    value: examController.partitionInEachLab.value ? "Yes" : "No",
+                    onChanged: (v) {
+                      examController.partitionInEachLab.value = (v == "Yes");
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return "Please select partition option";
+                      }
+                      return null;
+                    },
+                  )),
+
+
+                  const SizedBox(height: 15),
+                  Text("Is there an AC in each lab?",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  Obx(() => CustomDropdown<String>(
+                    hintText: "Select",
+                    items: yesNoOptions,
+                    itemLabel: (v) => v,
+                    value: examController.acInEachLab.value == null
+                        ? null
+                        : (examController.acInEachLab.value ? "Yes" : "No"),
+
+
+                    onChanged: (v) {
+                      examController.acInEachLab.value = (v == "Yes");
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return "Please select AC availability";
+                      }
+                      return null;
+                    },
+                  )),
+
+
+
+                  const SizedBox(height: 15),
+                  Text("Is the Network Printer available?",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+
+                  CustomDropdown<String>(
+                    hintText: "Select",
+                    value: selectedPrinter,
+                    items: yesNoOptions,
+                    itemLabel: (v) => v,
+
+                    onChanged: (v) {
+                      setState(() => selectedPrinter = v);
+                      examController.isNetworkPrinterAvailabel.value = (v == 'Yes');
+                    },
+
+                  ),
+
+                  const SizedBox(height: 15),
+                  Text("Is there a projector in each lab?",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  Obx(() => CustomDropdown<String>(
+                    hintText: "Select",
+                    items: yesNoOptions,
+                    itemLabel: (v) => v,
+                    value: examController.isThereProjectorInEachLab.value ? "Yes" : "No",
+                    onChanged: (v) {
+                      examController.isThereProjectorInEachLab.value = (v == "Yes");
+                    },
+                  )),
+
+                  const SizedBox(height: 15),
+                  Text("Is there a sound system in each lab?",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+
+                  Obx(() => CustomDropdown<String>(
+                    hintText: "Select",
+                    value: examController.isThereSoundSystemInEachLab.value ? "Yes" : "No",
+                    items: yesNoOptions,
+                    itemLabel: (v) => v,
+                    onChanged: (v) {
+                      examController.isThereSoundSystemInEachLab.value = (v == "Yes");
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return "Please select SoundSystem availability";
+                      }
+                      return null;
+                    },
+                  ),
+
+                  ),
+
+
+                  const SizedBox(height: 15),
+                  Text("How Many Fire Extinguisher in each lab",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  Obx(() => CustomDropdown<String>(
+                    hintText: "Select",
+                    items: List.generate(11, (index) => index.toString()),
+                    itemLabel: (v) => v,
+                    value: examController.fireExtinguisherInEachLab.value == 0
+                        ? null
+                        : examController.fireExtinguisherInEachLab.value.toString(),
+                    onChanged: (v) {
+                      examController.fireExtinguisherInEachLab.value =
+                          int.tryParse(v ?? '0') ?? 0;
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return "Please select fire extinguisher count";
+                      }
+                      return null;
+                    },
+                  )),
+
+                  const SizedBox(height: 15),
+                  Text("Is there a Locker facility?",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  CustomDropdown<String>(
+                    hintText: "Select",
+                    value: selectedMemory,
+                    items: yesNoOptions,
+                    itemLabel: (v) => v,
+
+                    onChanged: (v) {
+                      setState(() => selectedMemory = v);
+                      examController.isThereALockerFacilityInLab.value = (v == 'Yes');
+                    },
+
+                  ),
+
+                  const SizedBox(height: 15),
+                  Text("Is there a drinking water facility in/near the labs?",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  CustomDropdown<String>(
+                    hintText: "Select",
+                    value: selectedDrinkingWater,
+                    items: yesNoOptions,
+                    itemLabel: (v) => v,
+
+                    onChanged: (v) {
+                      setState(() => selectedDrinkingWater = v);
+                      examController.isThereADrinkingWaterFacilityInLab.value = (v == 'Yes');
+                    },
+
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // ===== Lab Infrastructure =====
+                  Text(
+                    "Lab Infrastructure",
+                    style: GoogleFonts.karla(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+                  Text("Name of the Primary ISP",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(
+                    controller: primaryISPController,
+                    keyboardType: TextInputType.text,
+                    label: '',
+                    onChanged: (v) => examController.primaryInfrastructure.value = v,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Primary ISP name is required";
+                      }
+                      return null;
+                    },
+
+                  ),
+
+                  const SizedBox(height: 15),
+                  Text("Primary ISP Connected Type",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  Obx(() => CustomDropdown<String>(
+                    hintText: "Select",
+                    items: ['Broadband', 'Lease line', 'Fibre Optics', 'Air Fibre'],
+                    itemLabel: (v) => v,
+                    value: examController.primaryIspConnectType.value.isNotEmpty
+                        ? examController.primaryIspConnectType.value
+                        : null,
+                    onChanged: (v) {
+                      examController.primaryIspConnectType.value = v ?? '';
+                    },
+
+                  )),
+
+
+
+                  const SizedBox(height: 15),
+                  Text("Primary Internet Speed",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: AppTextField(
+                          controller: primaryInternetController,
+                          keyboardType: TextInputType.number,
+                          label: '',
+                          onChanged: (v) =>
+                          examController.primaryIspSpeed.value = double.tryParse(v) ?? 0,
+                        ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(width: 10),
+                Expanded(
+                  child: Obx(() => CustomDropdown<String>(
+                    hintText: "Unit",
+                    items: speeds,
+                    itemLabel: (v) => v,
+                    value: examController.primaryInternetSpeedUnit.value.isNotEmpty
+                        ? examController.primaryInternetSpeedUnit.value
+                        : null,
+                    onChanged: (v) {
+                      examController.primaryInternetSpeedUnit.value = v ?? '';
+                    },
+
+                  )),
+                )
+
+
+                    ],
+                  ),
+
+                  const SizedBox(height: 15),
+                  Text("Name of the Secondary ISP",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(
+                    controller: secondaryISPController,
+                    keyboardType: TextInputType.text,
+                    label: '',
+                    onChanged: (v) => examController.secondaryInfrastructure.value = v,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Secondary ISP name is required";
+                      }
+                      return null;
+                    },
+
+                  ),
+
+                  const SizedBox(height: 15),
+                  Text("Secondary ISP Connected Type",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  Obx(() => CustomDropdown<String>(
+                    hintText: "Select",
+                    items: ispTypes,
+                    itemLabel: (v) => v,
+                    value: examController.secondaryIspConnectType.value.isNotEmpty
+                        ? examController.secondaryIspConnectType.value
+                        : null,
+                    onChanged: (v) {
+                      examController.secondaryIspConnectType.value = v ?? '';
+                    },
+
+                  )),
+
+
+                  const SizedBox(height: 15),
+                  Text("Secondary Internet Speed",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: AppTextField(
+                          controller: secondaryInternetController,
+                          keyboardType: TextInputType.number,
+                          label: '',
+                          onChanged: (v) =>
+                          examController.secondaryIspSpeed.value = double.tryParse(v) ?? 0,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Obx(() => CustomDropdown<String>(
+                          hintText: "Unit",
+                          items: speeds,
+                          itemLabel: (v) => v,
+                          value: examController.secondaryInternetSpeedUnit.value.isNotEmpty
+                              ? examController.secondaryInternetSpeedUnit.value
+                              : null,
+                          onChanged: (v) {
+                            examController.secondaryInternetSpeedUnit.value = v ?? '';
+                          },
+
+                        )),
+                      )
+
+                    ],
+                  ),
+
+                  const SizedBox(height: 15),
+                  Text("Generator Available", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  Obx(() => Column(
+                    children: [
                       CustomDropdown<String>(
                         hintText: "Select",
-                        items: tankCapacityLtr,
+                        items: yesNoOptions,
                         itemLabel: (v) => v,
-                        value: examController.generatorFuelTankCapacity.value > 0
-                            ? "${examController.generatorFuelTankCapacity.value % 1 == 0
-                            ? examController.generatorFuelTankCapacity.value.toInt()
-                            : examController.generatorFuelTankCapacity.value} ltr"
-                            : null,
+                        value: examController.isGeneratorBackup.value ? "Yes" : "No",
                         onChanged: (v) {
-                          examController.generatorFuelTankCapacity.value =
-                              double.tryParse(v?.replaceAll(" ltr", "") ?? "0") ?? 0;
+                          examController.isGeneratorBackup.value = (v == "Yes");
                         },
-                        validator: (value) => null,
-                      )
+
+                      ),
+
+                      // Show generator fields only if Yes
+                      if (examController.isGeneratorBackup.value) ...[
+                        const SizedBox(height: 15),
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Text("Generator Capacity (in KVA)",
+                              style: AppTextStyles.centerText),
+                        ),
+                        const SizedBox(height: 8),
+                        AppTextField(
+                          controller: generatorCapacityController,
+                          keyboardType: TextInputType.number,
+                          label: '',
+                          onChanged: (v) =>
+                          examController.generatorBackupCapacity.value = double.tryParse(v) ?? 0,
+                        ),
+
+                        const SizedBox(height: 15),
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Text("Generator full tank Capacity (ltr)",
+                              style: AppTextStyles.centerText),
+                        ),
+                        const SizedBox(height: 8),
+                        CustomDropdown<String>(
+                          hintText: "Select",
+                          items: tankCapacityLtr,
+                          itemLabel: (v) => v,
+                          value: examController.generatorFuelTankCapacity.value > 0
+                              ? "${examController.generatorFuelTankCapacity.value % 1 == 0
+                              ? examController.generatorFuelTankCapacity.value.toInt()
+                              : examController.generatorFuelTankCapacity.value} ltr"
+                              : null,
+                          onChanged: (v) {
+                            examController.generatorFuelTankCapacity.value =
+                                double.tryParse(v?.replaceAll(" ltr", "") ?? "0") ?? 0;
+                          },
+
+                        )
+                      ],
                     ],
-                  ],
-                )),
+                  )),
 
 
-                const SizedBox(height: 15),
-                Text("UPS Backup", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(
-                  controller: upsBackupController,
-                  keyboardType: TextInputType.number,
-                  label: '',
-                  onChanged: (v) {
-                    examController.upsBackup.value = v.toLowerCase() == "yes";
-                  },
-                ),
-                const SizedBox(height: 15),
-                Text("Ups Backup time (in mins)",
-                    style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-              Obx(() => CustomDropdown<String>(
-                hintText: "Select",
-                items: upsBackupTimeOptions,
-                itemLabel: (v) => v,
-                value: examController.upsBackupTime.value > 0
-                    ? "${examController.upsBackupTime.value.toInt()} mins"
-                    : null,
-                onChanged: (v) {
-                  examController.upsBackupTime.value =
-                      double.tryParse(v?.replaceAll(" mins", "") ?? "0") ?? 0;
-                },
-                validator: (value) => null,
-              )),
+                  const SizedBox(height: 15),
+                  Text("UPS Backup", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
 
-              const SizedBox(height: 30),
-                Text("Lab Details",
-                    style: GoogleFonts.karla(
-                        fontSize: 18, fontWeight: FontWeight.bold)),
-
-
-                Obx(() => Column(
-                  children: List.generate(
-                    examController.labs.length,
-                        (index) => _buildLabBox(index),
+                  AppTextField(
+                    controller: upsBackupController,
+                    keyboardType: TextInputType.number,
+                    label: '',
+                    onChanged: (v) {
+                      examController.upsBackup.value = (double.tryParse(v) ?? 0) as bool;
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "UPS Backup KVA is required";
+                      }
+                      return null;
+                    },
                   ),
+
+                  AppTextField(
+                    controller: upsBackupController,
+                    keyboardType: TextInputType.number,
+                    label: '',
+
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "UPS Backup is required";
+                      }
+                      return null;
+                    },
+
+                  ),
+                  const SizedBox(height: 15),
+                  Text("Ups Backup time (in mins)",
+                      style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                Obx(() => CustomDropdown<String>(
+                  hintText: "Select",
+                  items: upsBackupTimeOptions,
+                  itemLabel: (v) => v,
+                  value: examController.upsBackupTime.value > 0
+                      ? "${examController.upsBackupTime.value.toInt()} mins"
+                      : null,
+                  onChanged: (v) {
+                    examController.upsBackupTime.value =
+                        double.tryParse(v?.replaceAll(" mins", "") ?? "0") ?? 0;
+                  },
+
                 )),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          Get.back();
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border:
-                            Border.all(color: const Color(0xffDDDDDD)),
-                          ),
-                          height: 48,
-                          width: double.infinity,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Text(
-                              "Go Back",
-                              textAlign: TextAlign.center,
-                              style: AppTextStyles.centerText,
+
+                const SizedBox(height: 30),
+                  Text("Lab Details",
+                      style: GoogleFonts.karla(
+                          fontSize: 18, fontWeight: FontWeight.bold)),
+
+
+                  Obx(() => Column(
+                    children: List.generate(
+                      examController.labs.length,
+                          (index) => _buildLabBox(index),
+                    ),
+                  )),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            Get.back();
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border:
+                              Border.all(color: const Color(0xffDDDDDD)),
+                            ),
+                            height: 48,
+                            width: double.infinity,
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Go Back",
+                                textAlign: TextAlign.center,
+                                style: AppTextStyles.centerText,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 26),
-                    Expanded(
-                      flex: 2,
-                      child: CustomPrimaryButton(
-                        icon: Icons.arrow_right_alt_rounded,
-                        text: "Next",
-                        onPressed: (){
-                          _printStep3Data();
-                          Get.to(() =>  CenterDetailsPage4());
-                        },
+                      const SizedBox(width: 26),
+                      Expanded(
+                        flex: 2,
+                        child: CustomPrimaryButton(
+                          icon: Icons.arrow_right_alt_rounded,
+                          text: "Next",
+                          onPressed: (){
+                            if (!_formKey.currentState!.validate()) {
+
+                              return;
+                            }
+                            _printStep3Data();
+                            Get.to(() =>  CenterDetailsPage4());
+                          },
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 30),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                ],
+              ),
             ),
           ),
         ),
@@ -843,6 +926,8 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
   }
   void _printStep3Data() {
     print("========== STEP 3 DATA DEBUG START ==========");
+
+
 
     print("Total Labs: ${examController.totalNumberOfLab.value}");
     print("Total Systems: ${examController.totalNumberOfSystem.value}");

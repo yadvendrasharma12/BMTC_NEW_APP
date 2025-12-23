@@ -149,6 +149,9 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
   }
 
   Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) {
+      return; // ⛔ STOP submission
+    }
 
     examController.beneficiaryName.value = beneficiaryController.text.trim();
     examController.bankName.value = bankNameController.text.trim();
@@ -198,262 +201,309 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
 
     print("========== STEP 4 DATA DEBUG END ==========");
   }
-
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Step Header
-                Center(
-                  child: Column(
-                    children: [
-                      Text("Step 4", style: AppTextStyles.bodyStepText),
-                      const SizedBox(height: 2),
-                      Text(
-                        "Bank Account Details",
-                        style: AppTextStyles.centerDetailsTopTitle,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "Please enter your bank details",
-                        style: AppTextStyles.centerSubTitle,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Beneficiary Name
-                Text("Beneficiary Name", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(controller: beneficiaryController, onChanged: (val) {}, label: '',),
-                const SizedBox(height: 15),
-
-                // Bank Name
-                Text("Name of the Bank", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(controller: bankNameController, onChanged: (val) {}, label: '',),
-                const SizedBox(height: 15),
-
-                // Bank Account Number
-                Text("Bank Account Number", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(
-                  controller: accountNumberController,
-                  keyboardType: TextInputType.number,
-                  onChanged: (val) {}, label: '',
-                ),
-                const SizedBox(height: 15),
-
-                // IFSC
-                Text("Bank IFSC code", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(controller: ifscController, onChanged: (val) {}, label: '',),
-                const SizedBox(height: 15),
-
-                // PAN
-                Text("PAN Number", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(controller: panController, onChanged: (val) {}, label: '',),
-                const SizedBox(height: 15),
-
-                // GST Yes/No
-                yesNoSelector("Do you have GST number?", examController.hasGst),
-                const SizedBox(height: 15),
-
-                // GST Details
-                Obx(() => examController.hasGst.value
-                    ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("GST Number", style: AppTextStyles.centerText),
-                    const SizedBox(height: 8),
-                    AppTextField(controller: gstController, keyboardType: TextInputType.multiline, onChanged: (val) {}, label: '',),
-                    const SizedBox(height: 15),
-                    Text("Upload GST Certificate", style: AppTextStyles.centerText),
-                    const SizedBox(height: 8),
-                    UploadingContainer(
-                      buttonText: "Upload File",
-                      infoText: "Max Each file size: 2 MB | File type: doc, docx, pdf",
-                      onPressed: () async {
-                        await _pickFile(
-                            maxSizeMB: 2,
-                            allowedExtensions: ['doc', 'docx', 'pdf'],
-                            onFilePicked: (file) {
-                              examController.gstCertFile.value = file;
-                              print("GST Certificate picked: ${file.path}");
-                            });
-                      },
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Step Header
+                  Center(
+                    child: Column(
+                      children: [
+                        Text("Step 4", style: AppTextStyles.bodyStepText),
+                        const SizedBox(height: 2),
+                        Text(
+                          "Bank Account Details",
+                          style: AppTextStyles.centerDetailsTopTitle,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Please enter your bank details",
+                          style: AppTextStyles.centerSubTitle,
+                        ),
+                      ],
                     ),
-                    _selectedFileInfo(examController.gstCertFile),
-                    const SizedBox(height: 15),
-                    Text("GST State Code", style: AppTextStyles.centerText),
-                    const SizedBox(height: 8),
-                    AppTextField(controller: gstStateCodeController, keyboardType: TextInputType.number, onChanged: (val) {}, label: '',),
-                  ],
-                )
-                    : const SizedBox.shrink()),
+                  ),
+                  const SizedBox(height: 20),
 
-                const SizedBox(height: 15),
+                  // Beneficiary Name
+                  Text("Beneficiary Name", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(controller: beneficiaryController, onChanged: (val) {}, label: '',
 
-                // UIDAI
-                Text("UIDAI Number", style: AppTextStyles.centerText),
-                const SizedBox(height: 8),
-                AppTextField(controller: uidaiController, onChanged: (val) {}, label: '',),
-                const SizedBox(height: 15),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Beneficiary name is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 15),
 
-                // MSME Yes/No
-                yesNoSelector("Do you have MSME number?", examController.hasMsme),
-                const SizedBox(height: 15),
+                  // Bank Name
+                  Text("Name of the Bank", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(controller: bankNameController, onChanged: (val) {}, label: '',
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Bank name is required";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 15),
 
-                Obx(() => examController.hasMsme.value
-                    ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("MSME Number", style: AppTextStyles.centerText),
-                    const SizedBox(height: 8),
-                    AppTextField(controller: msmeController, onChanged: (val) {}, label: '',),
-                    const SizedBox(height: 15),
-                  ],
-                )
-                    : const SizedBox.shrink()),
+                  // Bank Account Number
+                  Text("Bank Account Number", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(
+                    controller: accountNumberController,
+                    keyboardType: TextInputType.number,
+                    onChanged: (val) {}, label: '',
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "Account number is required";
+                      }
+                      if (value.length < 10) {
+                        return "Invalid account number";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 15),
 
-                /// File Uploads
-                // Canceled Cheque
-                Text("Upload Canceled Cheque", style: AppTextStyles.centerText),
-                const SizedBox(height: 15),
-                UploadingContainer(
-                  buttonText: "Upload File",
-                  infoText: "Max Each file size: 2 MB | File type: doc, docx, pdf",
-                  onPressed: () async {
-                    await _pickFile(
-                        maxSizeMB: 2,
-                        allowedExtensions: ['doc', 'docx', 'pdf'],
-                        onFilePicked: (file) {
-                          examController.cancelledChequeFile.value = file;
-                          print("cancled check picked: ${file.path}");
-                        });
-                  },
-                ),
-                _selectedFileInfo(examController.cancelledChequeFile),
-                const SizedBox(height: 15),
+                  // IFSC
+                  Text("Bank IFSC code", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(controller: ifscController, onChanged: (val) {}, label: '',
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "IFSC code is required";
+                      }
+                      if (value.length != 11) {
+                        return "Invalid IFSC code";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 15),
 
-                // Agreement
-                Text("Upload Agreement", style: AppTextStyles.centerText),
-                const SizedBox(height: 15),
-                UploadingContainer(
-                  buttonText: "Upload File",
-                  infoText: "Max Each file size: 2 MB | File type: doc, docx, pdf",
-                  onPressed: () async {
-                    await _pickFile(
-                        maxSizeMB: 2,
-                        allowedExtensions: ['doc', 'docx', 'pdf'],
-                        onFilePicked: (file) {
-                          examController.agreementFile.value = file;
-                          print("upload agriment: ${file.path}");
+                  // PAN
+                  Text("PAN Number", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(controller: panController, onChanged: (val) {}, label: '',
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return "PAN number is required";
+                      }
+                      if (value.length != 10) {
+                        return "Invalid PAN number";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 15),
 
-                        });
-                  },
-                ),
-                _selectedFileInfo(examController.agreementFile),
-                const SizedBox(height: 15),
+                  // GST Yes/No
+                  yesNoSelector("Do you have GST number?", examController.hasGst),
+                  const SizedBox(height: 15),
 
-                // MOU
-                Text("Upload MOU", style: AppTextStyles.centerText),
-                const SizedBox(height: 15),
-                UploadingContainer(
-                  buttonText: "Upload File",
-                  infoText: "Max Each file size: 2 MB | File type: doc, docx, pdf",
-                  onPressed: () async {
-                    await _pickFile(
-                        maxSizeMB: 2,
-                        allowedExtensions: ['doc', 'docx', 'pdf'],
-                        onFilePicked: (file) {
-                          examController.mouFile.value = file;
-                          print("uplaod mOu picked: ${file.path}");
-                        });
-                  },
-                ),
-                _selectedFileInfo(examController.mouFile),
-                const SizedBox(height: 15),
+                  // GST Details
+                  Obx(() => examController.hasGst.value
+                      ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("GST Number", style: AppTextStyles.centerText),
+                      const SizedBox(height: 8),
+                      AppTextField(controller: gstController, keyboardType: TextInputType.multiline, onChanged: (val) {}, label: '',),
+                      const SizedBox(height: 15),
+                      Text("Upload GST Certificate", style: AppTextStyles.centerText),
+                      const SizedBox(height: 8),
+                      UploadingContainer(
+                        buttonText: "Upload File",
+                        infoText: "Max Each file size: 2 MB | File type: doc, docx, pdf",
+                        onPressed: () async {
+                          await _pickFile(
+                              maxSizeMB: 2,
+                              allowedExtensions: ['doc', 'docx', 'pdf'],
+                              onFilePicked: (file) {
+                                examController.gstCertFile.value = file;
+                                print("GST Certificate picked: ${file.path}");
+                              });
+                        },
+                      ),
+                      _selectedFileInfo(examController.gstCertFile),
+                      const SizedBox(height: 15),
+                      Text("GST State Code", style: AppTextStyles.centerText),
+                      const SizedBox(height: 8),
+                      AppTextField(controller: gstStateCodeController, keyboardType: TextInputType.number, onChanged: (val) {}, label: '',),
+                    ],
+                  )
+                      : const SizedBox.shrink()),
 
-                // PAN Card
-                Text("Upload PAN Card", style: AppTextStyles.centerText),
-                const SizedBox(height: 15),
-                UploadingContainer(
-                  buttonText: "Upload File",
-                  infoText: "Max Each file size: 2 MB | File type: doc, docx, pdf",
-                  onPressed: () async {
-                    await _pickFile(
-                        maxSizeMB: 2,
-                        allowedExtensions: ['doc', 'docx', 'pdf'],
-                        onFilePicked: (file) {
-                          examController.panCardFile.value = file;
-                          print("PanCard picked: ${file.path}");
-                        });
-                  },
-                ),
-                _selectedFileInfo(examController.panCardFile),
-                const SizedBox(height: 15),
+                  const SizedBox(height: 15),
 
-                // Udhaym Certificate
-                Text("Upload Udhaym Certificate", style: AppTextStyles.centerText),
-                const SizedBox(height: 15),
-                UploadingContainer(
-                  buttonText: "Upload File",
-                  infoText: "Max Each file size: 2 MB | File type: doc, docx, pdf",
-                  onPressed: () async {
-                    await _pickFile(
-                        maxSizeMB: 2,
-                        allowedExtensions: ['doc', 'docx', 'pdf'],
-                        onFilePicked: (file) {
-                          examController.udhayamFile.value = file;
-                          print("Udhaym cetificate picked: ${file.path}");
-                        });
-                  },
-                ),
-                _selectedFileInfo(examController.udhayamFile),
-                const SizedBox(height: 24),
+                  // UIDAI
+                  Text("UIDAI Number", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(controller: uidaiController, onChanged: (val) {}, label: '',),
+                  const SizedBox(height: 15),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => Get.back(),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: const Color(0xffDDDDDD))),
-                          height: 48,
-                          width: double.infinity,
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Text("Go Back", textAlign: TextAlign.center, style: AppTextStyles.centerText),
+                  // MSME Yes/No
+                  yesNoSelector("Do you have MSME number?", examController.hasMsme),
+                  const SizedBox(height: 15),
+
+                  Obx(() => examController.hasMsme.value
+                      ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("MSME Number", style: AppTextStyles.centerText),
+                      const SizedBox(height: 8),
+                      AppTextField(controller: msmeController, onChanged: (val) {}, label: '',),
+                      const SizedBox(height: 15),
+                    ],
+                  )
+                      : const SizedBox.shrink()),
+
+                  /// File Uploads
+                  // Canceled Cheque
+                  Text("Upload Canceled Cheque", style: AppTextStyles.centerText),
+                  const SizedBox(height: 15),
+                  UploadingContainer(
+                    buttonText: "Upload File",
+                    infoText: "Max Each file size: 2 MB | File type: doc, docx, pdf",
+                    onPressed: () async {
+                      await _pickFile(
+                          maxSizeMB: 2,
+                          allowedExtensions: ['doc', 'docx', 'pdf'],
+                          onFilePicked: (file) {
+                            examController.cancelledChequeFile.value = file;
+                            print("cancled check picked: ${file.path}");
+                          });
+                    },
+                  ),
+                  _selectedFileInfo(examController.cancelledChequeFile),
+                  const SizedBox(height: 15),
+
+                  // Agreement
+                  Text("Upload Agreement", style: AppTextStyles.centerText),
+                  const SizedBox(height: 15),
+                  UploadingContainer(
+                    buttonText: "Upload File",
+                    infoText: "Max Each file size: 2 MB | File type: doc, docx, pdf",
+                    onPressed: () async {
+                      await _pickFile(
+                          maxSizeMB: 2,
+                          allowedExtensions: ['doc', 'docx', 'pdf'],
+                          onFilePicked: (file) {
+                            examController.agreementFile.value = file;
+                            print("upload agriment: ${file.path}");
+
+                          });
+                    },
+                  ),
+                  _selectedFileInfo(examController.agreementFile),
+                  const SizedBox(height: 15),
+
+                  // MOU
+                  Text("Upload MOU", style: AppTextStyles.centerText),
+                  const SizedBox(height: 15),
+                  UploadingContainer(
+                    buttonText: "Upload File",
+                    infoText: "Max Each file size: 2 MB | File type: doc, docx, pdf",
+                    onPressed: () async {
+                      await _pickFile(
+                          maxSizeMB: 2,
+                          allowedExtensions: ['doc', 'docx', 'pdf'],
+                          onFilePicked: (file) {
+                            examController.mouFile.value = file;
+                            print("uplaod mOu picked: ${file.path}");
+                          });
+                    },
+                  ),
+                  _selectedFileInfo(examController.mouFile),
+                  const SizedBox(height: 15),
+
+                  // PAN Card
+                  Text("Upload PAN Card", style: AppTextStyles.centerText),
+                  const SizedBox(height: 15),
+                  UploadingContainer(
+                    buttonText: "Upload File",
+                    infoText: "Max Each file size: 2 MB | File type: doc, docx, pdf",
+                    onPressed: () async {
+                      await _pickFile(
+                          maxSizeMB: 2,
+                          allowedExtensions: ['doc', 'docx', 'pdf'],
+                          onFilePicked: (file) {
+                            examController.panCardFile.value = file;
+                            print("PanCard picked: ${file.path}");
+                          });
+                    },
+                  ),
+                  _selectedFileInfo(examController.panCardFile),
+                  const SizedBox(height: 15),
+
+                  // Udhaym Certificate
+                  Text("Upload Udhaym Certificate", style: AppTextStyles.centerText),
+                  const SizedBox(height: 15),
+                  UploadingContainer(
+                    buttonText: "Upload File",
+                    infoText: "Max Each file size: 2 MB | File type: doc, docx, pdf",
+                    onPressed: () async {
+                      await _pickFile(
+                          maxSizeMB: 2,
+                          allowedExtensions: ['doc', 'docx', 'pdf'],
+                          onFilePicked: (file) {
+                            examController.udhayamFile.value = file;
+                            print("Udhaym cetificate picked: ${file.path}");
+                          });
+                    },
+                  ),
+                  _selectedFileInfo(examController.udhayamFile),
+                  const SizedBox(height: 24),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => Get.back(),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: const Color(0xffDDDDDD))),
+                            height: 48,
+                            width: double.infinity,
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Text("Go Back", textAlign: TextAlign.center, style: AppTextStyles.centerText),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 26),
-                    Expanded(
-                      flex: 2,
-                      child: CustomPrimaryButton(
-                        icon: Icons.arrow_right_alt_rounded,
-                        text: "Next",
-                        onPressed: _submit,
+                      const SizedBox(width: 26),
+                      Expanded(
+                        flex: 2,
+                        child: CustomPrimaryButton(
+                          icon: Icons.arrow_right_alt_rounded,
+                          text: "Next",
+                          onPressed: _submit,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
             ),
           ),
         ),
