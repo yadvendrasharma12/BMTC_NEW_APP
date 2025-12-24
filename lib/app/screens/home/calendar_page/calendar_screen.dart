@@ -12,7 +12,7 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  final CalendarController controller = Get.put(CalendarController());
+  final CalendarController controller = Get.find();
 
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
@@ -47,6 +47,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             const SizedBox(height: 16),
 
             /// MONTH & YEAR DROPDOWN
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -58,8 +59,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
             ),
 
-            const SizedBox(height: 16),
 
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 18),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  formatFullDate(_selectedDay ?? _focusedDay),
+                  style: AppTextStyles.dashBordButton3,
+                ),
+              ),
+            ),
+            const SizedBox(height: 5),
             /// CALENDAR WIDGET
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -76,42 +87,56 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ),
                 ],
               ),
-              child: TableCalendar(
-                firstDay: DateTime(2020),
-                lastDay: DateTime(2035),
-                focusedDay: _focusedDay,
-                selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+              child: Obx(() {
+                return TableCalendar(
+                  key: ValueKey(controller.bookedDates.length), // 🔥 MOST IMPORTANT
 
-                /// ON DAY SELECTED → CALL API
-                onDaySelected: (selectedDay, focusedDay) async {
-                  setState(() {
-                    _selectedDay = selectedDay;
-                    _focusedDay = focusedDay;
-                  });
+                  firstDay: DateTime(2020),
+                  lastDay: DateTime(2035),
+                  focusedDay: _focusedDay,
+                  selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
 
-                  /// CALL LIVE API
-                  await controller.fetchBookingDetails(selectedDay);
+                  onDaySelected: (selectedDay, focusedDay) async {
+                    setState(() {
+                      _selectedDay = selectedDay;
+                      _focusedDay = focusedDay;
+                    });
 
-                  /// SHOW POPUP
-                  _showEventsDialog(selectedDay);
-                },
+                    await controller.fetchBookingDetails(selectedDay);
+                    _showEventsDialog(selectedDay);
+                  },
 
-                headerVisible: false,
-                availableGestures: AvailableGestures.none,
+                  headerVisible: false,
+                  availableGestures: AvailableGestures.none,
 
-                /// ---------------- Highlight Booked Dates ----------------
-                calendarBuilders: CalendarBuilders(
-                  defaultBuilder: (context, day, focusedDay) {
-                    bool isBooked = controller.bookedDates.any((d) =>
-                    d.year == day.year &&
-                        d.month == day.month &&
-                        d.day == day.day);
+                  calendarBuilders: CalendarBuilders(
+                    defaultBuilder: (context, day, focusedDay) {
+                      bool isBooked = controller.bookedDates.any((d) =>
+                      d.year == day.year &&
+                          d.month == day.month &&
+                          d.day == day.day);
 
-                    if (isBooked) {
+                      if (isBooked) {
+                        return Container(
+                          margin: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.green.shade400,
+                            shape: BoxShape.circle,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "${day.day}",
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        );
+                      }
+                      return null;
+                    },
+                    selectedBuilder: (context, day, focusedDay) {
                       return Container(
                         margin: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Colors.green.shade400,
+                        decoration: const BoxDecoration(
+                          color: Colors.blue,
                           shape: BoxShape.circle,
                         ),
                         alignment: Alignment.center,
@@ -120,40 +145,89 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           style: const TextStyle(color: Colors.white),
                         ),
                       );
-                    }
+                    },
+                  ),
+                );
+              }),
 
-                    return null; // fallback to default
-                  },
-                  selectedBuilder: (context, day, focusedDay) {
-                    return Container(
-                      margin: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        "${day.day}",
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    );
-                  },
-                  todayBuilder: (context, day, focusedDay) {
-                    return Container(
-                      margin: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.blue, width: 2),
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        "${day.day}",
-                        style: const TextStyle(color: Colors.black),
-                      ),
-                    );
-                  },
-                ),
-              ),
+              // child: TableCalendar(
+              //   firstDay: DateTime(2020),
+              //   lastDay: DateTime(2035),
+              //   focusedDay: _focusedDay,
+              //   selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
+              //
+              //   /// ON DAY SELECTED → CALL API
+              //   onDaySelected: (selectedDay, focusedDay) async {
+              //     setState(() {
+              //       _selectedDay = selectedDay;
+              //       _focusedDay = focusedDay;
+              //     });
+              //
+              //     /// CALL LIVE API
+              //     await controller.fetchBookingDetails(selectedDay);
+              //
+              //     /// SHOW POPUP
+              //     _showEventsDialog(selectedDay);
+              //   },
+              //
+              //   headerVisible: false,
+              //   availableGestures: AvailableGestures.none,
+              //
+              //   /// ---------------- Highlight Booked Dates ----------------
+              //   calendarBuilders: CalendarBuilders(
+              //     defaultBuilder: (context, day, focusedDay) {
+              //       bool isBooked = controller.bookedDates.any((d) =>
+              //       d.year == day.year &&
+              //           d.month == day.month &&
+              //           d.day == day.day);
+              //
+              //       if (isBooked) {
+              //         return Container(
+              //           margin: const EdgeInsets.all(4),
+              //           decoration: BoxDecoration(
+              //             color: Colors.green.shade400,
+              //             shape: BoxShape.circle,
+              //           ),
+              //           alignment: Alignment.center,
+              //           child: Text(
+              //             "${day.day}",
+              //             style: const TextStyle(color: Colors.white),
+              //           ),
+              //         );
+              //       }
+              //
+              //       return null; // fallback to default
+              //     },
+              //     selectedBuilder: (context, day, focusedDay) {
+              //       return Container(
+              //         margin: const EdgeInsets.all(4),
+              //         decoration: BoxDecoration(
+              //           color: Colors.blue,
+              //           shape: BoxShape.circle,
+              //         ),
+              //         alignment: Alignment.center,
+              //         child: Text(
+              //           "${day.day}",
+              //           style: const TextStyle(color: Colors.white),
+              //         ),
+              //       );
+              //     },
+              //     todayBuilder: (context, day, focusedDay) {
+              //       return Container(
+              //         margin: const EdgeInsets.all(4),
+              //         decoration: BoxDecoration(
+              //           border: Border.all(color: Colors.blue, width: 2),
+              //           shape: BoxShape.circle,
+              //         ),
+              //         alignment: Alignment.center,
+              //         child: Text(
+              //           "${day.day}",
+              //           style: const TextStyle(color: Colors.black),
+              //         ),
+              //       );
+              //     },
+              //   ),
+              // ),
             ),
 
             const SizedBox(height: 8),
@@ -161,6 +235,48 @@ class _CalendarScreenState extends State<CalendarScreen> {
         );
       }),
     );
+  }
+  String formatFullDate(DateTime date) {
+    String dayName = [
+      'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday'
+    ][date.weekday % 7];
+
+    String monthName = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ][date.month - 1];
+
+    String daySuffix(int day) {
+      if (day >= 11 && day <= 13) return 'th';
+      switch (day % 10) {
+        case 1:
+          return 'st';
+        case 2:
+          return 'nd';
+        case 3:
+          return 'rd';
+        default:
+          return 'th';
+      }
+    }
+
+    return "$dayName, $monthName ${date.day}${daySuffix(date.day)}, ${date.year}";
   }
 
   // =================== Month Dropdown ===================
@@ -337,3 +453,4 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 }
+

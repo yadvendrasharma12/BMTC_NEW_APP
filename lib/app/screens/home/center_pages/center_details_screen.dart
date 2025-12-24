@@ -5,7 +5,12 @@ import 'package:get/get.dart';
 import '../../../controllers/profile_data_controller.dart';
 import '../../../core/app_colors.dart';
 import '../../../core/text_style.dart';
+import '../../../models/city_modal.dart';
+import '../../../models/country_modal.dart';
 import '../../../models/profile_data_model.dart' as api;
+import '../../../models/state_modal.dart';
+import '../../../services/location_services/location_service.dart';
+import '../../../widgets/custom_dropdown.dart';
 
 class CenterDetailsScreen extends StatefulWidget {
   const CenterDetailsScreen({super.key});
@@ -16,12 +21,81 @@ class CenterDetailsScreen extends StatefulWidget {
 
 class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
   final profileController = Get.put(ProfileDataController());
+
   String formatBooleanField(String? value) {
     if (value == null || value.isEmpty) return "N/A";
     if (value.toLowerCase() == "true") return "Yes";
     if (value.toLowerCase() == "false") return "No";
     return value; // For any other value, show as-is
   }
+  final controller = Get.find<ProfileDataController>();
+  Future<void> _loadCountries() async {
+    final list = await LocationService.getCountries();
+    final center = controller.profileDataModel.value!.data.center;
+
+    setState(() {
+      countryList = list;
+      selectedCountry = list.firstWhereOrNull(
+            (c) => c.id == center.countryId,
+      );
+    });
+
+    if (selectedCountry != null) {
+      await _loadStatesByCountry(selectedCountry!.id);
+    }
+  }
+
+  Future<void> _loadStatesByCountry(String countryId) async {
+    final list = await LocationService.getStates(countryId);
+    final center = controller.profileDataModel.value!.data.center;
+
+    setState(() {
+      stateList = list;
+      selectedState = list.firstWhereOrNull(
+            (s) => s.id == center.stateId,
+      );
+    });
+
+    if (selectedState != null) {
+      await _loadCitiesByState(selectedState!.id);
+    }
+  }
+
+  Future<void> _loadCitiesByState(String stateId) async {
+    final list = await LocationService.getCities(stateId);
+    final center = controller.profileDataModel.value!.data.center;
+
+    setState(() {
+      cityList = list;
+      selectedCity = list.firstWhereOrNull(
+            (c) => c.id == center.cityId,
+      );
+    });
+  }
+  List<CountryModel> countryList = [];
+  List<StateModel> stateList = [];
+  List<CityModel> cityList = [];
+
+  CountryModel? selectedCountry;
+  StateModel? selectedState;
+  CityModel? selectedCity;
+
+  bool isCountryLoading = false;
+  bool isStateLoading = false;
+  bool isCityLoading = false;
+
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadCountries();
+  }
+
+  String _safeText(String? value) {
+    if (value == null || value.isEmpty) return "N/A";
+    return value;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,11 +141,12 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
                   const SizedBox(height: 20),
 
                   Padding(
-                    padding:  EdgeInsets.all(14.0),
+                    padding: EdgeInsets.all(14.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Center Images", style: AppTextStyles.dashBordButton3),
+                        Text("Center Images",
+                            style: AppTextStyles.dashBordButton3),
                         Row(
                           children: [
 
@@ -82,7 +157,8 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
                                 );
 
                                 if (result == true) {
-                                  profileController.fetchCenterDetails(); // 🔥 REFRESH API
+                                  profileController
+                                      .fetchCenterDetails(); // 🔥 REFRESH API
                                 }
                               },
 
@@ -90,15 +166,17 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
                                 height: 40,
                                 width: 135,
                                 decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius: BorderRadius.circular(6)
+                                    color: Colors.black,
+                                    borderRadius: BorderRadius.circular(6)
                                 ),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.edit_note_outlined,color: Colors.white,),
+                                    Icon(Icons.edit_note_outlined,
+                                      color: Colors.white,),
                                     SizedBox(width: 7,),
-                                    Text("Edit Center",style: AppTextStyles.button,),
+                                    Text("Edit Center",
+                                      style: AppTextStyles.button,),
                                   ],
                                 ),
                               ),
@@ -115,7 +193,8 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Last updated on 05/03/2025", style: AppTextStyles.caption),
+                        Text("Last updated on 05/03/2025",
+                            style: AppTextStyles.caption),
                         SizedBox(height: 7,),
                         Divider()
                       ],
@@ -124,14 +203,17 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
 
                   Padding(
                     padding: const EdgeInsets.all(14.0),
-                    child: Text("Center Details", style: AppTextStyles.dashBordButton3),
+                    child: Text(
+                        "Center Details", style: AppTextStyles.dashBordButton3),
                   ),
 
-                  _buildCenterInfo(center, countries, states, cities, centerTypes),
+                  _buildCenterInfo(
+                      center, countries, states, cities, centerTypes),
                   const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.all(14.0),
-                    child: Text("Admin / Contact Details", style: AppTextStyles.topHeading3),
+                    child: Text("Admin / Contact Details",
+                        style: AppTextStyles.topHeading3),
                   ),
                   _buildAdminDetails(center),
                   const SizedBox(height: 20),
@@ -141,27 +223,32 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
                   // ===== Lab Details =====
                   Padding(
                     padding: const EdgeInsets.all(14.0),
-                    child: Text("Lab Details", style: AppTextStyles.topHeading3),
+                    child: Text(
+                        "Lab Details", style: AppTextStyles.topHeading3),
                   ),
                   if (labs.isNotEmpty)
-                    ...labs.asMap().entries.map((entry) {
+                    ...labs
+                        .asMap()
+                        .entries
+                        .map((entry) {
                       final lab = entry.value;
                       return _buildLabCard(lab, entry.key);
                     }).toList()
                   else
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Text("No Lab data available", style: AppTextStyles.centerText),
+                      child: Text("No Lab data available",
+                          style: AppTextStyles.centerText),
                     ),
 
                   const SizedBox(height: 20),
                   _buildBankDetails(center),
 
 
-
                   Padding(
                     padding: const EdgeInsets.all(14.0),
-                    child: Text("Upload Documents", style: AppTextStyles.dashBordButton3),
+                    child: Text("Upload Documents",
+                        style: AppTextStyles.dashBordButton3),
                   ),
                   _buildDocumentsSection(documents),
                   // ===== Admin Details =====
@@ -176,22 +263,21 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
   }
 
   // ===== Center Info Section =====
-  Widget _buildCenterInfo(
-      api.Center center,
+  Widget _buildCenterInfo(api.Center center,
       List<api.Country> countries,
-      List<api.State> states,      // add states list
-      List<api.City> cities,       // add cities list
-      List<api.CenterType> centerTypes,
-      ) {
+      List<api.State> states,
+      List<api.City> cities,
+      List<api.CenterType> centerTypes,) {
     // Map countryId → countryName
     String countryName = countries
-        .firstWhere((c) => c.id == center.countryId, orElse: () => api.Country(id: '', name: 'N/A'))
+        .firstWhere((c) => c.id == center.countryId,
+        orElse: () => api.Country(id: '', name: 'N/A'))
         .name;
 
     // Map stateId → stateName
     String stateName = states
         .firstWhere(
-          (s) => s.id.toString() == center.stateId.toString(),
+          (s) => s.id == center.stateId,
       orElse: () => api.State(id: '', name: 'N/A'),
     )
         .name;
@@ -204,12 +290,7 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
     )
         .name;
     // Map centerType id → centerTypeName
-    String centerTypeName = centerTypes
-        .firstWhere(
-          (ct) => ct.id.toString() == center.centerType.toString(),
-      orElse: () => api.CenterType(id: '', centerType: 'N/A'),
-    )
-        .centerType;
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
@@ -231,13 +312,29 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
           _buildField("Center's Latitude", center.addressLat),
           _buildField("Center's Longitude", center.addressLong),
           _buildField("Center Capacity", center.capacity),
-          _buildField("Country", countryName),
-          _buildField("State", stateName),
-          _buildField("City", cityName),
+
+          _buildField(
+            "Country",
+            _safeText(selectedCountry?.name),
+          ),
+
+          _buildField(
+            "State",
+            _safeText(selectedState?.name),
+          ),
+
+          _buildField(
+            "City",
+            _safeText(selectedCity?.name),
+          ),
+
+
           _buildField("Local Area Name", center.localArea),
           _buildField("Pin Code", center.pinCode),
-          _buildField("Center Type", centerTypeName),
-          _buildField("Center Description", center.description.isNotEmpty ? center.description : "No Description"),
+          _buildField("What is the Category of your Test Center?",center.typeOfCenter ),
+          _buildField("Center Description", center.description.isNotEmpty
+              ? center.description
+              : "No Description"),
           _buildField("Center nearby landmark", center.landmark),
           _buildField("Nearest Railway Station", center.nearestRailway),
           _buildField("Distance from Railway Station", center.distanceRailw),
@@ -271,38 +368,41 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 8.0,bottom: 8,left: 16),
-            child: Text("Point of Contact",style: AppTextStyles.centerText,),
+            padding: const EdgeInsets.only(top: 8.0, bottom: 8, left: 16),
+            child: Text("Point of Contact", style: AppTextStyles.centerText,),
           ),
-          _buildField("", center.pocName,showTitle: false),
-          _buildField("", center.pocContactNo,showTitle: false),
-          _buildField("", center.pocMobileAlternate,showTitle: false),
-          _buildField("", center.pocEmail,showTitle: false),
+          _buildField("", center.pocName, showTitle: false),
+          _buildField("", center.pocContactNo, showTitle: false),
+          _buildField("", center.pocMobileAlternate, showTitle: false),
+          _buildField("", center.pocEmail, showTitle: false),
           Padding(
-            padding: const EdgeInsets.only(top: 8.0,bottom: 8,left: 16),
-            child: Text("Center Superintendent details",style: AppTextStyles.centerText,),
+            padding: const EdgeInsets.only(top: 8.0, bottom: 8, left: 16),
+            child: Text("Center Superintendent details",
+              style: AppTextStyles.centerText,),
           ),
-          _buildField("AM Name", center.csName,showTitle: false),
-          _buildField("AM Contact", center.csContactNumber,showTitle: false),
-          _buildField("AM Email", center.csEmail,showTitle: false),
+          _buildField("AM Name", center.csName, showTitle: false),
+          _buildField("AM Contact", center.csContactNumber, showTitle: false),
+          _buildField("AM Email", center.csEmail, showTitle: false),
           Padding(
-            padding: const EdgeInsets.only(top: 8.0,bottom: 8,left: 16),
-            child: Text("IT Manager Details",style: AppTextStyles.centerText,),
+            padding: const EdgeInsets.only(top: 8.0, bottom: 8, left: 16),
+            child: Text("IT Manager Details", style: AppTextStyles.centerText,),
           ),
-          _buildField("POC Name", center.amName,showTitle: false),
-          _buildField("POC Contact", center.amContactNo,showTitle: false),
-          _buildField("POC Mobile Alternate", center.amEmail,showTitle: false),
+          _buildField("POC Name", center.amName, showTitle: false),
+          _buildField("POC Contact", center.amContactNo, showTitle: false),
+          _buildField("POC Mobile Alternate", center.amEmail, showTitle: false),
           Padding(
-            padding: const EdgeInsets.only(top: 8.0,bottom: 8,left: 16),
-            child: Text("Emergency Contact number of the Center",style: AppTextStyles.centerText,),
+            padding: const EdgeInsets.only(top: 8.0, bottom: 8, left: 16),
+            child: Text("Emergency Contact number of the Center",
+              style: AppTextStyles.centerText,),
           ),
-          _buildField("POC Name", center.emergencyContactNo,showTitle: false),
-          _buildField("POC Contact", center.landlineNumber,showTitle: false),
-        //  _buildField("POC Email", center.pocEmail),
+          _buildField("POC Name", center.emergencyContactNo, showTitle: false),
+          _buildField("POC Contact", center.landlineNumber, showTitle: false),
+          //  _buildField("POC Email", center.pocEmail),
         ],
       ),
     );
   }
+
   // ===== Infrastructure Details =====
   Widget _buildInfrastructureDetails(api.Center center) {
     return Container(
@@ -323,69 +423,95 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 8.0, bottom: 8, left: 16),
-            child: Text("Infrastructure Details", style: AppTextStyles.centerText),
+            child: Text(
+                "Infrastructure Details", style: AppTextStyles.centerText),
           ),
-          _buildField("Total Computers", center.totalNoSystem),
           _buildField("Total Labs", center.totalNoLab),
+          _buildField("Total Computers", center.totalNoSystem),
+
           _buildField(
             "Are all labs connected through a single network?",
-            formatBooleanField(center.connectedSingleNetwork),
+            formatBooleanField(center.connectedSingleNetwork,),
+            showDropdownArrow: true,
           ),
           _buildField("Total Network", center.howManyNetwork),
           _buildField(
             "Is There a Partition in each System",
             formatBooleanField(center.parttionEachLab),
+            showDropdownArrow: true,
           ),
           _buildField(
             "Is there an AC in each lab?",
             formatBooleanField(center.acInLab),
+            showDropdownArrow: true,
           ),
           _buildField(
             "Is the Network Printer available?",
             formatBooleanField(center.printerLab),
+            showDropdownArrow: true,
           ),
           _buildField(
             "Is there a projector in each lab?",
             formatBooleanField(center.projectorLab),
-          ),
+            showDropdownArrow: true,),
           _buildField(
             "Is there a sound system in each lab?",
             formatBooleanField(center.soundSystem),
+            showDropdownArrow: true,
           ),
           _buildField(
             "Is there Fire Extinguisher in each lab?",
             formatBooleanField(center.fireExuter),
+            showDropdownArrow: true,
           ),
           _buildField(
             "Is there a Locker Facility",
             formatBooleanField(center.lockerFacelity),
+            showDropdownArrow: true,
           ),
           _buildField(
             "Is there a drinking water facility in/near the labs?",
             formatBooleanField(center.drinkingWater),
+            showDropdownArrow: true,
           ),
           Padding(
             padding: const EdgeInsets.only(top: 8.0, bottom: 8, left: 16),
-            child: Text("Lab Infrastructure details", style: AppTextStyles.centerText),
+            child: Text(
+                "Lab Infrastructure details", style: AppTextStyles.centerText),
           ),
 
-          _buildField("Name of the Primary ISP", center.primaryIspName),
+          _buildField("Name of the Primary ISP", center.primaryIspName,),
+
           _buildField(
               "Primary Internet speed",
-              "${center.primaryConnectType ?? 'N/A'} (${center.primaryIspSpeed ?? '0'} ${center.speedUnitPrimary ?? ''})"
+              "${center.primaryConnectType ?? 'N/A'} (${center
+                  .primaryIspSpeed ?? '0'} ${center.speedUnitPrimary ?? ''})"
+
+
           ),
 
-          _buildField("Primary ISP Connection Type", center.primaryConnectType),
+          _buildField("Primary ISP Connection Type", center.primaryConnectType,
+            showDropdownArrow: true,),
 
           _buildField("Name of the Secondary ISP", center.secondaryIspName),
 
           _buildField(
               "Secondary ISP speed",
-              "${center.primaryConnectType ?? 'N/A'} (${center.secondaryIspSpeed ?? '0'} ${center.secoundaryUnit ?? ''})"
+              "${center.primaryConnectType ?? 'N/A'} (${center
+                  .secondaryIspSpeed ?? '0'} ${center.secoundaryUnit ?? ''})"
           ),
-          _buildField("Secondary ISP Connection Type", center.secondaryConnectedType),
+          _buildField(
+            "Secondary ISP Connection Type", center.secondaryConnectedType,
+            showDropdownArrow: true,),
+          _buildField(
+              "Generator Capacity (in KVA)", center.generatorBackupCapacity,
+              showDropdownArrow: true),
+          _buildField(
+              "Generator Fuel Tank Capacity (in Ltr.)", center.fuilTankCapacity,
+              showDropdownArrow: true),
           _buildField("UPS Backup(KVA)", center.upsBackupKua),
-          _buildField("UPS Backup Time(in mins)", center.upsBackupTime),
+          _buildField("UPS Backup Time(in mins)", center.upsBackupTime,
+            showDropdownArrow: true,),
 
         ],
       ),
@@ -420,7 +546,9 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
           _buildField("Bank Account number", center.bankAccount),
           _buildField("Bank IFSC code", center.Ifsc),
           _buildField("PAN number", center.panNo),
+          _buildField("GST number", center.gstNo),
           _buildField("GST State code", center.gstState),
+          _buildField("MSME Number", center.msmeNo),
           _buildField("UIDAI Number", center.uidainNo),
 
         ],
@@ -430,23 +558,24 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
 
 
   // ===== Generic Field Widget =====
-  Widget _buildField(
-      String title,
+  Widget _buildField(String title,
       String? value, {
         bool showDropdownArrow = false,
-        bool showTitle = true, // New parameter to show or hide title
+        bool showTitle = true,
       }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (showTitle) // Only show title if showTitle is true
+          if (showTitle)
             Text(
               title,
-              style: AppTextStyles.centerText.copyWith(fontWeight: FontWeight.w500),
+              style: AppTextStyles.centerText
+                  .copyWith(fontWeight: FontWeight.w500),
             ),
           if (showTitle) const SizedBox(height: 4),
+
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             decoration: BoxDecoration(
@@ -455,7 +584,6 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
               border: Border.all(color: Colors.grey.shade300),
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Text(
@@ -463,8 +591,14 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
                     style: AppTextStyles.centerText,
                   ),
                 ),
+
+                /// ✅ iOS-style dropdown arrow (optional)
                 if (showDropdownArrow)
-                  const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                  const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: Colors.black,
+                    size: 22,
+                  ),
               ],
             ),
           ),
@@ -502,7 +636,7 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
             ),
             child: Center(
               child: Text(
-                "Lab ${index + 1}",
+                "Total Lab ${index + 1}",
                 style: AppTextStyles.button,
               ),
             ),
@@ -510,14 +644,19 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
           const SizedBox(height: 12),
           _buildField("Floor", lab.floorName),
           _buildField("Total Computers", lab.noOfComputer),
-          _buildField("window_generation", lab.processer),
-          _buildField("Monitor Type", lab.monitorType),
-          _buildField("Operating System", lab.operatingSystem),
-          _buildField("RAM (GB)", lab.ram),
-          _buildField("Hard Disk (GB)", lab.hardDisk),
-          _buildField("Ethernet Company", lab.ehternetSwtchCompany),
-          _buildField("Switch Category", lab.switchCategory),
-          _buildField("No. of Ports", lab.noOfPortEthSwitch),
+          _buildField(
+              "window_generation", lab.processer, showDropdownArrow: true),
+          _buildField("Monitor Type", lab.monitorType, showDropdownArrow: true),
+          _buildField(
+              "Operating System", lab.operatingSystem, showDropdownArrow: true),
+          _buildField("RAM (GB)", lab.ram, showDropdownArrow: true),
+          _buildField("Hard Disk (GB)", lab.hardDisk, showDropdownArrow: true),
+          _buildField("Ethernet Company", lab.ehternetSwtchCompany,
+              showDropdownArrow: true),
+          _buildField(
+              "Switch Category", lab.switchCategory, showDropdownArrow: true),
+          _buildField(
+              "No. of Ports", lab.noOfPortEthSwitch, showDropdownArrow: true),
         ],
       ),
     );
@@ -534,7 +673,8 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
         itemCount: images.length,
         itemBuilder: (context, index) {
           final img = images[index];
-          final imageUrl = "http://staging.bookmytestcenter.com/${img.centerImage}";
+          final imageUrl = "http://staging.bookmytestcenter.com/${img
+              .centerImage}";
           return Container(
             margin: const EdgeInsets.only(right: 10),
             width: 160,
@@ -547,14 +687,24 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
               child: Image.network(
                 imageUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Center(child: Icon(Icons.broken_image)),
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return const Center(child: CircularProgressIndicator());
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return const Center(
+                    child: Icon(Icons.broken_image, size: 40),
+                  );
+                },
               ),
+
             ),
           );
         },
       ),
     );
   }
+
   Widget _buildDocumentsSection(List<api.Document> documents) {
     if (documents.isEmpty) {
       return Padding(
@@ -614,7 +764,7 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
                 IconButton(
                   icon: const Icon(Icons.open_in_new),
                   onPressed: () {
-                    // yaha URL open karwa sakte ho
+
                   },
                 )
               ],
@@ -622,53 +772,6 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
           ),
         );
       },
-    );
-  }
-
-  Widget _sectionCard({
-    required String title,
-    required Widget child,
-  }) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: AppTextStyles.dashBordButton3),
-          const SizedBox(height: 12),
-          child,
-        ],
-      ),
-    );
-  }
-  Widget _card({required Widget child}) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 6,
-          ),
-        ],
-      ),
-      child: child,
     );
   }
 

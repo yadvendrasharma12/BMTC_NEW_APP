@@ -112,6 +112,7 @@ class ProfileUpdateController extends GetxController {
   String fuilTnak = "";
   String upsBackup = "";
   String upsBackuptimeMinutes= "";
+  String secondryIspType = "";
 
 
 
@@ -228,7 +229,7 @@ class ProfileUpdateController extends GetxController {
       "pan_no":panNo,
       "gst_no":gstNo,
 
-
+"secondary_isp_connect_type":secondryIspType,
 
       "country_id": countryId,
       "state_id": stateId,
@@ -316,7 +317,7 @@ class ProfileUpdateController extends GetxController {
 
       "secondary_isp_name": secondryIsp,
       "secondary_isp_bband_or_lease": "",
-      "secondary_isp_speed": secondryInternatetype,
+
       "secondary_internet_speed_unit": secondryInternateUnit,
 
       // ================= POWER =================

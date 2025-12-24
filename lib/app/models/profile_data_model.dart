@@ -191,6 +191,8 @@ class Center {
   final String msmeNo;
   final String primaryinternetspeedunit;
   final String powerbachup;
+  final String fuilTankCapacity;
+  final String typeOfCenter;
 
 
 
@@ -270,6 +272,8 @@ class Center {
     required  this.msmeNo,
     required this.powerbachup,
     required this.primaryinternetspeedunit,
+    required this.fuilTankCapacity,
+    required this.typeOfCenter
   });
 
   factory Center.fromJson(Map<String, dynamic> json) {
@@ -294,10 +298,12 @@ class Center {
       gstState: json["gst_state_code"],
       Ifsc: json["bank_ifsc_code"],
       panNo: json["pan_no"],
+      typeOfCenter: json['type_of_center'],
       distanceBus: json["distance_from_bus_stop"],
       upsBackupKua: json["backup_hours"],
       nearestRailway: json["nearest_railway_station"],
       centerName: json['center_name'] ?? '',
+      fuilTankCapacity: json["generator_fuel_tank_capacity"],
       distanceRailw: json['distance_from_station'],
       secondaryConnectedType: json["secondary_isp_connect_type"],
       address: json['address'] ?? '',
@@ -344,6 +350,7 @@ class Center {
       adminUrl: json['admin_url'] ?? '',
       capacity: json['capacity'] ?? '',
       logo: json['logo'] ?? '',
+
       generatorBackupCapacity: json['generator_backup_capacity'] ?? '',
       generatorBackupTime: json['generator_backup_time'] ?? '',
       backupHours: json['backup_hours'] ?? '',

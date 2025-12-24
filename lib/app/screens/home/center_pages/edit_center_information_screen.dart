@@ -108,6 +108,19 @@ class _EditCenterInformationScreenState
   final TextEditingController generatorCapacity = TextEditingController();
   final TextEditingController upsBackup = TextEditingController();
 
+  String? mapDistanceFromApi({
+    required String? apiValue,
+    required List<String> options,
+  }) {
+    if (apiValue == null || apiValue.isEmpty) return null;
+
+    for (final option in options) {
+      if (option.contains(apiValue)) {
+        return option;
+      }
+    }
+    return null;
+  }
 
   List<api.CenterType> _categoryTypes = [];
   api.CenterType? selectedCenterType;
@@ -127,9 +140,49 @@ class _EditCenterInformationScreenState
     Get.put(ProfileUpdateController());
     final labList = controller.profileDataModel.value?.data.labs ?? [];
     addressCtrl.text = center.address ?? '';
+
+    selectedBusDistance = matchDropdownValue(
+      apiValue: center.distanceBus,
+      options: distanceOptions,
+    );
+
+    selectedRailwayDistance = matchDropdownValue(
+      apiValue: center.distanceRailw,
+      options: distanceOptions,
+    );
+
+    selectedMetroDistance = matchDropdownValue(
+      apiValue: center.distanceFromMetro,
+      options: distanceOptions,
+    );
+
+    selectedAirportDistance = matchDropdownValue(
+      apiValue: center.distanceFromAirport,
+      options: distanceOptions,
+    );
+    primaryIspType = matchDropdownValue(
+      apiValue: center.primaryConnectType,
+      options: isp,
+    );
+
+    secondaryIsptype = matchDropdownValue(
+      apiValue: center.secondaryConnectedType,
+      options: isp,
+    );
+
+    generatorFuilTank = matchDropdownValue(
+      apiValue: center.fuilTankCapacity, // <-- backend value
+      options: tankCapacityLtr,
+    );
+    upsBackupTimeMinutes = matchDropdownValue(
+        apiValue: center.upsBackupTime, // <-- backend value
+        options: upsBackupTimeOptions,
+    );
+
     centerNameCtrl.text = center.centerName ?? '';
     description.text = center.description ?? '';
     centerType.text = center.centerType ?? '';
+    setCenterTypeFromApi(center.centerType);
     centerLat.text = center.addressLat?? '';
     centerLong.text = center.addressLong ?? '';
     capacity.text = center.capacity ?? '';
@@ -227,32 +280,43 @@ class _EditCenterInformationScreenState
     lockerFacelity  = parseYesNo(center.lockerFacelity);
 
     fireExuter = center.fireExuter;
-    selectedRailwayDistance = center.distanceRailw.isNotEmpty ? center.distanceRailw : '';
-    selectedBusDistance = center.distanceBus.isNotEmpty ? center.distanceBus : '';
+    selectedRailwayDistance = center.distanceRailw.isNotEmpty ? center.distanceRailw : null;
+    selectedBusDistance = center.distanceBus.isNotEmpty ? center.distanceBus : null;
     selectedMetroDistance = center.distanceFromMetro.isNotEmpty ? center.distanceFromMetro : '';
     selectedAirportDistance = center.distanceFromAirport.isNotEmpty ? center.distanceFromAirport : '';
-    primaryUnit = unites.cast<String?>().firstWhere(
+
+    primaryIspType = isp.cast<String?>().firstWhere(
           (e) => e?.toLowerCase() == (center.primaryConnectType ?? '').toLowerCase(),
       orElse: () => null,
     );
-
-
-    upsBackupTimeMinutes = unites.cast<String?>().firstWhere(
-          (e) => e?.toLowerCase() == (center.upsBackupKua ?? '').toLowerCase(),
-      orElse: () => null,
+    secondaryIsptype = isp.firstWhereOrNull(
+          (e) => e.toLowerCase() == (center.secondaryConnectedType ?? '').toLowerCase(),
     );
+
+
+
+
     primaryUnit = unites.firstWhereOrNull(
           (e) => e.toLowerCase() == (center.primaryinternetspeedunit ?? '').toLowerCase(),
     );
     secondryUnit = unites.firstWhereOrNull(
           (e) => e.toLowerCase() == (center.secoundaryUnit ?? '').toLowerCase(),
     );
+
+
+
   }
+  final List<String> isp = [
+    "Broadband",
+    "Base line",
+    "lease_line",
+    "Fibre Optics",
+    "Air Fibre",
+  ];
   final List<String> yesNoOptions = ['Yes', 'No'];
-  final List<String> ispTypes = ['Broadband', 'Lease line', 'Fibre Optics', 'Air Fibre'];
   final List<String> speeds = ['Gbps', 'Mbps'];
-  final List<String> upsBackupTimeOptions = ['5 mins','10 mins','15 mins','20 mins','25 mins','30 mins','35 mins','40 mins','50 mins','60 mins',];
-  final List<String> tankCapacityLtr = ['1 ltr',  '1.5 ltr','2 ltr', '2.5 ltr', '3 ltr', '3.5 ltr', '4 ltr', '4.5 ltr', '5 ltr',];
+  final List<String> upsBackupTimeOptions = ['5','10','15','20','25','30','35','40','50','60',];
+  final List<String> tankCapacityLtr = ['1',  '1.5','2 ', '2.5 ', '3 ', '3.5', '4 ', '4.5 ', '5 ',];
 
   bool parseYesNo(dynamic value) {
     if (value == null) return false;
@@ -346,18 +410,53 @@ class _EditCenterInformationScreenState
   bool drinking = false;
   bool lockerFacelity = false;
   String? primaryIspType;
-  String? secondryType;
   String? generatorFuilTank;
   String? upsBackupTimeMinutes;
   String? primaryUnit;
   String? secondryUnit;
+  String? secondaryIsptype;
+
+
 
   final List<String> yesNoList = ["Yes", "No"];
 
-  final List<String> isp = ["BrodCast", "BaseLine"];
+
   final List<String> unites = ["Mbps", "Gbps"];
   final List<String> fireCount = ["1", "2","3","4","5"];
 
+  final Map<String, String> centerTypeMap = {
+    "1": "Online",
+    "2": "Offline",
+    "3": "Both",
+  };
+  String? selectedTypeCenter;
+  late final List<String> centerTypeOptions = centerTypeMap.values.toList();
+
+  void setCenterTypeFromApi(String? apiValue) {
+    if (apiValue == null) return;
+
+    setState(() {
+      selectedTypeCenter = centerTypeMap[apiValue];
+      centerType.text = selectedTypeCenter ?? "";
+    });
+  }
+
+
+  String? matchDropdownValue({
+    required String? apiValue,
+    required List<String> options,
+  }) {
+    if (apiValue == null || apiValue.isEmpty) return null;
+
+    return options.firstWhere(
+          (e) => e.trim().toLowerCase() == apiValue.trim().toLowerCase(),
+      orElse: () => '',
+    ).isEmpty
+        ? null
+        : options.firstWhere(
+          (e) => e.trim().toLowerCase() == apiValue.trim().toLowerCase(),
+    );
+  }
 
 
   @override
@@ -374,6 +473,11 @@ class _EditCenterInformationScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+
+
+
+
+
 
 
                 _sectionTitle("Center Details"),
@@ -401,13 +505,35 @@ class _EditCenterInformationScreenState
                         validator: (v) =>
                         v!.isEmpty ? "address is required" : null,
                       ),
-                      _textField(
-                        title: "Center Type",
-                        hint: "center Type",
-                        controller:centerType,
-                        validator: (v) =>
-                        v!.isEmpty ? "center type is required" : null,
+                      Align(
+
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Center Type",
+                          style: AppTextStyles.centerText,
+                        ),
                       ),
+                      const SizedBox(height: 8),
+                      CustomDropdown<String>(
+                        hintText: "Select Center Type",
+                        value: selectedTypeCenter, // "Online"
+                        items: centerTypeOptions,
+                        itemLabel: (v) => v,
+                        onChanged: (v) {
+                          if (v == null) return;
+                          setState(() {
+                            selectedTypeCenter = v;
+                            centerType.text = v;
+                          });
+                        },
+                        validator: (_) =>
+                        selectedTypeCenter == null ? "Please select Center Type" : null,
+                      ),
+
+
+
+
+                      const SizedBox(height: 8),
                       _textField(
                         title: "Center's Latitude",
                         hint: "Center's Latitude",
@@ -633,6 +759,7 @@ class _EditCenterInformationScreenState
                           return null;
                         },
                       ),
+
                       const SizedBox(height: 16),
                       _textField(
                         title: "Local area Name",
@@ -653,7 +780,7 @@ class _EditCenterInformationScreenState
                       // 🔹 Center Type
                       Align(
                           alignment: Alignment.centerLeft,
-                          child: Text("Type Center Type", style: AppTextStyles.centerText)),
+                          child: Text("What is the Category of your Test Center?", style: AppTextStyles.centerText)),
                       const SizedBox(height: 10),
 
                       CustomDropdown<api.CenterType>(
@@ -728,6 +855,7 @@ class _EditCenterInformationScreenState
                         ),
                       ),
                       const SizedBox(height: 8),
+
                       CustomDropdown<String>(
                         hintText: "Select Distance",
                         value: distanceOptions.contains(selectedBusDistance)
@@ -812,6 +940,8 @@ class _EditCenterInformationScreenState
                     ],
                   ),
                 ),
+
+
                 _sectionTitle("Admin Details"),
                 _card(child: Column(children: [
                   _textField(
@@ -1157,239 +1287,6 @@ class _EditCenterInformationScreenState
 
                 ],)),
 
-                _sectionTitle("Lab Infrastructure Details"),
-                _card(child: Column(children: [
-                  _textField(
-
-                    title:"Name of the Primary ISP",
-
-                    hint: "primary isp",
-                    controller: primaryIsp,
-                    validator: (v) =>
-                    v!.isEmpty ? "Center name is required" : null,
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Primary ISP Connection Type",
-                      style: AppTextStyles.centerText,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CustomDropdown<String>(
-                          hintText: "Select Primary ISP",
-                          value: primaryIspType, // must be null or exist in isp
-                          items: isp,
-                          itemLabel: (v) => v,
-                          onChanged: (v) {
-                            if (v == null) return;
-                            setState(() {
-                              primaryIspType = v;
-                            });
-                          },
-                          validator: (_) => primaryIspType == null ? "Please select ISP" : null,
-                        ),
-                      ),
-                    ],
-                  ),
-
-
-                  SizedBox(height: 7,),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        flex:2,
-                        child: _textField(
-
-                          title:"Primary Internate Speed",
-
-                          hint: "primary speed",
-                          controller: internateSpeedPrimary,
-                          validator: (v) =>
-                          v!.isEmpty ? "Center name is required" : null,
-                        ),
-                      ),
-                      SizedBox(width: 6,),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 9.0),
-                          child: CustomDropdown<String>(
-                            hintText: "select",
-                            value: primaryUnit, // must be null or exist in isp
-                            items: unites,
-                            itemLabel: (v) => v,
-                            onChanged: (v) {
-                              if (v == null) return;
-                              setState(() {
-                                primaryUnit = v;
-                              });
-                            },
-                            validator: (_) => primaryUnit == null ? "Please select ISP" : null,
-                          ),
-                        ),
-                      ),
-                    ],
-
-                  ),
-                  SizedBox(height: 8,),
-                  _textField(
-
-                    title:"Name of the Secondry ISP",
-
-                    hint: "secondry isp",
-                    controller: secondryIsp,
-                    validator: (v) =>
-                    v!.isEmpty ? "Center name is required" : null,
-                  ),
-                  const SizedBox(height: 8),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Secondary ISP Connection Type",
-                      style: AppTextStyles.centerText,
-                    ),
-                  ),
-                  SizedBox(height: 6,),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CustomDropdown<String>(
-                          hintText: "Select Secondary type",
-                          value: generatorFuilTank, // must be null or exist in isp
-                          items: isp,
-                          itemLabel: (v) => v,
-                          onChanged: (v) {
-                            if (v == null) return;
-                            setState(() {
-                              generatorFuilTank = v;
-                            });
-                          },
-                          validator: (_) => generatorFuilTank == null ? "Please select ISP" : null,
-                        ),
-                      ),
-                    ],
-                  ),
-
-
-                  SizedBox(height: 7,),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        flex:2,
-                        child: _textField(
-
-                          title:"Secondary Internal Speed",
-
-                          hint: "secondry speed",
-                          controller: internateSpeedSecondry,
-                          validator: (v) =>
-                          v!.isEmpty ? "Center name is required" : null,
-                        ),
-                      ),
-                      SizedBox(width: 6,),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 9.0),
-                          child: CustomDropdown<String>(
-                            hintText: "select",
-                            value: secondryUnit,
-                            items: unites,
-                            itemLabel: (v) => v,
-                            onChanged: (v) {
-                              if (v == null) return;
-                              setState(() {
-                                secondryUnit = v;
-                              });
-                            },
-                            validator: (_) => secondryUnit == null ? "Please select ISP" : null,
-                          ),
-                        ),
-                      ),
-
-                    ],
-
-                  ),
-
-                  SizedBox(height: 8,),
-                  _textField(
-
-                    title:"Generator Capacity (in KVA)",
-
-                    hint: "capacity",
-                    controller: generatorCapacity,
-                    validator: (v) =>
-                    v!.isEmpty ? "Center name is required" : null,
-                  ),
-                  SizedBox(height: 6),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Generator Fuel Tank Capacity (in Ltr.)",
-                      style: AppTextStyles.centerText,
-                    ),
-                  ),
-                  SizedBox(height: 7,),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CustomDropdown<String>(
-                          hintText: "Select Secondary type",
-                          value: secondryType, // must be null or exist in isp
-                          items: tankCapacityLtr,
-                          itemLabel: (v) => v,
-                          onChanged: (v) {
-                            if (v == null) return;
-                            setState(() {
-                              secondryType = v;
-                            });
-                          },
-                          validator: (_) => secondryType == null ? "Please select ISP" : null,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8,),
-                  _textField(
-
-                    title:"UPS Backup (KVA)",
-
-                    hint: "capacity",
-                    controller: upsBackup,
-                    validator: (v) =>
-                    v!.isEmpty ? "Center name is required" : null,
-                  ),
-
-                  SizedBox(height: 7,),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "UPS Backup Time (in mins)",
-                      style: AppTextStyles.centerText,
-                    ),
-                  ),
-                  SizedBox(height: 7,),
-                  CustomDropdown<String>(
-                    hintText: "select",
-                    value: upsBackupTimeMinutes,
-                    items: upsBackupTimeOptions,
-                    itemLabel: (v) => v,
-                    onChanged: (v) {
-                      if (v == null) return;
-                      setState(() {
-                        upsBackupTimeMinutes = v;
-                      });
-                    },
-                    validator: (_) => upsBackupTimeMinutes == null ? "Please select ISP" : null,
-                  ),
-                ],)),
 
                 _sectionTitle("Lab Details"),
                 ListView.builder(
@@ -1528,6 +1425,7 @@ class _EditCenterInformationScreenState
 
 
 
+
                 const SizedBox(height: 30),
 
                 SizedBox(
@@ -1561,118 +1459,11 @@ class _EditCenterInformationScreenState
   String? selectedBusDistance;
   String? selectedMetroDistance;
   String? selectedAirportDistance;
-  final List<String> distanceOptions = [
-    '100 Meters',
-    '200 Meters',
-    '300 Meters',
-    '400 Meters',
-    '500 Meters',
-    '600 Meters',
-    '700 Meters',
-    '800 Meters',
-    '900 Meters',
-    '1000 Meters',
-    '1.10 km',
-    '1.20 km',
-    '1.30 km',
-    '1.40 km',
-    '1.50 km',
-    '1.60 km',
-    '1.70 km',
-    '1.80 km',
-    '1.90 km',
-    '2 km',
-    '2.10 km',
-    '2.20 km',
-    '2.30 km',
-    '2.40 km',
-    '2.50 km',
-    '2.60 km',
-    '2.70 km',
-    '2.80 km',
-    '2.90 km',
-    '3 km',
-    '3.10 km',
-    '3.20 km',
-    '3.30 km',
-    '3.40 km',
-    '3.50 km',
-    '3.60 km',
-    '3.70 km',
-    '3.80 km',
-    '3.90 km',
-    '4 km',
-    '4.10 km',
-    '4.20 km',
-    '4.30 km',
-    '4.40 km',
-    '4.50 km',
-    '4.60 km',
-    '4.70 km',
-    '4.80 km',
-    '4.90 km',
-    '5 km',
-    '5.10 km',
-    '5.20 km',
-    '5.30 km',
-    '5.40 km',
-    '5.50 km',
-    '5.60 km',
-    '5.70 km',
-    '5.80 km',
-    '5.90 km',
-    '6 km',
-    '6.10 km',
-    '6.20 km',
-    '6.30 km',
-    '6.40 km',
-    '6.50 km',
-    '6.60 km',
-    '6.70 km',
-    '6.80 km',
-    '6.90 km',
-    '7 km',
-    '7.10 km',
-    '7.20 km',
-    '7.30 km',
-    '7.40 km',
-    '7.50 km',
-    '7.60 km',
-    '7.70 km',
-    '7.80 km',
-    '7.90 km',
-    '8 km',
-    '8.10 km',
-    '8.20 km',
-    '8.30 km',
-    '8.40 km',
-    '8.50 km',
-    '8.60 km',
-    '8.70 km',
-    '8.80 km',
-    '8.90 km',
-    '9 km',
-    '9.10 km',
-    '9.20 km',
-    '9.30 km',
-    '9.40 km',
-    '9.50 km',
-    '9.60 km',
-    '9.70 km',
-    '9.80 km',
-    '9.90 km',
-    '10 km',
-    '10.10 km',
-    '10.20 km',
-    '10.30 km',
-    '10.40 km',
-    '10.50 km',
-    '10.60 km',
-    '10.70 km',
-    '10.80 km',
-    '10.90 km',
-    '11 km',
-  ];
+
+  final List<String> distanceOptions = List.generate(
+    5000,
+        (index) => '${index + 1}',
+  );
   Widget _fileInfo(File? file) {
     if (file == null) return const SizedBox();
 
@@ -1917,7 +1708,7 @@ class _EditCenterInformationScreenState
     updateController.drinkingWater = drinking ? "yes" : "no";
     updateController.primaryIspType = primaryIspType ?? "";
     updateController.primaryInternateUnit = primaryUnit ?? "";
-    updateController.secondryInternatetype = secondryType ?? "";
+    updateController.secondryInternatetype = secondaryIsptype ?? "";
     updateController.secondryInternateUnit = secondryUnit ?? "";
 
 
@@ -1943,7 +1734,7 @@ class _EditCenterInformationScreenState
     upsImage != null ? [upsImage!] : [];
     updateController.walkthroughVideo = walkthroughVideo;
 
-    if (selectedCountry != null) updateController.centerType = selectedCountry!.id;
+    if (selectedCountry != null) updateController.countryId = selectedCountry!.id;
     if (selectedState != null) updateController.stateId = selectedState!.id;
     if (selectedCity != null) updateController.cityId = selectedCity!.id;
     if (categoryTypes != null) updateController.typeOfCenter = categoryTypes!;
@@ -1973,7 +1764,7 @@ class _EditCenterInformationScreenState
       orElse: () => "", // use empty string or first item
     );
 
-    if (selectedValue.isEmpty) selectedValue = null; // convert empty back to null
+    if (selectedValue.isEmpty) selectedValue = null;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
