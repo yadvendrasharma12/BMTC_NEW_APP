@@ -153,7 +153,7 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
                             GestureDetector(
                               onTap: () async {
                                 final result = await Get.to<bool>(
-                                  EditCenterInformationScreen(apiLabs: labs),
+                                      () => EditCenterInformationScreen(apiLabs: labs),
                                 );
 
                                 if (result == true) {
@@ -645,7 +645,7 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
           _buildField("Floor", lab.floorName),
           _buildField("Total Computers", lab.noOfComputer),
           _buildField(
-              "window_generation", lab.processer, showDropdownArrow: true),
+              "window_generation", lab.windowGeneration, showDropdownArrow: true),
           _buildField("Monitor Type", lab.monitorType, showDropdownArrow: true),
           _buildField(
               "Operating System", lab.operatingSystem, showDropdownArrow: true),

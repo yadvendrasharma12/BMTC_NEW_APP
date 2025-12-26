@@ -1,4 +1,5 @@
 
+import 'dart:convert';
 import 'dart:io';
 
 
@@ -37,17 +38,16 @@ class _EditCenterInformationScreenState
 
 
   List<EditableLab> labs = [];
-
-
   List<String> floors = [];
   List<String> processors = [];
   List<String> monitors = [];
   List<String> rams = [];
   List<String> hardDisks = [];
   List<String> osList = [];
-  List<String> ethernetCompanies = []; // populate from API dynamically
+  List<String> ethernetCompanies = [];
   List<String> switchCategories = [];
   List<String> ethernetPorts = [];
+
   List<String> floorOptions = ['Ground', '1st', '2nd', '3rd','4th','5th','6th','7th','8th','9th','10th',"Basement"];
   final List<String> processor = ['Core 2 Duo','i3', 'i5', 'i7', 'i9'];
   final List<String> monitor = ['LCD', 'LED', 'CRT'];
@@ -89,7 +89,6 @@ class _EditCenterInformationScreenState
   final TextEditingController emergencyNo = TextEditingController();
   final TextEditingController landLineNo = TextEditingController();
   final TextEditingController primaryIsp = TextEditingController();
-  final TextEditingController totalLab = TextEditingController();
   final TextEditingController totalSystem = TextEditingController();
   final TextEditingController totalNetwork = TextEditingController();
   final TextEditingController totalLabCtrl = TextEditingController();
@@ -107,6 +106,7 @@ class _EditCenterInformationScreenState
   final TextEditingController secondryIsp = TextEditingController();
   final TextEditingController generatorCapacity = TextEditingController();
   final TextEditingController upsBackup = TextEditingController();
+  final TextEditingController pocController = TextEditingController();
 
   String? mapDistanceFromApi({
     required String? apiValue,
@@ -125,187 +125,153 @@ class _EditCenterInformationScreenState
   List<api.CenterType> _categoryTypes = [];
   api.CenterType? selectedCenterType;
 
+
+
+  bool? isLiftAvailable;
+
   @override
   void initState() {
     super.initState();
-
-    _loadCountries();
-    _loadCenterTypes();
-
-
-
-
-
-    final center = controller.profileDataModel.value!.data.center;
-    Get.put(ProfileUpdateController());
-    final labList = controller.profileDataModel.value?.data.labs ?? [];
-    addressCtrl.text = center.address ?? '';
-
-    selectedBusDistance = matchDropdownValue(
-      apiValue: center.distanceBus,
-      options: distanceOptions,
-    );
-
-    selectedRailwayDistance = matchDropdownValue(
-      apiValue: center.distanceRailw,
-      options: distanceOptions,
-    );
-
-    selectedMetroDistance = matchDropdownValue(
-      apiValue: center.distanceFromMetro,
-      options: distanceOptions,
-    );
-
-    selectedAirportDistance = matchDropdownValue(
-      apiValue: center.distanceFromAirport,
-      options: distanceOptions,
-    );
-    primaryIspType = matchDropdownValue(
-      apiValue: center.primaryConnectType,
-      options: isp,
-    );
-
-    secondaryIsptype = matchDropdownValue(
-      apiValue: center.secondaryConnectedType,
-      options: isp,
-    );
-
-    generatorFuilTank = matchDropdownValue(
-      apiValue: center.fuilTankCapacity, // <-- backend value
-      options: tankCapacityLtr,
-    );
-    upsBackupTimeMinutes = matchDropdownValue(
-        apiValue: center.upsBackupTime, // <-- backend value
-        options: upsBackupTimeOptions,
-    );
-
-    centerNameCtrl.text = center.centerName ?? '';
-    description.text = center.description ?? '';
-    centerType.text = center.centerType ?? '';
-    setCenterTypeFromApi(center.centerType);
-    centerLat.text = center.addressLat?? '';
-    centerLong.text = center.addressLong ?? '';
-    capacity.text = center.capacity ?? '';
-    pincode.text = center.pinCode ?? '';
-    localAreaName.text = center.localArea ?? '';
-    airport.text = center.nearestAirport ?? '';
-    pointOfContactEmail.text = center.amEmail ?? '';
-    pocName.text = center.pocName ?? '';
-    pocEmail.text = center.pocEmail ?? '';
-    pocNumber.text = center.pocContactNo ?? '';
-    emergencyNo.text = center.emergencyContactNo ?? '';
-    landLineNo.text = center.landlineNumber ?? '';
-    primaryIsp.text = center.primaryIspName ?? '';
-    totalLab.text = center.totalNoLab ?? '';
-    totalSystem.text = center.totalNoSystem ?? '';
-    totalNetwork.text = center.howManyNetwork ?? '';
-    bankName.text = center.bankName ?? '';
-    bankAccount.text = center.bankAccount ?? '';
-    ifsc.text = center.Ifsc ?? '';
-    panno.text = center.panNo ?? '';
-    gstStateCode.text = center.gstState ?? '';
-    uidiai.text = center.uidainNo ?? '';
-    MsmeNo.text = center.msmeNo ?? '';
-
-    generatorCapacity.text = center.generatorBackupCapacity ?? '';
-    internateSpeedPrimary.text = center.primaryIspSpeed ?? '';
-    internateSpeedSecondry.text = center.secondaryIspSpeed ?? '';
-
-    gstNo.text = center.gstNo ?? '';
-    upsBackup.text = center.powerbachup ?? '';
-    secondryIsp.text = center.secondaryIspName ?? '';
-
-
-
-    csName.text = center.csName ?? '';
-    csNumber.text = center.csContactNumber ?? '';
-    csEmail.text = center.csEmail ?? '';
-
-
-
-    labs = widget.apiLabs.map((lab) {
-      // Floor, processor, etc.
-      if (lab.floorName.isNotEmpty && !floors.contains(lab.floorName)) floors.add(lab.floorName);
-      if (lab.processer.isNotEmpty && !processors.contains(lab.processer)) processors.add(lab.processer);
-      if (lab.monitorType.isNotEmpty && !monitors.contains(lab.monitorType)) monitors.add(lab.monitorType);
-      if (lab.ram.isNotEmpty && !rams.contains(lab.ram)) rams.add(lab.ram);
-      if (lab.hardDisk.isNotEmpty && !hardDisks.contains(lab.hardDisk)) hardDisks.add(lab.hardDisk);
-      if (lab.operatingSystem.isNotEmpty && !osList.contains(lab.operatingSystem)) osList.add(lab.operatingSystem);
-
-      // ⚡ Ethernet fields
-      if (lab.ehternetSwtchCompany.isNotEmpty && !ethernetCompanies.contains(lab.ehternetSwtchCompany)) {
-        ethernetCompanies.add(lab.ehternetSwtchCompany);
-      }
-      if (lab.switchCategory.isNotEmpty && !switchCategories.contains(lab.switchCategory)) {
-        switchCategories.add(lab.switchCategory);
-      }
-      if (lab.noOfPortEthSwitch.isNotEmpty && !ethernetPorts.contains(lab.noOfPortEthSwitch)) {
-        ethernetPorts.add(lab.noOfPortEthSwitch);
-      }
-
-      return EditableLab(
-        floor: lab.floorName ?? '',
-        computers: lab.noOfComputer ?? '',
-        processor: lab.processer ?? '',
-        monitor: lab.monitorType ?? '',
-        os: lab.operatingSystem ?? '',
-        ram: lab.ram ?? '',
-        hardDisk: lab.hardDisk ?? '',
-        ethernetSwitchCompany: lab.ehternetSwtchCompany ?? '',
-        switchCategory: lab.switchCategory ?? '',
-        noOfPorts: lab.noOfPortEthSwitch ?? '',
-      );
-    }).toList();
-
-    if (labs.isEmpty) labs.add(EditableLab());
-    totalLabCtrl.text = labs.length.toString();
-
-
-    landmark.text = center.landmark ?? '';
-    railwayS.text = center.nearestRailway ?? '';
-    busStop.text = center.nearestBus ?? '';
-    metro.text = center.nearestMetroStation ?? '';
-    pointOfContactName.text = center.amName ?? '';
-    pointOfContactNumber.text = center.amContactNo ?? '';
-    altPointOfContactNumber.text = center.amContactNo ?? '';
-    benifiryName.text = center.beneficiaryName ?? '';
-
-    isSingleNetwork = parseYesNo(center.connectedSingleNetwork);
-    partition       = parseYesNo(center.parttionEachLab);
-    networkPrinter  = parseYesNo(center.printerLab);
-    ac              = parseYesNo(center.acInLab);
-    projector       = parseYesNo(center.projectorLab);
-    soundSystem     = parseYesNo(center.soundSystem);
-    drinking        = parseYesNo(center.drinkingWater);
-    lockerFacelity  = parseYesNo(center.lockerFacelity);
-
-    fireExuter = center.fireExuter;
-    selectedRailwayDistance = center.distanceRailw.isNotEmpty ? center.distanceRailw : null;
-    selectedBusDistance = center.distanceBus.isNotEmpty ? center.distanceBus : null;
-    selectedMetroDistance = center.distanceFromMetro.isNotEmpty ? center.distanceFromMetro : '';
-    selectedAirportDistance = center.distanceFromAirport.isNotEmpty ? center.distanceFromAirport : '';
-
-    primaryIspType = isp.cast<String?>().firstWhere(
-          (e) => e?.toLowerCase() == (center.primaryConnectType ?? '').toLowerCase(),
-      orElse: () => null,
-    );
-    secondaryIsptype = isp.firstWhereOrNull(
-          (e) => e.toLowerCase() == (center.secondaryConnectedType ?? '').toLowerCase(),
-    );
-
-
-
-
-    primaryUnit = unites.firstWhereOrNull(
-          (e) => e.toLowerCase() == (center.primaryinternetspeedunit ?? '').toLowerCase(),
-    );
-    secondryUnit = unites.firstWhereOrNull(
-          (e) => e.toLowerCase() == (center.secoundaryUnit ?? '').toLowerCase(),
-    );
-
-
-
+    _initializeScreen();
   }
+
+  Future<void> _initializeScreen() async {
+    try {
+      // Load reference data asynchronously
+      await _loadCountries();
+      await _loadCenterTypes();
+
+      final center = controller.profileDataModel.value?.data.center;
+      if (center == null) return; // safety check
+
+      final labList = controller.profileDataModel.value?.data.labs ?? [];
+
+      // Populate controllers and variables inside setState
+      setState(() {
+        // Basic details
+        addressCtrl.text = center.address ?? '';
+        centerNameCtrl.text = center.centerName ?? '';
+        description.text = center.description ?? '';
+        centerType.text = center.centerType ?? '';
+        setCenterTypeFromApi(center.centerType);
+
+        centerLat.text = center.addressLat ?? '';
+        centerLong.text = center.addressLong ?? '';
+        capacity.text = center.capacity ?? '';
+        pincode.text = center.pinCode ?? '';
+        localAreaName.text = center.localArea ?? '';
+        airport.text = center.nearestAirport ?? '';
+        landmark.text = center.landmark ?? '';
+
+        // Point of contact
+        pointOfContactName.text = center.amName ?? '';
+        pointOfContactNumber.text = center.amContactNo ?? '';
+        altPointOfContactNumber.text = center.amContactNo ?? '';
+        pointOfContactEmail.text = center.amEmail ?? '';
+        pocName.text = center.pocName ?? '';
+        pocEmail.text = center.pocEmail ?? '';
+        pocNumber.text = center.pocContactNo ?? '';
+        pocController.text = center.pocMobileAlternate ?? '';
+
+        // Center support staff
+        csName.text = center.csName ?? '';
+        csNumber.text = center.csContactNumber ?? '';
+        csEmail.text = center.csEmail ?? '';
+        emergencyNo.text = center.emergencyContactNo ?? '';
+        landLineNo.text = center.landlineNumber ?? '';
+
+        // Bank & legal info
+        bankName.text = center.bankName ?? '';
+        bankAccount.text = center.bankAccount ?? '';
+        ifsc.text = center.Ifsc ?? '';
+        panno.text = center.panNo ?? '';
+        gstStateCode.text = center.gstState ?? '';
+        gstNo.text = center.gstNo ?? '';
+        uidiai.text = center.uidainNo ?? '';
+        MsmeNo.text = center.msmeNo ?? '';
+        benifiryName.text = center.beneficiaryName ?? '';
+
+        // Network & UPS
+        totalSystem.text = center.totalNoSystem ?? '';
+        totalNetwork.text = center.howManyNetwork ?? '';
+        generatorCapacity.text = center.generatorBackupCapacity ?? '';
+        internateSpeedPrimary.text = center.primaryIspSpeed ?? '';
+        internateSpeedSecondry.text = center.secondaryIspSpeed ?? '';
+        upsBackup.text = center.powerbachup ?? '';
+        secondryIsp.text = center.secondaryIspName ?? '';
+
+        // Nearest transport
+        railwayS.text = center.nearestRailway ?? '';
+        busStop.text = center.nearestBus ?? '';
+        metro.text = center.nearestMetroStation ?? '';
+
+        // Parse yes/no fields
+        isSingleNetwork = parseYesNo(center.connectedSingleNetwork);
+        partition = parseYesNo(center.parttionEachLab);
+        networkPrinter = parseYesNo(center.printerLab);
+        ac = parseYesNo(center.acInLab);
+        projector = parseYesNo(center.projectorLab);
+        soundSystem = parseYesNo(center.soundSystem);
+        drinking = parseYesNo(center.drinkingWater);
+        lockerFacelity = parseYesNo(center.lockerFacelity);
+
+        fireExuter = center.fireExuter;
+
+        // Dropdowns
+        selectedBusDistance = matchDropdownValue(
+            apiValue: center.distanceBus, options: distanceOptions);
+        selectedRailwayDistance = matchDropdownValue(
+            apiValue: center.distanceRailw, options: distanceOptions);
+        selectedMetroDistance = matchDropdownValue(
+            apiValue: center.distanceFromMetro, options: distanceOptions);
+        selectedAirportDistance = matchDropdownValue(
+            apiValue: center.distanceFromAirport, options: distanceOptions);
+
+        primaryIspType = isp.cast<String?>().firstWhere(
+                (e) => e?.toLowerCase() == (center.primaryConnectType ?? '').toLowerCase(),
+            orElse: () => null);
+        secondaryIsptype = isp.firstWhereOrNull(
+                (e) => e.toLowerCase() == (center.secondaryConnectedType ?? '').toLowerCase());
+
+        generatorFuilTank = matchDropdownValue(
+            apiValue: center.fuilTankCapacity, options: tankCapacityLtr);
+        upsBackupTimeMinutes = matchDropdownValue(
+            apiValue: center.upsBackupTime, options: upsBackupTimeOptions);
+
+        primaryUnit = unites.firstWhereOrNull(
+                (e) => e.toLowerCase() == (center.primaryinternetspeedunit ?? '').toLowerCase());
+        secondryUnit = unites.firstWhereOrNull(
+                (e) => e.toLowerCase() == (center.secoundaryUnit ?? '').toLowerCase());
+
+        // Labs
+        labs = widget.apiLabs.map((lab) {
+          return EditableLab(
+            id: lab.id ?? "",
+            floor: lab.floorName ?? '',
+            computers: lab.noOfComputer ?? '',
+            processor: lab.windowGeneration ?? '',
+            monitor: lab.monitorType ?? '',
+            os: lab.operatingSystem ?? '',
+            ram: lab.ram ?? '',
+            hardDisk: lab.hardDisk ?? '',
+            ethernetSwitchCompany: lab.ehternetSwtchCompany ?? '',
+            switchCategory: lab.switchCategory ?? '',
+            noOfPorts: lab.noOfPortEthSwitch ?? '',
+          );
+        }).toList();
+
+        if (labs.isEmpty) labs.add(EditableLab());
+        totalLabCtrl.text = labs.length.toString();
+      });
+    } catch (e) {
+      print("Error initializing screen: $e");
+    }finally {
+      if (mounted) {
+        setState(() => isInitializing = false); // ✅ MUST
+      }
+    }
+  }
+
   final List<String> isp = [
     "Broadband",
     "Base line",
@@ -337,23 +303,23 @@ class _EditCenterInformationScreenState
   }
 
 
-  void _loadCenterTypes() {
+  Future<void> _loadCenterTypes() async {
     final data = controller.profileDataModel.value!.data;
     final center = data.center;
 
     setState(() {
       _categoryTypes = data.centerType;
 
+      final String apiType = center.typeOfCenter ?? ""; // "University"
+
       selectedCenterType = _categoryTypes.firstWhereOrNull(
-            (e) => e.id.toString() == center.centerType.toString(),
+            (e) => e.centerType.toLowerCase() == apiType.toLowerCase(),
       );
     });
 
-    /// update controller me bhi set kar do
-    if (selectedCenterType != null) {
 
-    }
   }
+
 
   Future<void> _loadCountries() async {
     final list = await LocationService.getCountries();
@@ -417,6 +383,55 @@ class _EditCenterInformationScreenState
   String? secondaryIsptype;
 
 
+  @override
+  void dispose() {
+    centerNameCtrl.dispose();
+    description.dispose();
+    addressCtrl.dispose();
+    centerType.dispose();
+    centerLat.dispose();
+    centerLong.dispose();
+    capacity.dispose();
+    localAreaName.dispose();
+    pincode.dispose();
+    landmark.dispose();
+    railwayS.dispose();
+    busStop.dispose();
+    metro.dispose();
+    airport.dispose();
+    pointOfContactName.dispose();
+    pointOfContactNumber.dispose();
+    altPointOfContactNumber.dispose();
+    pointOfContactEmail.dispose();
+    csName.dispose();
+    csNumber.dispose();
+    csEmail.dispose();
+    pocName.dispose();
+    pocEmail.dispose();
+    pocNumber.dispose();
+    emergencyNo.dispose();
+    landLineNo.dispose();
+    primaryIsp.dispose();
+    totalSystem.dispose();
+    totalNetwork.dispose();
+    totalLabCtrl.dispose();
+    benifiryName.dispose();
+    bankName.dispose();
+    bankAccount.dispose();
+    ifsc.dispose();
+    panno.dispose();
+    gstNo.dispose();
+    gstStateCode.dispose();
+    uidiai.dispose();
+    MsmeNo.dispose();
+    internateSpeedPrimary.dispose();
+    internateSpeedSecondry.dispose();
+    secondryIsp.dispose();
+    generatorCapacity.dispose();
+    upsBackup.dispose();
+    pocController.dispose();
+    super.dispose();
+  }
 
   final List<String> yesNoList = ["Yes", "No"];
 
@@ -461,11 +476,19 @@ class _EditCenterInformationScreenState
 
   @override
   Widget build(BuildContext context) {
+    final images = controller.profileDataModel.value?.data.images ?? [];
+
+    if (isInitializing) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7FB),
-
       body: SafeArea(
-
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Form(
@@ -475,12 +498,26 @@ class _EditCenterInformationScreenState
               children: [
 
 
+                const SizedBox(height: 20),
+                Padding(
+                  padding: EdgeInsets.all(14.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Center Images",
+                          style: AppTextStyles.dashBordButton3),
+
+                    ],
+                  ),
+                ),
 
 
+                _buildImageGallery(images),
 
-
+                SizedBox(height: 11,),
 
                 _sectionTitle("Center Details"),
+                SizedBox(height: 11,),
                 _card(
                   child: Column(
                     children: [
@@ -806,6 +843,28 @@ class _EditCenterInformationScreenState
                         v!.isEmpty ? "landmark is required" : null,
                       ),
 
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Is the Lift available for Physically Handicapped Candidate?",
+                            style: AppTextStyles.centerText,
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          Row(
+                            mainAxisAlignment:MainAxisAlignment.spaceBetween,
+                            children: [
+                              liftOption(value: "Yes"),
+                              liftOption(value: "No"),
+                            ],
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 10),
+
                       _textField(
                         title: "Name of Railway Station",
                         hint: "Railway",
@@ -940,8 +999,6 @@ class _EditCenterInformationScreenState
                     ],
                   ),
                 ),
-
-
                 _sectionTitle("Admin Details"),
                 _card(child: Column(children: [
                   _textField(
@@ -963,7 +1020,7 @@ class _EditCenterInformationScreenState
 
 
                     hint: "number",
-                    controller: pointOfContactNumber,
+                    controller: pocController,
                     validator: (v) =>
                     v!.isEmpty ? "number is required" : null,
                   ),
@@ -1036,6 +1093,7 @@ class _EditCenterInformationScreenState
                   ),
 
                 ],)),
+
 
                 _sectionTitle("Infrastructure Details"),
                 _card(child: Column(children: [
@@ -1288,6 +1346,7 @@ class _EditCenterInformationScreenState
                 ],)),
 
 
+
                 _sectionTitle("Lab Details"),
                 ListView.builder(
                   shrinkWrap: true,
@@ -1296,6 +1355,8 @@ class _EditCenterInformationScreenState
                   itemBuilder: (context, index) => _labCard(index),
                 ),
                 const SizedBox(height: 20),
+
+
 
                 _sectionTitle("Bank Details"),
                 _card(child: Column(children: [
@@ -1373,43 +1434,36 @@ class _EditCenterInformationScreenState
                     builder: (c) {
                       return Column(
                         children: [
-
                           uploadSection(
                             title: "Upload Center Entrance",
                             file: c.entranceImage,
                             onTap: () => c.pickFile(type: "entrance", isImage: true),
                           ),
-
                           uploadSection(
                             title: "Upload Cancelled Cheque",
                             file: c.canceledCheque,
                             onTap: () => c.pickFile(type: "cheque"),
                           ),
-
                           uploadSection(
                             title: "Upload Agreement",
                             file: c.agreementFile,
                             onTap: () => c.pickFile(type: "agreement"),
                           ),
-
                           uploadSection(
                             title: "Upload MOU",
                             file: c.mouFile,
                             onTap: () => c.pickFile(type: "mou"),
                           ),
-
                           uploadSection(
                             title: "Upload GST Certificate",
                             file: c.gstCertFile,
                             onTap: () => c.pickFile(type: "gst_cert"),
                           ),
-
                           uploadSection(
                             title: "Upload Udyam Certificate",
                             file: c.udyamCertFile,
                             onTap: () => c.pickFile(type: "udyam"),
                           ),
-
                           uploadSection(
                             title: "Upload PAN Card",
                             file: c.panNumberFile,
@@ -1420,8 +1474,8 @@ class _EditCenterInformationScreenState
                     },
                   ),
 
-                ],)),
 
+                ],)),
 
 
 
@@ -1431,23 +1485,32 @@ class _EditCenterInformationScreenState
                 SizedBox(
                   width: double.infinity,
                   height: 42,
-                  child: ElevatedButton(
-                    onPressed: _submit,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  child: Obx(() {
+                    return ElevatedButton(
+                      onPressed:
+                      controller.isLoading.value ? null : _submit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
-                    ),
-                    child:  Center(
-                      child: Text(
+                      child: controller.isLoading.value
+                          ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                          : Text(
                         "Update Center",
-                        style:AppTextStyles.button ,
+                        style: AppTextStyles.button,
                       ),
-                    ),
-                  ),
+                    );
+                  }),
                 ),
-
               ],
             ),
           ),
@@ -1455,15 +1518,14 @@ class _EditCenterInformationScreenState
       ),
     );
   }
+
   String? selectedRailwayDistance;
   String? selectedBusDistance;
   String? selectedMetroDistance;
   String? selectedAirportDistance;
 
-  final List<String> distanceOptions = List.generate(
-    5000,
-        (index) => '${index + 1}',
-  );
+  final List<String> distanceOptions =
+  List.generate(50, (index) => '${(index + 1) * 100}');
   Widget _fileInfo(File? file) {
     if (file == null) return const SizedBox();
 
@@ -1593,7 +1655,6 @@ class _EditCenterInformationScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
-          /// 🔹 SHOW TITLE ONLY IF NOT NULL & NOT EMPTY
           if (title != null && title.trim().isNotEmpty) ...[
             Text(
               title,
@@ -1628,14 +1689,17 @@ class _EditCenterInformationScreenState
 
 
 
-
-  // ================= LOGIC =================
-
   void _submit() async {
+
     final updateController = Get.put(ProfileUpdateController());
 
     /// UI → Controller
+    updateController.labs = labs.map((lab) => lab.toJson()).toList();
+    updateController.totalLab = labs.length.toString();
+    print("🧪 LAB COUNT => ${updateController.labs.length}");
+    print("🧪 LAB PAYLOAD => ${jsonEncode(updateController.labs)}");
     updateController.centerName = centerNameCtrl.text.trim();
+    updateController.capacity = capacity.text.trim();
     updateController.postalAddress = addressCtrl.text.trim();
     updateController.centerDescription = description.text.trim();
     updateController.centerType = centerType.text.trim();
@@ -1656,28 +1720,22 @@ class _EditCenterInformationScreenState
     updateController.distanceRailways = selectedRailwayDistance ?? "";
     updateController.distaceMetro = selectedMetroDistance ?? "";
     updateController.distaceAirport = selectedAirportDistance ?? "";
-
-
+   // updateController.typeOfCenter = selectedCenterType!.centerType!;
+    if (selectedCenterType != null) {
+      updateController.typeOfCenter = selectedCenterType!.centerType!;
+    }
     updateController.amName = pointOfContactName.text.trim();
     updateController.amNumber = pointOfContactNumber.text.trim();
     updateController.amEmail = pointOfContactEmail.text.trim();
-    if (selectedCountry != null) {
-      updateController.countryId = selectedCountry!.id;
-    }
-    if (selectedState != null) {
-      updateController.stateId = selectedState!.id;
-    }
+    updateController.pocAltNumber = pocController.text.trim();
 
-    if (selectedCity != null) {
-      updateController.cityId = selectedCity!.id;
-    }
     updateController.pocName = pocName.text.trim();
     updateController.pocEmail = pocEmail.text.trim();
     updateController.pocNumber = pocNumber.text.trim();
     updateController.emergencyNo = emergencyNo.text.trim();
     updateController.landLineNo = landLineNo.text.trim();
     updateController.primaaryIsp = primaryIsp.text.trim();
-    updateController.totalLab = totalLab.text.trim();
+    updateController.totalLab = totalLabCtrl.text.trim();
     updateController.networkTotal = totalNetwork.text.trim();
     updateController.benifiyName = benifiryName.text.trim();
     updateController.bankName = bankName.text.trim();
@@ -1688,10 +1746,14 @@ class _EditCenterInformationScreenState
     updateController.gstStateCode = gstStateCode.text.trim();
     updateController.UidiaNo = uidiai.text.trim();
     updateController.mSMENo = MsmeNo.text.trim();
-    updateController.secondryIsp = secondryIsp.text.trim();
+    updateController.secondryIspType = secondryIsp.text.trim();
     updateController.fuilTnak = generatorFuilTank ?? "";
     updateController.upsBackuptimeMinutes =upsBackupTimeMinutes  ?? "";
     updateController.upsBackup = upsBackup.text.trim();
+
+    updateController.csName = csName.text.trim();
+    updateController.csEmail = csEmail.text.trim();
+    updateController.csNumber = csNumber.text.trim();
 
 
     updateController.labs = labs.map((e) => e.toJson()).toList();
@@ -1710,7 +1772,7 @@ class _EditCenterInformationScreenState
     updateController.primaryInternateUnit = primaryUnit ?? "";
     updateController.secondryInternatetype = secondaryIsptype ?? "";
     updateController.secondryInternateUnit = secondryUnit ?? "";
-
+    updateController.totalSystem = totalSystem.text.trim();
 
 
 
@@ -1791,6 +1853,112 @@ class _EditCenterInformationScreenState
   }
 
 
+  Widget _buildImageGallery(List<api.CenterImage> images) {
+    if (images.isEmpty) {
+      return const Center(child: Text("No Images Available"));
+    }
+
+    return SizedBox(
+      height: 120,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: images.length,
+        itemBuilder: (context, index) {
+          final img = images[index];
+
+          final imageUrl =
+              "http://staging.bookmytestcenter.com/${img.centerImage.replaceFirst('/', '')}";
+
+          return Stack(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(right: 10),
+                width: 160,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.grey.shade200,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey.shade200,
+                        alignment: Alignment.center,
+                        child: const Icon(
+                          Icons.broken_image,
+                          color: Colors.grey,
+                          size: 30,
+                        ),
+                      );
+                    },
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      );
+                    },
+                  ),
+                ),
+              ),
+
+
+              Positioned(
+                top: 48,
+                right: 75,
+                child: GestureDetector(
+                  onTap: () {
+                    _confirmDelete(context, images, index);
+                  },
+                  child: const Icon(
+                    Icons.delete,
+                    color: Colors.red,
+                    size: 26,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }  void _confirmDelete(
+      BuildContext context,
+      List<api.CenterImage> images,
+      int index,
+      ) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Delete Image"),
+        content: const Text("Are you sure you want to delete this image?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+
+              setState(() {
+                images.removeAt(index);
+              });
+
+
+            },
+            child: const Text("Delete"),
+          ),
+        ],
+      ),
+    );
+  }
+
 
 
 
@@ -1859,30 +2027,36 @@ class _EditCenterInformationScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            height: 40,
-            width: 150,
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Lab Number ${index + 1}", style: AppTextStyles.button),
-                if (labs.length > 1)
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      setState(() {
-                        labs.removeAt(index);
-                        totalLabCtrl.text = labs.length.toString();
-                      });
-                    },
-                  ),
-              ],
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                height: 40,
+                width: 150,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  "Lab Number ${index + 1}",
+                  style: AppTextStyles.button,
+                ),
+              ),
+
+              if (labs.length > 1)
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    setState(() {
+                      labs.removeAt(index);
+                      totalLabCtrl.text = labs.length.toString();
+                    });
+                  },
+                ),
+            ],
           ),
+
           const SizedBox(height: 12),
 
           // Floor
@@ -1994,6 +2168,7 @@ class _EditCenterInformationScreenState
       ),
     );
   }
+
   Widget _dropdown(String label, String value, List<String> items, Function(String) onChanged) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -2006,47 +2181,103 @@ class _EditCenterInformationScreenState
     );
   }
 
+  // Future<void> _getCurrentLocation() async {
+  //   bool serviceEnabled;
+  //   LocationPermission permission;
+  //   print("🔥 Get Current Location tapped");
+  //   // 🔹 Check location service
+  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  //   if (!serviceEnabled) {
+  //     AppToast.showError(context, "Location service is disabled");
+  //     return;
+  //   }
+  //
+  //   permission = await Geolocator.checkPermission();
+  //   if (permission == LocationPermission.denied) {
+  //     permission = await Geolocator.requestPermission();
+  //     if (permission == LocationPermission.denied) {
+  //       AppToast.showError(context, "Location permission denied");
+  //       return;
+  //     }
+  //   }
+  //
+  //   if (permission == LocationPermission.deniedForever) {
+  //     AppToast.showError(context, "Location permission permanently denied");
+  //     return;
+  //   }
+  //
+  //   Position position = await Geolocator.getCurrentPosition(
+  //     desiredAccuracy: LocationAccuracy.high,
+  //   );
+  //
+  //   centerLat.text = position.latitude.toString();
+  //   centerLong.text = position.longitude.toString();
+  //
+  //
+  //
+  //   AppToast.showSuccess(context, "Current location fetched");
+  // }
+  bool isInitializing = true;
+
   Future<void> _getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-    print("🔥 Get Current Location tapped");
-    // 🔹 Check location service
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      AppToast.showError(context, "Location service is disabled");
-      return;
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        AppToast.showError(context, "Location permission denied");
-        return;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      AppToast.showError(context, "Location permission permanently denied");
-      return;
-    }
-
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-
-    centerLat.text = position.latitude.toString();
-    centerLong.text = position.longitude.toString();
-
-
-
-    AppToast.showSuccess(context, "Current location fetched");
+    await Future.delayed(Duration(milliseconds: 100));
+    final pos = await Geolocator.getCurrentPosition();
+    if (!mounted) return;
+    setState(() {
+      centerLat.text = pos.latitude.toString();
+      centerLong.text = pos.longitude.toString();
+    });
   }
-
-
+  String? liftAvailable;
+  Widget liftOption({
+    required String value,
+  }) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          liftAvailable = value;
+        });
+      },
+      child: Container(
+        width: 100,
+        alignment: Alignment.centerLeft,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(
+            color: liftAvailable == value
+                ? Colors.grey.shade600
+                : Colors.grey.shade400,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Checkbox(
+              activeColor: AppColors.primaryColor,
+              checkColor: AppColors.background,
+              value: liftAvailable == value,
+              shape:  CircleBorder(
+              ),
+              onChanged: (val) {
+                setState(() {
+                  liftAvailable = value;
+                });
+              },
+            ),
+            Text(
+              value,
+              style: const TextStyle(fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class EditableLab {
+  String id;
   String floor;
   String computers;
   String processor;
@@ -2059,6 +2290,7 @@ class EditableLab {
   String noOfPorts;
 
   EditableLab({
+    this.id = "",
     this.floor = '',
     this.computers = '',
     this.processor = '',
@@ -2073,6 +2305,7 @@ class EditableLab {
 
   Map<String, dynamic> toJson() {
     return {
+      "id": id,
       "floor_name": floor,
       "no_of_computer": computers,
       "window_generation": processor,
@@ -2080,9 +2313,9 @@ class EditableLab {
       "operating_system": os,
       "ram": ram,
       "hard_disk": hardDisk,
-      "ethernet_swtch_company": ethernetSwitchCompany,
+      "ehternet_swtch_company": ethernetSwitchCompany,
       "switch_category": switchCategory,
-      "no_of_ethernet_switch": noOfPorts,
+      "no_of_port_eth_switch": noOfPorts,
     };
   }
 }

@@ -193,6 +193,7 @@ class Center {
   final String powerbachup;
   final String fuilTankCapacity;
   final String typeOfCenter;
+  final String amAltNumber;
 
 
 
@@ -273,7 +274,8 @@ class Center {
     required this.powerbachup,
     required this.primaryinternetspeedunit,
     required this.fuilTankCapacity,
-    required this.typeOfCenter
+    required this.typeOfCenter,
+    required this.amAltNumber
   });
 
   factory Center.fromJson(Map<String, dynamic> json) {
@@ -309,12 +311,13 @@ class Center {
       address: json['address'] ?? '',
       printerLab: json["network_printer"],
       gstNo: json["gst_no"],
-      fireExuter: json["how_many_fire_extinguisher_in_each_lab"],
+      fireExuter: json["fire_extinguisher"],
       acInLab: json["ac_in_each_lab"],
       addressLat: json['address_lat'] ?? '',
       addressLong: json['address_long'] ?? '',
       landmark: json['landmark'] ?? '',
       pinCode: json['pin_code'] ?? '',
+      amAltNumber: json['am_phone_alternate'],
       secoundaryUnit: json["secondary_internet_speed_unit"],
       primaryConnectType: json["primary_isp_connect_type"],
       drinkingWater: json["drinking_water_facility"],
@@ -378,9 +381,9 @@ class Lab {
   final String noOfPortEthSwitch;
   final String ehternetSwtchCompany;
   final String switchCategory;
-  final String processer;
 
-  Lab({
+
+  Lab( {
     required this.id,
     required this.centerId,
     required this.labName,
@@ -395,7 +398,7 @@ class Lab {
     required this.noOfPortEthSwitch,
     required this.ehternetSwtchCompany,
     required this.switchCategory,
-    required this.processer
+
   });
 
   factory Lab.fromJson(Map<String, dynamic> json) {
@@ -408,7 +411,7 @@ class Lab {
       noOfAc: json['no_of_ac'] ?? '',
       monitorType: json['monitor_type'] ?? '',
       operatingSystem: json['operating_system'] ?? '',
-      processer: json["window_generation"],
+
       ram: json['ram'] ?? '',
       hardDisk: json['hard_disk'] ?? '',
       windowGeneration: json['window_generation'] ?? '',

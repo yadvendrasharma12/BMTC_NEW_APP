@@ -48,7 +48,7 @@ class ProfileUpdateController extends GetxController {
   String typeOfCenter = "";
   String centerName = "";
   String centerDescription = "";
-  int capacity = 0;
+  String capacity = "";
   String postalAddress = "";
   double addressLat = 0.0;
   double addressLong = 0.0;
@@ -70,6 +70,7 @@ class ProfileUpdateController extends GetxController {
   String amName = "";
   String amNumber = "";
   String amEmail = "";
+  String amAltNumber = "";
 
   String csName = "";
   String csNumber = "";
@@ -78,6 +79,7 @@ class ProfileUpdateController extends GetxController {
   String pocName = "";
   String pocEmail = "";
   String pocNumber = "";
+  String pocAltNumber = "";
   String emergencyNo = "";
   String landLineNo = "";
   String primaaryIsp = '';
@@ -124,6 +126,8 @@ class ProfileUpdateController extends GetxController {
 
 
 
+
+
   List<File> labPhotos = [];
   List<File> mainGateImages = [];
   List<File> serverRoomImages = [];
@@ -131,7 +135,7 @@ class ProfileUpdateController extends GetxController {
   List<File> upsGeneratorImages = [];
   File? walkthroughVideo;
 
-  // ================= DOCUMENT FILES =================
+
 
   File? entranceImage;
   File? canceledCheque;
@@ -206,7 +210,7 @@ class ProfileUpdateController extends GetxController {
       "how_many_network":networkTotal,
       "partitation":partition,
       "primary_internet_speed_unit":primaryInternateUnit,
-      "capacity": capacity.toString(),
+      "capacity": capacity,
       "is_there_projector_in_each_lab":projectorLab,
       "address": postalAddress,
       "ac_in_each_lab":acInLab,
@@ -217,7 +221,7 @@ class ProfileUpdateController extends GetxController {
       "address_long": addressLong.toString(),
 
       "is_there_sound_sytem_in_each_lab": soundSystem,
-      "how_many_fire_extinguisher_in_each_lab": fireExutter,
+      "fire_extinguisher": fireExutter,
       "locker_facility": lockerFacelity,
       "drinking_water_facility": drinkingWater,
 
@@ -235,20 +239,15 @@ class ProfileUpdateController extends GetxController {
       "state_id": stateId,
       "city_id": cityId,
       "local_area_name": localArea,
-      "region_code": "",
-      "state_code": "",
-      "city_code": "",
-      "vendor_id": "0",
+      "am_phone_alternate":amAltNumber,
+
 
       "pin_code": pincode,
       "landmark": landmark,
 
       // ================= CONTACT =================
-      "landline_country_code": "",
-      "landline_area_code": "",
       "landline_number": landLineNo,
-      "landline_extension": "",
-      "mobile_no": "",
+
 
       "cs_name": csName,
       "cs_country_code": "",
@@ -259,13 +258,12 @@ class ProfileUpdateController extends GetxController {
       "am_name": amName,
       "am_country_code": "",
       "am_contact_no": amNumber,
-      "am_phone_alternate": "",
       "am_email": amEmail,
 
       "poc_name": pocName,
       "poc_country_code": "",
       "poc_contact_no": pocNumber,
-      "poc_mobile_alternate": pocNumber,
+      "poc_mobile_alternate": pocAltNumber,
       "poc_email": pocEmail,
 
       "emergency_counter_code": "",
@@ -274,13 +272,9 @@ class ProfileUpdateController extends GetxController {
 
       // ================= LOCATION =================
       "nearest_railway_station": nearestRailway,
-      "station_lat": "",
-      "station_long": "",
       "distance_from_station": distanceRailways,
 
       "nearest_bus_stop": nearestBusStop,
-      "bus_lat": "",
-      "bus_long": "",
       "distance_from_bus_stop": distaceBus,
 
       "nearest_metro_station": nearestMetro,
@@ -291,8 +285,9 @@ class ProfileUpdateController extends GetxController {
 
       // ================= BANK / GST =================
 
-      "gst_state_code": "",
+      "gst_state_code": gstStateCode,
 
+      "labs": labs,
 
       "sec_bank_option": "",
       "secondary_pan_no": "",
@@ -302,7 +297,6 @@ class ProfileUpdateController extends GetxController {
       "secondary_beneficiary_name": "",
 "connected_single_network": connectSingle,
 
-      "partitaion_each_lab": "yes",
 
 
 
@@ -312,33 +306,29 @@ class ProfileUpdateController extends GetxController {
       "lan_managed": "",
 
 
-      "primary_isp_bband_or_lease": "",
 
 
       "secondary_isp_name": secondryIsp,
-      "secondary_isp_bband_or_lease": "",
 
       "secondary_internet_speed_unit": secondryInternateUnit,
 
       // ================= POWER =================
       "power_backup_generator_kv": "",
-      "power_back_ups_kv": "",
+
       "power_backup_hour": "",
       "power_backup_unit": "",
       "is_generator_backup": "yes",
 
-      "generator_backup_capacity": "",
       "generator_backup_time": "",
-      "ups_backup_time": "",
+
       "backup_hours": "",
       "backup_minutes": "",
-      "generator_fuel_tank_capacity": "",
 
       // ================= FACILITY =================
       "cctv_dvr": "",
 
-      "projector_sound_system": "",
-      "fire_extinguisher": "",
+      "projector_sound_system": projectorLab,
+
       "parking_facility": "",
 
       "security_guard_male": "0",
@@ -360,8 +350,8 @@ class ProfileUpdateController extends GetxController {
       "center_prev_exam_name": "",
 
       "udyam_number": "",
-      "uidai_number": "",
-      "msme_number": "",
+      "uidai_number": UidiaNo,
+      "msme_number": mSMENo,
       "has_gst": "yes",
       "has_msme": "yes",
 
