@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../../controllers/project_controller.dart';
 import '../../../core/app_colors.dart';
 import '../../../core/text_style.dart';
@@ -93,7 +94,7 @@ class _CounslingPopupState extends State<CounslingPopup> {
                           style: AppTextStyles.topHeading3,
                         ),
                         Text(
-                          data.bookingReceived ?? '',
+                          formatDateTime(data.bookingReceived),
                           style: AppTextStyles.centerText,
                         ),
                       ],
@@ -126,7 +127,7 @@ class _CounslingPopupState extends State<CounslingPopup> {
                             style: AppTextStyles.topHeading3,
                           ),
                           Text(
-                            data.centerBookingAcceptDate ?? '',
+                            formatDateTime(data.centerBookingAcceptDate),
                             style: AppTextStyles.centerText,
                           ),
                         ],
@@ -160,9 +161,10 @@ class _CounslingPopupState extends State<CounslingPopup> {
                       Text("1. Project Details", style: AppTextStyles.dashBordButton3),
 
 
-                      _field("Exam Date", data.startDate),
+                      _field("Exam Date", data.startDate, data.endDate),
                       _field("Exam Name", data.examName),
                       _field("Exam City", data.examCityName),
+                      _field("Exam City", data.clientName),
                       _field("Seats", data.numberOfSeats?.toString()),
                       _field("Pricing", "₹ ${data.pricePerSeat ?? '-'}"),
 
@@ -220,7 +222,18 @@ class _CounslingPopupState extends State<CounslingPopup> {
   }
 
   /// ================= FIELD WIDGET =================
-  Widget _field(String label, String? value) {
+  Widget _field(String label, String? startDate, [String? endDate]) {
+    String displayValue = "N/A";
+
+    if (startDate != null && startDate.isNotEmpty) {
+      displayValue = formatDateTime(startDate);
+
+      if (endDate != null && endDate.isNotEmpty) {
+        displayValue =
+        "${formatDateTime(startDate)}  -  ${formatDateTime(endDate)}";
+      }
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
@@ -239,7 +252,7 @@ class _CounslingPopupState extends State<CounslingPopup> {
               color: AppColors.background,
             ),
             child: Text(
-              formatYesNo(value),
+              displayValue,
               style: AppTextStyles.centerText,
             ),
           ),
@@ -247,4 +260,30 @@ class _CounslingPopupState extends State<CounslingPopup> {
       ),
     );
   }
+
+  String formatValue(String? value) {
+    if (value == null || value.isEmpty) return "N/A";
+    return value;
+  }
+
+
+  String formatDateTime(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return "N/A";
+
+    final formats = [
+      "yyyy-MM-dd HH:mm:ss",     // 2025-12-11 10:08:31
+      "MMM dd, yyyy HH:mm:ss",   // Dec 11, 2025 10:12:37
+      "MM dd yyyy HH:mm:ss",     // 12 11 2025 10:12:37
+    ];
+
+    for (var f in formats) {
+      try {
+        final dateTime = DateFormat(f, 'en_US').parse(dateStr);
+        return DateFormat("MMM dd yyyy hh:mm a").format(dateTime);
+      } catch (_) {}
+    }
+
+    return dateStr; // fallback
+  }
+
 }

@@ -148,6 +148,8 @@ class _InReviewScreenState extends State<InReviewScreen> {
           SizedBox(
             width: 40,
             child: Checkbox(
+              activeColor: AppColors.primaryColor,
+              checkColor: Colors.white,
               value: headerChecked,
               onChanged: (val) {
                 setState(() {
@@ -183,6 +185,8 @@ class _InReviewScreenState extends State<InReviewScreen> {
           SizedBox(
             width: 40,
             child: Checkbox(
+              activeColor: AppColors.primaryColor,
+              checkColor: Colors.white,
               value: rowCheckedList[index],
               onChanged: (val) {
                 setState(() {
@@ -199,7 +203,7 @@ class _InReviewScreenState extends State<InReviewScreen> {
           _dataCell(b.endDate ?? "-", 120),
           _dataCell(b.numberOfSeats?.toString() ?? "-", 80),
           _dataCell("₹ ${b.pricePerSeat ?? 200}", 100),
-          _statusCell("approved", 100),
+          _statusCell(b.examCenterStatus, 100),
 
           Container(
             width: 100,
@@ -265,28 +269,35 @@ class _InReviewScreenState extends State<InReviewScreen> {
   }
 
 
-  Widget _statusCell(String status, double width) {
-    Color bgColor;
-    Color textColor;
+  Widget _statusCell(String? status, double width) {
     String text;
+    Color color;
 
-    if (status.toLowerCase() == "approved") {
-      bgColor = Colors.green.shade100;
-      textColor = Colors.green.shade800;
-      text = "Approved";
-    } else {
-      bgColor = Colors.orange.shade100;
-      textColor = Colors.orange.shade800;
-      text = "In Review";
+    switch (status) {
+      case "1":
+        text = "Approved";
+        color = Colors.green;
+        break;
+      case "2":
+        text = "Rejected";
+        color = Colors.red;
+        break;
+      default:
+        text = "Pending";
+        color = Colors.orange;
     }
 
-    return Text(
-      text,
-      style: AppTextStyles.tableText.copyWith(
-        color: textColor,
-        fontWeight: FontWeight.w600,
+    return Container(
+      width: width,
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      child: Text(
+        text,
+        style: AppTextStyles.tableText.copyWith(
+          color: color,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
-
 }

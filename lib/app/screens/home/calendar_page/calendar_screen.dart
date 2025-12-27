@@ -150,84 +150,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 );
               }),
 
-              // child: TableCalendar(
-              //   firstDay: DateTime(2020),
-              //   lastDay: DateTime(2035),
-              //   focusedDay: _focusedDay,
-              //   selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
-              //
-              //   /// ON DAY SELECTED → CALL API
-              //   onDaySelected: (selectedDay, focusedDay) async {
-              //     setState(() {
-              //       _selectedDay = selectedDay;
-              //       _focusedDay = focusedDay;
-              //     });
-              //
-              //     /// CALL LIVE API
-              //     await controller.fetchBookingDetails(selectedDay);
-              //
-              //     /// SHOW POPUP
-              //     _showEventsDialog(selectedDay);
-              //   },
-              //
-              //   headerVisible: false,
-              //   availableGestures: AvailableGestures.none,
-              //
-              //   /// ---------------- Highlight Booked Dates ----------------
-              //   calendarBuilders: CalendarBuilders(
-              //     defaultBuilder: (context, day, focusedDay) {
-              //       bool isBooked = controller.bookedDates.any((d) =>
-              //       d.year == day.year &&
-              //           d.month == day.month &&
-              //           d.day == day.day);
-              //
-              //       if (isBooked) {
-              //         return Container(
-              //           margin: const EdgeInsets.all(4),
-              //           decoration: BoxDecoration(
-              //             color: Colors.green.shade400,
-              //             shape: BoxShape.circle,
-              //           ),
-              //           alignment: Alignment.center,
-              //           child: Text(
-              //             "${day.day}",
-              //             style: const TextStyle(color: Colors.white),
-              //           ),
-              //         );
-              //       }
-              //
-              //       return null; // fallback to default
-              //     },
-              //     selectedBuilder: (context, day, focusedDay) {
-              //       return Container(
-              //         margin: const EdgeInsets.all(4),
-              //         decoration: BoxDecoration(
-              //           color: Colors.blue,
-              //           shape: BoxShape.circle,
-              //         ),
-              //         alignment: Alignment.center,
-              //         child: Text(
-              //           "${day.day}",
-              //           style: const TextStyle(color: Colors.white),
-              //         ),
-              //       );
-              //     },
-              //     todayBuilder: (context, day, focusedDay) {
-              //       return Container(
-              //         margin: const EdgeInsets.all(4),
-              //         decoration: BoxDecoration(
-              //           border: Border.all(color: Colors.blue, width: 2),
-              //           shape: BoxShape.circle,
-              //         ),
-              //         alignment: Alignment.center,
-              //         child: Text(
-              //           "${day.day}",
-              //           style: const TextStyle(color: Colors.black),
-              //         ),
-              //       );
-              //     },
-              //   ),
-              // ),
+
             ),
 
             const SizedBox(height: 8),
@@ -384,12 +307,35 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 ],
               ),
 
-              const SizedBox(height: 8),
 
-              Text(
-                "Events for ${selectedDay.toLocal().toString().split(' ')[0]}",
-                style: AppTextStyles.topHeading3,
-              ),
+
+
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Exam Scheduled for the day",
+                        style: AppTextStyles.centerText,
+                      ),
+                      // Agar exams list empty nahi hai to first exam ka start-end date show karo
+                      if (exams.isNotEmpty)
+                        Text(
+                          "Date - ${_formatDate(exams[0]["start_date"])} to ${_formatDate(exams[0]["end_date"])}",
+                          style: AppTextStyles.topHeading3,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                        )
+                      else
+                        Text(
+                          "Date - ${_formatEventDate(selectedDay)}",
+                          style: AppTextStyles.topHeading3,
+                        ),
+                    ],
+                  ),
+
+
 
               const SizedBox(height: 16),
 
@@ -422,9 +368,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               _row("Exam Name", exam["exam_name"]),
                               _row("Client", exam["client_name"]),
                               _row("Seats Booked", exam["seats_booked"]),
-                              _row("Start Date", exam["start_date"]),
-                              _row("End Date", exam["end_date"]),
-                              _row("Type", exam["type"]),
+                              _row("Status", exam["type"],),
                             ],
                           ),
                         ),
@@ -440,17 +384,80 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   // =================== Key-Value Row ===================
-  Widget _row(String title, String value) {
+  Widget _row(String title, dynamic value, {String? type}) {
+    Color valueColor = Colors.black;
+
+    // If this row represents a self_booking, change color
+    if (type != null && type.toLowerCase() == "self_booking") {
+      valueColor = Colors.orange.shade800;
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(title, style: AppTextStyles.centerText),
-          Text(value, style: AppTextStyles.tableText),
+          Flexible(
+            child: Text(
+              value?.toString() ?? "-",
+              style: AppTextStyles.tableText.copyWith(color: valueColor),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );
   }
+
+
+  String _formatDate(String dateString) {
+    try {
+      DateTime date = DateTime.parse(dateString);
+      final weekDay = [
+        'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+      ][date.weekday - 1];
+
+      final month = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ][date.month - 1];
+
+      return "$weekDay, $month ${date.day}, ${date.year}";
+    } catch (e) {
+      return dateString; // agar parse fail ho jaye to original string return kare
+    }
+  }
+
+
+
+  String _formatEventDate(DateTime? date) {
+    if (date == null) return "-"; // null-safe check
+
+    final weekDay = [
+      'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+    ][date.weekday - 1];
+
+    final month = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ][date.month - 1];
+
+    return "$weekDay, $month ${date.day}, ${date.year}";
+  }
+  String formatDuration(dynamic duration) {
+    if (duration == null || duration.toString().isEmpty) return "-";
+
+    int val = int.tryParse(duration.toString()) ?? 0;
+
+    // Treat <=24 as hours
+    if (val <= 24) return "${val}h 0m";
+
+    int hours = val ~/ 60;
+    int mins = val % 60;
+
+    return "${hours}h ${mins}m";
+  }
+
 }
 

@@ -573,11 +573,11 @@ class _ExamDetailsScreenState extends State<ExamDetailsScreen> {
           Expanded(
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey.shade400),
+                  backgroundColor: Colors.black),
               onPressed: () {
                 setState(() => isEditable = true);
               },
-              child: const Text("Edit"),
+              child:  Text("Edit",style: AppTextStyles.button,),
             ),
           ),
           const SizedBox(width: 15),
@@ -585,7 +585,7 @@ class _ExamDetailsScreenState extends State<ExamDetailsScreen> {
             child: Obx(() =>
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black),
+                      backgroundColor:AppColors.primaryColor),
                   onPressed: controller.isLoading.value ? null : _updateBooking,
                   child: controller.isLoading.value
                       ? const SizedBox(
@@ -594,8 +594,8 @@ class _ExamDetailsScreenState extends State<ExamDetailsScreen> {
                     child: CircularProgressIndicator(
                         color: Colors.white, strokeWidth: 3),
                   )
-                      : const Text(
-                      "Update", style: TextStyle(color: Colors.white)),
+                      :  Text(
+                      "Update", style:AppTextStyles.button ),
                 )),
           ),
         ],

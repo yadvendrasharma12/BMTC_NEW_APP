@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:bmtc_app/app/utils/toast_message.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../../../controllers/dashboard_controller.dart';
 import '../../../../core/app_colors.dart';
 import '../../../../core/text_style.dart';
@@ -115,11 +120,30 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
 
                 const SizedBox(height: 20),
 
-                AppTextField(
-                  controller: searchController,
-                  keyboardType: TextInputType.text,
-                  label: 'Search by Exam Name',
-                  prefix: const Icon(Icons.search),
+                Row(
+                  children: [
+                    Expanded(
+                      child: AppTextField(
+                        controller: searchController,
+                        keyboardType: TextInputType.text,
+                        label: 'Search by Exam Name',
+                        prefix: const Icon(Icons.search),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton.icon(
+                      onPressed: _exportBookings,
+                      icon:  Icon(Icons.download, size: 18,color: Colors.white,),
+                      label:  Text("Export",style: AppTextStyles.button,),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 20),
@@ -136,6 +160,7 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
   // ----------------------------------------------------------
   // TABLE UI
   // ----------------------------------------------------------
+
 
   Widget _buildContainerTable() {
     return Container(
@@ -178,6 +203,8 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
           SizedBox(
             width: 40,
             child: Checkbox(
+              activeColor: AppColors.primaryColor,
+              checkColor: Colors.white,
               value: headerChecked,
               onChanged: (val) {
                 setState(() {
@@ -213,6 +240,8 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
           SizedBox(
             width: 40,
             child: Checkbox(
+              activeColor: AppColors.primaryColor,
+              checkColor: Colors.white,
               value: rowCheckedList[index],
               onChanged: (val) {
                 setState(() {
@@ -234,7 +263,7 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
 
           _dataCell(booking.numberOfSeats ?? "-", 100),
           _dataCell(booking.pricePerSeat ?? "-", 100),
-          _statusCell(booking.status, 100),
+          _statusCell(booking.examCenterStatus, 100),
 
           /// Action Button (Fixed width)
           Container(
@@ -316,15 +345,18 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
     String text;
     Color color;
 
-    if (status == "1") {
-      text = "Approved";
-      color = Colors.green;
-    } else if (status == "0") {
-      text = "Rejected";
-      color = Colors.red;
-    } else {
-      text = "Pending";
-      color = Colors.orange;
+    switch (status) {
+      case "1":
+        text = "Approved";
+        color = Colors.green;
+        break;
+      case "2":
+        text = "Rejected";
+        color = Colors.red;
+        break;
+      default:
+        text = "Pending";
+        color = Colors.orange;
     }
 
     return Container(
@@ -340,5 +372,78 @@ class _BookingRequestScreenState extends State<BookingRequestScreen> {
       ),
     );
   }
+
+  void _exportBookings() async {
+    if (filteredRequests.isEmpty) {
+      AppToast.showInfo(Get.context!, "No data to export");
+      return;
+    }
+
+    // Generate CSV string
+    final headers = [
+      "Exam Name",
+      "Client",
+      "City",
+      "Exam Date",
+      "Seats",
+      "Pricing",
+      "Status"
+    ];
+
+    final csvData = [
+      headers.join(","), // Header row
+      ...filteredRequests.map((booking) {
+        final examDate =
+            "${booking.startDate ?? '-'} to ${booking.endDate ?? '-'}";
+        final status = booking.examCenterStatus == "1"
+            ? "Approved"
+            : booking.examCenterStatus == "2"
+            ? "Rejected"
+            : "Pending";
+
+        return [
+          booking.examName ?? "-",
+          booking.clientName ?? "-",
+          booking.examCityName ?? "-",
+          examDate,
+          booking.numberOfSeats ?? "-",
+          booking.pricePerSeat ?? "-",
+          status
+        ].join(",");
+      })
+    ].join("\n");
+
+    try {
+      // Request storage permission (Android only)
+      if (await Permission.storage.request().isGranted) {
+        Directory? downloadsDir;
+
+        // iOS → Use Documents directory
+        if (Platform.isAndroid) {
+          downloadsDir = Directory("/storage/emulated/0/Download");
+        } else {
+          downloadsDir = await getApplicationDocumentsDirectory();
+        }
+
+        if (!downloadsDir.existsSync()) {
+          downloadsDir.createSync(recursive: true);
+        }
+
+        String fileName =
+            "booking_export_${DateTime.now().millisecondsSinceEpoch}.csv";
+        File file = File("${downloadsDir.path}/$fileName");
+
+        await file.writeAsString(csvData);
+
+        AppToast.showSuccess(Get.context!, "Exported to ${file.path}");
+      } else {
+        AppToast.showError(Get.context!, "Storage permission denied!");
+      }
+    } catch (e) {
+      AppToast.showError(Get.context!, "Export failed: $e");
+    }
+  }
+
+
 
 }

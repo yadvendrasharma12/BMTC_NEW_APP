@@ -115,6 +115,8 @@ class _SelfBookingScreenState extends State<SelfBookingScreen> {
                       ];
 
                       final labList = [
+                        "Ground",
+                        "Basement",
                         "LAB 1",
                         "LAB 2",
                         "LAB 3",
@@ -156,6 +158,8 @@ class _SelfBookingScreenState extends State<SelfBookingScreen> {
 
                   const SizedBox(height: 20),
 
+
+
                   // Table
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -167,16 +171,15 @@ class _SelfBookingScreenState extends State<SelfBookingScreen> {
                       ),
                       child: Table(
                         columnWidths: const {
-                          0: FixedColumnWidth(50),
+                          0: FixedColumnWidth(150),
                           1: FixedColumnWidth(150),
-                          2: FixedColumnWidth(150),
+                          2: FixedColumnWidth(120),
                           3: FixedColumnWidth(120),
                           4: FixedColumnWidth(120),
                           5: FixedColumnWidth(120),
-                          6: FixedColumnWidth(120),
-                          7: FixedColumnWidth(80),
-                          8: FixedColumnWidth(150),
-                          9: FixedColumnWidth(80),
+                          6: FixedColumnWidth(80),
+                          7: FixedColumnWidth(150),
+                          8: FixedColumnWidth(80),
                         },
                         border: TableBorder.all(color: Colors.grey),
                         children: [
@@ -184,17 +187,6 @@ class _SelfBookingScreenState extends State<SelfBookingScreen> {
                           TableRow(
                             decoration: const BoxDecoration(color: Color(0xFFF5F5F5)),
                             children: [
-                              Checkbox(
-                                value: headerChecked,
-                                onChanged: (val) {
-                                  setState(() {
-                                    headerChecked = val ?? false;
-                                    for (int i = 0; i < rowCheckedList.length; i++) {
-                                      rowCheckedList[i] = headerChecked;
-                                    }
-                                  });
-                                },
-                              ),
                               _buildHeader("Client Name"),
                               _buildHeader("Client Email"),
                               _buildHeader("Client Phone"),
@@ -212,15 +204,6 @@ class _SelfBookingScreenState extends State<SelfBookingScreen> {
                             final item = bookings[index];
                             return TableRow(
                               children: [
-                                Checkbox(
-                                  value: rowCheckedList[index],
-                                  onChanged: (val) {
-                                    setState(() {
-                                      rowCheckedList[index] = val ?? false;
-                                      headerChecked = rowCheckedList.every((e) => e);
-                                    });
-                                  },
-                                ),
                                 _buildCell(item['client_name'] ?? '-'),
                                 _buildCell(item['client_email'] ?? '-'),
                                 _buildCell(item['client_phone'] ?? '-'),
@@ -230,54 +213,32 @@ class _SelfBookingScreenState extends State<SelfBookingScreen> {
                                 _buildCell(item['seats_booked']?.toString() ?? '-'),
                                 _buildCell(item['exam_location'] ?? '-'),
 
-                                Column(
-                                  children: [
-
-                                    // GestureDetector(
-                                    //   onTap: () {
-                                    //     controller.selectedBooking(item);
-                                    //     Get.to(() => const ExamDetailsScreen());
-                                    //   },
-                                    //   child: Container(
-                                    //     height: 30,
-                                    //     width: 65,
-                                    //     margin: const EdgeInsets.all(5),
-                                    //     decoration: BoxDecoration(
-                                    //       color: Colors.black,
-                                    //       borderRadius: BorderRadius.circular(10),
-                                    //     ),
-                                    //     alignment: Alignment.center,
-                                    //     child: Text("View", style: AppTextStyles.button),
-                                    //   ),
-                                    // ),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        controller.selectedBooking(item);
-                                        // Wait for the result from ExamDetailsScreen
-                                        bool? updated = await Get.to(() => const ExamDetailsScreen());
-
-                                        if (updated == true) {
-                                          // Refresh bookings after update
-                                          await controller.fetchSelfBooking();
-                                          setState(() {
-                                            filteredBookings.clear(); // Optional: reset search
-                                          });
-                                        }
-                                      },
-                                      child: Container(
-                                        height: 30,
-                                        width: 65,
-                                        margin: const EdgeInsets.all(5),
-                                        decoration: BoxDecoration(
-                                          color: Colors.black,
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        alignment: Alignment.center,
-                                        child: Text("View", style: AppTextStyles.button),
+                                // Action button
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      controller.selectedBooking(item);
+                                      bool? updated = await Get.to(() => const ExamDetailsScreen());
+                                      if (updated == true) {
+                                        await controller.fetchSelfBooking();
+                                        setState(() {
+                                          filteredBookings.clear(); // Optional: reset search
+                                        });
+                                      }
+                                    },
+                                    child: Container(
+                                      height: 30,
+                                      width: 65,
+                                      margin: const EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(10),
                                       ),
+                                      alignment: Alignment.center,
+                                      child: Text("View", style: AppTextStyles.button),
                                     ),
-
-                                  ],
+                                  ),
                                 ),
                               ],
                             );
@@ -286,6 +247,139 @@ class _SelfBookingScreenState extends State<SelfBookingScreen> {
                       ),
                     ),
                   ),
+
+
+
+                  // Table
+                  // SingleChildScrollView(
+                  //   scrollDirection: Axis.horizontal,
+                  //   child: Container(
+                  //     decoration: BoxDecoration(
+                  //       color: AppColors.background,
+                  //       borderRadius: BorderRadius.circular(12),
+                  //       border: Border.all(color: AppColors.grey73),
+                  //     ),
+                  //     child: Table(
+                  //       columnWidths: const {
+                  //         0: FixedColumnWidth(50),
+                  //         1: FixedColumnWidth(150),
+                  //         2: FixedColumnWidth(150),
+                  //         3: FixedColumnWidth(120),
+                  //         4: FixedColumnWidth(120),
+                  //         5: FixedColumnWidth(120),
+                  //         6: FixedColumnWidth(120),
+                  //         7: FixedColumnWidth(80),
+                  //         8: FixedColumnWidth(150),
+                  //         9: FixedColumnWidth(80),
+                  //       },
+                  //       border: TableBorder.all(color: Colors.grey),
+                  //       children: [
+                  //         // Header
+                  //         TableRow(
+                  //           decoration: const BoxDecoration(color: Color(0xFFF5F5F5)),
+                  //           children: [
+                  //             Checkbox(
+                  //               value: headerChecked,
+                  //               onChanged: (val) {
+                  //                 setState(() {
+                  //                   headerChecked = val ?? false;
+                  //                   for (int i = 0; i < rowCheckedList.length; i++) {
+                  //                     rowCheckedList[i] = headerChecked;
+                  //                   }
+                  //                 });
+                  //               },
+                  //             ),
+                  //             _buildHeader("Client Name"),
+                  //             _buildHeader("Client Email"),
+                  //             _buildHeader("Client Phone"),
+                  //             _buildHeader("Exam"),
+                  //             _buildHeader("Exam Type"),
+                  //             _buildHeader("Exam Date"),
+                  //             _buildHeader("Seats"),
+                  //             _buildHeader("Location"),
+                  //             _buildHeader("Action"),
+                  //           ],
+                  //         ),
+                  //
+                  //         // Rows
+                  //         ...List.generate(bookings.length, (index) {
+                  //           final item = bookings[index];
+                  //           return TableRow(
+                  //             children: [
+                  //               Checkbox(
+                  //                 value: rowCheckedList[index],
+                  //                 onChanged: (val) {
+                  //                   setState(() {
+                  //                     rowCheckedList[index] = val ?? false;
+                  //                     headerChecked = rowCheckedList.every((e) => e);
+                  //                   });
+                  //                 },
+                  //               ),
+                  //               _buildCell(item['client_name'] ?? '-'),
+                  //               _buildCell(item['client_email'] ?? '-'),
+                  //               _buildCell(item['client_phone'] ?? '-'),
+                  //               _buildCell(item['exam_name'] ?? '-'),
+                  //               _buildCell(item['exam_type'] ?? '-'),
+                  //               _buildCell(item['start_date'] ?? '-'),
+                  //               _buildCell(item['seats_booked']?.toString() ?? '-'),
+                  //               _buildCell(item['exam_location'] ?? '-'),
+                  //
+                  //               Column(
+                  //                 children: [
+                  //
+                  //                   // GestureDetector(
+                  //                   //   onTap: () {
+                  //                   //     controller.selectedBooking(item);
+                  //                   //     Get.to(() => const ExamDetailsScreen());
+                  //                   //   },
+                  //                   //   child: Container(
+                  //                   //     height: 30,
+                  //                   //     width: 65,
+                  //                   //     margin: const EdgeInsets.all(5),
+                  //                   //     decoration: BoxDecoration(
+                  //                   //       color: Colors.black,
+                  //                   //       borderRadius: BorderRadius.circular(10),
+                  //                   //     ),
+                  //                   //     alignment: Alignment.center,
+                  //                   //     child: Text("View", style: AppTextStyles.button),
+                  //                   //   ),
+                  //                   // ),
+                  //                   GestureDetector(
+                  //                     onTap: () async {
+                  //                       controller.selectedBooking(item);
+                  //                       // Wait for the result from ExamDetailsScreen
+                  //                       bool? updated = await Get.to(() => const ExamDetailsScreen());
+                  //
+                  //                       if (updated == true) {
+                  //                         // Refresh bookings after update
+                  //                         await controller.fetchSelfBooking();
+                  //                         setState(() {
+                  //                           filteredBookings.clear(); // Optional: reset search
+                  //                         });
+                  //                       }
+                  //                     },
+                  //                     child: Container(
+                  //                       height: 30,
+                  //                       width: 65,
+                  //                       margin: const EdgeInsets.all(5),
+                  //                       decoration: BoxDecoration(
+                  //                         color: Colors.black,
+                  //                         borderRadius: BorderRadius.circular(10),
+                  //                       ),
+                  //                       alignment: Alignment.center,
+                  //                       child: Text("View", style: AppTextStyles.button),
+                  //                     ),
+                  //                   ),
+                  //
+                  //                 ],
+                  //               ),
+                  //             ],
+                  //           );
+                  //         }),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
                   const SizedBox(height: 30),
                 ],
               ),

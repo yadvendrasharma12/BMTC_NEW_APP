@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:intl/intl.dart';
 
 import '../../../controllers/project_controller.dart';
 import '../../../core/app_colors.dart';
@@ -87,11 +88,13 @@ class _ConfimPopupState extends State<ConfimPopup> {
                     Row(
                       children: [
                         Text(
+
                           "Booking Received Date ",
                           style: AppTextStyles.topHeading3,
                         ),
                         Text(
-                          data.bookingReceived ?? '',
+                          formatDateTime(data.bookingReceived),
+
                           style: AppTextStyles.centerText,
                         ),
                       ],
@@ -134,7 +137,9 @@ class _ConfimPopupState extends State<ConfimPopup> {
                                     ),
                                     Expanded(
                                       child: Text(
-                                        data.centerBookingAcceptDate ?? '',
+
+                                        formatDateTime(data.centerBookingAcceptDate),
+
                                         style: AppTextStyles.centerText,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -184,7 +189,8 @@ class _ConfimPopupState extends State<ConfimPopup> {
                                     ),
                                     Expanded(
                                       child: Text(
-                                        data.clientAcceptBookingDate ?? '',
+                                        formatDateTime(data.clientAcceptBookingDate),
+
                                         style: AppTextStyles.centerText,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -213,9 +219,11 @@ class _ConfimPopupState extends State<ConfimPopup> {
 
                       SizedBox(height: 10,),
 
-                      _field("Exam Date", data.startDate),
+                      _field("Exam Date", data.startDate, data.endDate),
+
                       _field("Exam Name", data.examName),
                       _field("Exam City", data.examCityName),
+                      _field("Exam City", data.clientName),
                       _field("Seats",
                           data.numberOfSeats?.toString()),
                       _field("Pricing",
@@ -245,20 +253,20 @@ class _ConfimPopupState extends State<ConfimPopup> {
                         style: AppTextStyles.dashBordButton3,
                       ),
                       SizedBox(height: 5,),
-                      _field("Parking Facility", data.parkingFacility),
-                      _field("Security guard", data.securityGuard),
-                      _field("Lockers", data.lockerFacility),
-                      _field("Waiting Area", data.waitingArea),
-                      _field("Power Backup", data.powerBackup),
-                      _field("PH Handicapped", data.phHandicaped),
-                      _field("Printer", data.printer),
-                      _field("Rough Sheet", data.roughSheet),
-                      _field("Partition", data.partitionInLab),
-                      _field("Ac in each Lab", data.acInLab),
-                      _field("CCTV Required", data.cctvRequired),
+                      _field("Parking Facility", data.parkingFacility,null, true),
+                      _field("Security guard", data.securityGuard,),
+                      _field("Lockers", data.lockerFacility,null, true),
+                      _field("Waiting Area", data.waitingArea,null, true),
+                      _field("Power Backup", data.powerBackup,null, true),
+                      _field("PH Handicapped", data.phHandicaped,null, true),
+                      _field("Printer", data.printer,null, true),
+                      _field("Rough Sheet", data.roughSheet,null, true),
+                      _field("Partition", data.partitionInLab,null, true),
+                      _field("Ac in each Lab", data.acInLab,null, true),
+                      _field("CCTV Required", data.cctvRequired,null, true),
                       SizedBox(height: 10,),
                       Divider(
-                        color: AppColors.primaryColor,
+
                       ),
                       SizedBox(height: 4,),
                       Row(
@@ -286,17 +294,25 @@ class _ConfimPopupState extends State<ConfimPopup> {
       ),
     );
   }
-  Widget _field(String label, String? value) {
+  Widget _field(String label, String? value, [String? endValue, bool yesNo = false]) {
     String displayValue = "N/A";
 
-    if (value != null && value.isNotEmpty) {
-      if (value == "1") {
-        displayValue = "Yes";
-      } else if (value == "0") {
-        displayValue = "No";
-      } else {
-        displayValue = value;
+    // ✅ For start-end dates
+    if ((label == "Exam Date" || endValue != null) && value != null && value.isNotEmpty) {
+      displayValue = formatDateTime(value);
+      if (endValue != null && endValue.isNotEmpty) {
+        displayValue = "${formatDateTime(value)} - ${formatDateTime(endValue)}";
       }
+    }
+    // ✅ For Yes/No fields
+    else if (yesNo && value != null) {
+      if (value == '0') displayValue = 'No';
+      else if (value == '1') displayValue = 'Yes';
+      else displayValue = value;
+    }
+    // ✅ For normal text
+    else if (value != null && value.isNotEmpty) {
+      displayValue = value;
     }
 
     return Padding(
@@ -325,4 +341,31 @@ class _ConfimPopupState extends State<ConfimPopup> {
       ),
     );
   }
+
+  String formatValue(String? value) {
+    if (value == null || value.isEmpty) return "N/A";
+    return value;
+  }
+
+  String formatDateTime(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return "N/A";
+
+    final formats = [
+      "yyyy-MM-dd HH:mm:ss",     // 2025-12-11 10:08:31
+      "MMM dd, yyyy HH:mm:ss",   // Dec 11, 2025 10:12:37
+      "MM dd yyyy HH:mm:ss",     // 12 11 2025 10:12:37
+    ];
+
+    for (var f in formats) {
+      try {
+        final dateTime = DateFormat(f, 'en_US').parse(dateStr);
+        return DateFormat("MMM dd yyyy hh:mm a").format(dateTime);
+      } catch (_) {}
+    }
+
+    return dateStr; // fallback
+  }
+
+
+
 }

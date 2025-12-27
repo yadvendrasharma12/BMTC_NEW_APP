@@ -74,6 +74,8 @@
 
 import 'dart:async';
 import 'package:bmtc_app/app/core/app_colors.dart';
+import 'package:bmtc_app/app/screens/add_center_pages/center_details_page1.dart';
+import 'package:bmtc_app/app/screens/auth_pages/login/login_screen.dart';
 import 'package:bmtc_app/app/screens/auth_pages/onboarding/onboarding_screen.dart';
 import 'package:bmtc_app/app/screens/home/dashboard_page/dashBoard_page_screen.dart';
 import 'package:bmtc_app/app/utils/shared_preferances.dart';
@@ -129,7 +131,7 @@ class _SplashScreenState extends State<SplashScreen>
     if (centerId != null && centerId.isNotEmpty) {
       Get.offAll(() => const DashboardPageScreen());
     } else {
-      Get.offAll(() => const OnboardingScreen());
+      Get.offAll(() => LoginScreen());
     }
   }
 

@@ -2,6 +2,7 @@ import 'package:bmtc_app/app/core/app_colors.dart';
 import 'package:bmtc_app/app/core/text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../../controllers/project_controller.dart';
 import '../../../utils/toast_message.dart';
@@ -76,7 +77,8 @@ class _CounslingFormScreenState extends State<CounslingFormScreen> {
                               Text("Booking Received Date", style: AppTextStyles.topHeading3),
                               SizedBox(width: 7,),
                               Text(
-                                data.bookingReceived ?? '',
+                                formatDateOnly(data.bookingReceived),
+
                                 style: AppTextStyles.centerText,
                               ),
                             ],
@@ -95,7 +97,8 @@ class _CounslingFormScreenState extends State<CounslingFormScreen> {
                               Text("Booking cancelled on", style: AppTextStyles.topHeading3),
                               SizedBox(width: 7,),
                               Text(
-                                data.centerBookingAcceptDate ?? '',
+                                formatDateOnly(data.centerBookingAcceptDate),
+
                                 style: AppTextStyles.centerText,
                               ),
                             ],
@@ -109,9 +112,14 @@ class _CounslingFormScreenState extends State<CounslingFormScreen> {
                       ),
           
                       const SizedBox(height: 0),
-                      _buildField("Exam Date", data.startDate ?? ''),
+                      _buildField(
+                        "Exam Date",
+                        data.startDate,
+                        endValue: data.endDate,
+                      ),
                       _buildField("Exam Name", data.examName ?? ''),
                       _buildField("Exam City", data.examCityName ?? ''),
+                      _buildField("Exam City", data.clientName ?? ''),
                       _buildField("Seats", data.numberOfSeats ?? ''),
                       _buildField("Exam Type", data.examType ?? ''),
                       _buildField("Pricing", data.pricePerSeat ?? ''),
@@ -148,18 +156,18 @@ class _CounslingFormScreenState extends State<CounslingFormScreen> {
                           style: AppTextStyles.dashBordButton3,
                         ),
                       ),
-                      _buildField("Parking Facility", data.parkingFacility ?? ''),
-                      _buildField("Security Guard", data.securityGuard ?? ''),
-                      _buildField("AC in Lab", data.acInLab ?? ''),
-                      _buildField("Lockers", data.lockerFacility ?? ''),
-                      _buildField("Waiting area", data.waitingArea ?? ''),
-                      _buildField("Power Backup", data.powerBackup ?? ''),
-                      _buildField("PH Handicapped", data.phHandicaped ?? ''),
-                      _buildField("Printer", data.printer ?? ''),
-                      _buildField("Rough Sheet", data.roughSheet ?? ''),
-                      _buildField("Partition", data.partitionInLab ?? ''),
-                      _buildField("Ac in Each Lab", data.acInLab ?? ''),
-                      _buildField("CCTV Required", data.cctvRequired ?? ''),
+                      _buildField("Parking Facility", data.parkingFacility ?? '', yesNo: true,),
+                      _buildField("Security Guard", data.securityGuard ?? '',),
+                      _buildField("AC in Lab", data.acInLab ?? '', yesNo: true,),
+                      _buildField("Lockers", data.lockerFacility ?? '', yesNo: true,),
+                      _buildField("Waiting area", data.waitingArea ?? '', yesNo: true,),
+                      _buildField("Power Backup", data.powerBackup ?? '', yesNo: true,),
+                      _buildField("PH Handicapped", data.phHandicaped ?? '', yesNo: true,),
+                      _buildField("Printer", data.printer ?? '', yesNo: true,),
+                      _buildField("Rough Sheet", data.roughSheet ?? '', yesNo: true,),
+                      _buildField("Partition", data.partitionInLab ?? '', yesNo: true,),
+                      _buildField("Ac in Each Lab", data.acInLab ?? '', yesNo: true,),
+                      _buildField("CCTV Required", data.cctvRequired ?? '', yesNo: true,),
           
                       const SizedBox(height: 30),
                     ],
@@ -255,11 +263,34 @@ class _CounslingFormScreenState extends State<CounslingFormScreen> {
     );
   }
 
-  Widget _buildField(String label, String value) {
-    // Convert 0/1 to No/Yes
-    String displayValue = value;
-    if (value == '0') displayValue = 'No';
-    else if (value == '1') displayValue = 'Yes';
+  Widget _buildField(
+      String label,
+      String? value, {
+        String? endValue,
+        bool yesNo = false,
+      }) {
+    String displayValue = "N/A";
+
+    // ✅ Exam Date (start + end)
+    if (label == "Exam Date") {
+      if (value != null && value.isNotEmpty) {
+        displayValue = formatDateOnly(value);
+
+        if (endValue != null && endValue.isNotEmpty) {
+          displayValue =
+          "${formatDateOnly(value)} - ${formatDateOnly(endValue)}";
+        }
+      }
+    }
+    // ✅ Yes / No
+    else if (yesNo && value != null) {
+      if (value == '0') displayValue = 'No';
+      else if (value == '1') displayValue = 'Yes';
+    }
+    // ✅ Normal text
+    else if (value != null && value.isNotEmpty) {
+      displayValue = value;
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -271,23 +302,43 @@ class _CounslingFormScreenState extends State<CounslingFormScreen> {
           Container(
             height: 40,
             width: double.infinity,
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.only(left: 8),
             decoration: BoxDecoration(
               color: AppColors.background,
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8.0, top: 8),
-              child: Text(
-                textAlign: TextAlign.start,
-                displayValue,
-                style: AppTextStyles.centerText,
-              ),
+            child: Text(
+              displayValue,
+              style: AppTextStyles.centerText,
             ),
           ),
         ],
       ),
     );
   }
+
+
+  String formatDateOnly(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return "N/A";
+
+    final formats = [
+      "yyyy-MM-dd HH:mm:ss",
+      "yyyy-MM-dd",
+      "MMM dd, yyyy HH:mm:ss",
+      "MMM dd, yyyy",
+    ];
+
+    for (var f in formats) {
+      try {
+        final dateTime = DateFormat(f, 'en_US').parse(dateStr);
+        return DateFormat("MMM dd, yyyy").format(dateTime);
+      } catch (_) {}
+    }
+
+    return dateStr;
+  }
+
 
 }

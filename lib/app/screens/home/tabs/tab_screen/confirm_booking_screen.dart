@@ -172,6 +172,8 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
           SizedBox(
             width: 40,
             child: Checkbox(
+              activeColor: AppColors.primaryColor,
+              checkColor: Colors.white,
               value: headerChecked,
               onChanged: (val) {
                 setState(() {
@@ -207,6 +209,8 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
           SizedBox(
             width: 40,
             child: Checkbox(
+              activeColor: AppColors.primaryColor,
+              checkColor: Colors.white,
               value: rowCheckedList[index],
               onChanged: (val) {
                 setState(() {

@@ -1285,16 +1285,14 @@ class _EditCenterInformationScreenState
 
                   CustomDropdown<String>(
                     hintText: "Select",
-                    value: fireExuter,
+                    value: fireCount.contains(fireExuter) ? fireExuter : null,
                     items: fireCount,
                     itemLabel: (v) => v,
                     onChanged: (v) {
-                      if (v == null) return;
                       setState(() {
                         fireExuter = v;
                       });
                     },
-                    validator: (_) => null,
                   ),
                   SizedBox(height: 10,),
                   Align(

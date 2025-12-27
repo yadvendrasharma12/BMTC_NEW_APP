@@ -243,7 +243,7 @@ class _CenterPageScreenState extends State<CenterPageScreen> {
 
                                 GestureDetector(
                                   onTap: () async {
-                                    if (centerData.addressLat != null && centerData.addressLong != null) {
+                                    if (centerData.addressLong != null) {
                                       final LatLng result = await Navigator.push(
                                         context,
                                         MaterialPageRoute(

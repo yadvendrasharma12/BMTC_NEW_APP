@@ -736,6 +736,7 @@ class TotalInReviewBooking {
   String? examCityName;
   String? numberOfSeats;
   String? pricePerSeat;
+  String? examCenterStatus;
 
   TotalInReviewBooking({
     this.id,
@@ -747,6 +748,7 @@ class TotalInReviewBooking {
     this.examCityName,
     this.numberOfSeats,
     this.pricePerSeat,
+    this.examCenterStatus,
   });
 
   factory TotalInReviewBooking.fromJson(Map<String, dynamic> json) =>
@@ -760,6 +762,8 @@ class TotalInReviewBooking {
         examCityName: json["exam_city_name"],
         numberOfSeats: json["number_of_seats"],
         pricePerSeat: json["price_per_seat"],
+        examCenterStatus: json['exam_center_status'],
+
       );
 
   Map<String, dynamic> toJson() => {
@@ -772,6 +776,7 @@ class TotalInReviewBooking {
     "exam_city_name": examCityName,
     "number_of_seats": numberOfSeats,
     "price_per_seat": pricePerSeat,
+    "exam_center_status":examCenterStatus,
   };
 }
 
