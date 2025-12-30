@@ -75,6 +75,8 @@
 import 'dart:async';
 import 'package:bmtc_app/app/core/app_colors.dart';
 import 'package:bmtc_app/app/screens/add_center_pages/center_details_page1.dart';
+import 'package:bmtc_app/app/screens/add_center_pages/center_details_page3.dart';
+import 'package:bmtc_app/app/screens/add_center_pages/center_details_page4.dart';
 import 'package:bmtc_app/app/screens/auth_pages/login/login_screen.dart';
 import 'package:bmtc_app/app/screens/auth_pages/onboarding/onboarding_screen.dart';
 import 'package:bmtc_app/app/screens/home/dashboard_page/dashBoard_page_screen.dart';
@@ -82,6 +84,8 @@ import 'package:bmtc_app/app/utils/shared_preferances.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../add_center_pages/center_details_page2.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

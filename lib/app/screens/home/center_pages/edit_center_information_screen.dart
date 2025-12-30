@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:bmtc_app/app/maps_page/maps_location_screen.dart';
 import 'package:bmtc_app/app/models/profile_data_model.dart' as api;
 import 'package:bmtc_app/app/core/text_style.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -28,7 +29,7 @@ import '../../../widgets/uploading_container.dart';
 
 class EditCenterInformationScreen extends StatefulWidget {
   final List<api.Lab> apiLabs;
-   EditCenterInformationScreen({super.key, required this.apiLabs});
+  EditCenterInformationScreen({super.key, required this.apiLabs});
   @override
   State<EditCenterInformationScreen> createState() => _EditCenterInformationScreenState();
 }
@@ -190,6 +191,7 @@ class _EditCenterInformationScreenState
         uidiai.text = center.uidainNo ?? '';
         MsmeNo.text = center.msmeNo ?? '';
         benifiryName.text = center.beneficiaryName ?? '';
+        primaryIsp.text = center.primaryIspName ?? '';
 
         // Network & UPS
         totalSystem.text = center.totalNoSystem ?? '';
@@ -230,8 +232,10 @@ class _EditCenterInformationScreenState
         primaryIspType = isp.cast<String?>().firstWhere(
                 (e) => e?.toLowerCase() == (center.primaryConnectType ?? '').toLowerCase(),
             orElse: () => null);
-        secondaryIsptype = isp.firstWhereOrNull(
-                (e) => e.toLowerCase() == (center.secondaryConnectedType ?? '').toLowerCase());
+        secondaryIsptype = ispTypes.firstWhereOrNull(
+              (e) => e.toLowerCase() ==
+              (center.secondaryConnectedType ?? '').toLowerCase(),
+        );
 
         generatorFuilTank = matchDropdownValue(
             apiValue: center.fuilTankCapacity, options: tankCapacityLtr);
@@ -281,8 +285,8 @@ class _EditCenterInformationScreenState
   ];
   final List<String> yesNoOptions = ['Yes', 'No'];
   final List<String> speeds = ['Gbps', 'Mbps'];
-  final List<String> upsBackupTimeOptions = ['5','10','15','20','25','30','35','40','50','60',];
-  final List<String> tankCapacityLtr = ['1',  '1.5','2 ', '2.5 ', '3 ', '3.5', '4 ', '4.5 ', '5 ',];
+  final List<String> upsBackupTimeOptions = [ '0.0','5','10','15','20','25','30','35','40','50','60',];
+  final List<String> tankCapacityLtr = [  '0.0','1',  '1.5','2 ', '2.5 ', '3 ', '3.5', '4 ', '4.5 ', '5 ',];
 
   bool parseYesNo(dynamic value) {
     if (value == null) return false;
@@ -437,7 +441,7 @@ class _EditCenterInformationScreenState
 
 
   final List<String> unites = ["Mbps", "Gbps"];
-  final List<String> fireCount = ["1", "2","3","4","5"];
+  final List<String> fireCount = ["1", "2","3","4","5","6","7","8","9"];
 
   final Map<String, String> centerTypeMap = {
     "1": "Online",
@@ -451,10 +455,124 @@ class _EditCenterInformationScreenState
     if (apiValue == null) return;
 
     setState(() {
-      selectedTypeCenter = centerTypeMap[apiValue];
+      selectedTypeCenter = centerTypeOptions.firstWhereOrNull(
+            (e) => e.toLowerCase().trim() == apiValue.toLowerCase().trim(),
+      );
       centerType.text = selectedTypeCenter ?? "";
     });
   }
+  final List<String> distanceOptions = [
+    '100 Meters',
+    '200 Meters',
+    '300 Meters',
+    '400 Meters',
+    '500 Meters',
+    '600 Meters',
+    '700 Meters',
+    '800 Meters',
+    '900 Meters',
+    '1000 Meters',
+    '1.1',
+    '1.2',
+    '1.3',
+    '1.4',
+    '1.5',
+    '1.6',
+    '1.7',
+    '1.8',
+    '1.9',
+    '2.0',
+    '2.1',
+    '2.2',
+    '2.3',
+    '2.4',
+    '2.5',
+    '2.6',
+    '2.7',
+    '2.8',
+    '2.9',
+    '3.0',
+    '3.1',
+    '3.2',
+    '3.3',
+    '3.4',
+    '3.5',
+    '3.6',
+    '3.7',
+    '3.8',
+    '3.9',
+    '4.0',
+    '4.1',
+    '4.2',
+    '4.3',
+    '4.4',
+    '4.5',
+    '4.6',
+    '4.7',
+    '4.8',
+    '4.9',
+    '5.0',
+    '5.1',
+    '5.2',
+    '5.3',
+    '5.4',
+    '5.5',
+    '5.6',
+    '5.7',
+    '5.8',
+    '5.9',
+    '6.0',
+    '6.1',
+    '6.2',
+    '6.3',
+    '6.4',
+    '6.5',
+    '6.6',
+    '6.7',
+    '6.8',
+    '6.9',
+    '7.0',
+    '7.1',
+    '7.2',
+    '7.3',
+    '7.4',
+    '7.5',
+    '7.6',
+    '7.7',
+    '7.8',
+    '7.9',
+    '8.0',
+    '8.1',
+    '8.2',
+    '8.3',
+    '8.4',
+    '8.5',
+    '8.6',
+    '8.7',
+    '8.8',
+    '8.9',
+    '9.0',
+    '9.1',
+    '9.2',
+    '9.3',
+    '9.4',
+    '9.5',
+    '9.6',
+    '9.7',
+    '9.8',
+    '9.9',
+    '10.0',
+    '10.1',
+    '10.2',
+    '10.3',
+    '10.4',
+    '10.5',
+    '10.6',
+    '10.7',
+    '10.8',
+    '10.9',
+    '11.0',
+  ];
 
 
   String? matchDropdownValue({
@@ -473,7 +591,14 @@ class _EditCenterInformationScreenState
     );
   }
 
-
+  final List<String> ispTypes = [
+    'Broadband',
+    'Lease_line',
+    'Fibre Optics',
+    'Air Fibre',
+    "Lease line"
+  ];
+  bool isGeneratorBackup = false;
   @override
   Widget build(BuildContext context) {
     final images = controller.profileDataModel.value?.data.images ?? [];
@@ -553,7 +678,7 @@ class _EditCenterInformationScreenState
                       const SizedBox(height: 8),
                       CustomDropdown<String>(
                         hintText: "Select Center Type",
-                        value: selectedTypeCenter, // "Online"
+                        value: selectedTypeCenter,
                         items: centerTypeOptions,
                         itemLabel: (v) => v,
                         onChanged: (v) {
@@ -566,6 +691,7 @@ class _EditCenterInformationScreenState
                         validator: (_) =>
                         selectedTypeCenter == null ? "Please select Center Type" : null,
                       ),
+
 
 
 
@@ -854,9 +980,10 @@ class _EditCenterInformationScreenState
                           const SizedBox(height: 10),
 
                           Row(
-                            mainAxisAlignment:MainAxisAlignment.spaceBetween,
+
                             children: [
                               liftOption(value: "Yes"),
+                              SizedBox(width: 10,),
                               liftOption(value: "No"),
                             ],
                           ),
@@ -1097,7 +1224,26 @@ class _EditCenterInformationScreenState
 
                 _sectionTitle("Infrastructure Details"),
                 _card(child: Column(children: [
+                  Align(
+
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "General Lab Details",
+                      style: AppTextStyles.grey18,
+                    ),
+                  ),
+                  SizedBox(height: 8,),
+                  Align(
+
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Total number of labs",
+                      style: AppTextStyles.centerText,
+                    ),
+                  ),
+                  SizedBox(height: 2,),
                   TextField(
+
                     controller: totalLabCtrl,
                     keyboardType: TextInputType.number,
                     onChanged: _onLabCountChanged,
@@ -1342,7 +1488,231 @@ class _EditCenterInformationScreenState
                   ),
 
                 ],)),
+                _sectionTitle("Lab Infrastructure Details"),
 
+                _card(child: Column(children: [
+                  _textField(
+
+                    title:"Name of the Primary ISP",
+
+                    hint: "Name of the Primary ISP",
+                    controller: primaryIsp,
+                    validator: (v) =>
+                    v!.isEmpty ? "system name is required" : null,
+                  ),
+
+
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Primary ISP Connection Type",
+                      style: AppTextStyles.centerText,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  CustomDropdown<String>(
+                    hintText: "Select ISP Type",
+                    value: primaryIspType, // ✅ API value show hogi
+                    items: ispTypes,
+                    itemLabel: (v) => v,
+                    onChanged: (v) {
+                      if (v == null) return;
+                      setState(() {
+                        primaryIspType = v; // ✅ update hoga
+                      });
+                    },
+                    validator: (_) => null,
+                  ),
+                  SizedBox(height: 8,),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _textField(
+
+                          title:"Primary Internal Speed",
+
+                          hint: "Primary Internal Speed",
+                          controller: internateSpeedPrimary,
+                          validator: (v) =>
+                          v!.isEmpty ? "system name is required" : null,
+                        ),
+                        flex: 2,
+                      ),
+                      SizedBox(width: 7,),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 12.0),
+                          child: CustomDropdown<String>(
+                            hintText: "Unite",
+                            value: primaryUnit, // ✅ API value show hogi
+                            items: speeds,
+                            itemLabel: (v) => v,
+                            onChanged: (v) {
+                              if (v == null) return;
+                              setState(() {
+                                primaryUnit = v; // ✅ update hoga
+                              });
+                            },
+                            validator: (_) => null,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  _textField(
+
+                    title:"Name of the Secondary ISP",
+
+                    hint: "Name of the Secondary ISP",
+                    controller: secondryIsp,
+                    validator: (v) =>
+                    v!.isEmpty ? "system name is required" : null,
+                  ),
+
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Secondary ISP Connection Type",
+                      style: AppTextStyles.centerText,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  CustomDropdown<String>(
+                    hintText: "Select ISP Type",
+                    value: secondaryIsptype, // ✅ API value show hogi
+                    items: ispTypes,
+                    itemLabel: (v) => v,
+                    onChanged: (v) {
+                      if (v == null) return;
+                      setState(() {
+                        secondaryIsptype = v; // ✅ update hoga
+                      });
+                    },
+                    validator: (_) => null,
+                  ),
+                  SizedBox(height: 8,),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: _textField(
+
+                          title:"Secondary ISP Speed",
+
+                          hint: "Secondary ISP Speed",
+                          controller: internateSpeedSecondry,
+                          validator: (v) =>
+                          v!.isEmpty ? "system name is required" : null,
+                        ),
+                      ),
+                      SizedBox(width: 7,),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 12.0),
+                          child: CustomDropdown<String>(
+                            hintText: "Unite",
+                            value: secondryUnit, // ✅ API value show hogi
+                            items: speeds,
+                            itemLabel: (v) => v,
+                            onChanged: (v) {
+                              if (v == null) return;
+                              setState(() {
+                                secondryUnit = v; // ✅ update hoga
+                              });
+                            },
+                            validator: (_) => null,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 15),
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Generator Available", style: AppTextStyles.centerText)),
+                  const SizedBox(height: 8),
+                  CustomDropdown<String>(
+                    hintText: "Select",
+                    items: yesNoOptions,
+                    itemLabel: (v) => v,
+                    value: isGeneratorBackup ? "Yes" : "No",
+                    onChanged: (v) {
+                      setState(() {
+                        isGeneratorBackup = (v == "Yes");
+                      });
+                    },
+                  ),
+
+                  /// SHOW ONLY IF YES
+                  if (isGeneratorBackup) ...[
+                    const SizedBox(height: 8),
+
+                    _textField(
+                      title: "Generator Capacity (in KVA)",
+                      hint: "Generator Capacity (in KVA)",
+                      controller: generatorCapacity,
+                      validator: (v) =>
+                      v!.isEmpty ? "Generator capacity is required" : null,
+                    ),
+
+                    const SizedBox(height: 15),
+
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        "Generator full tank Capacity (ltr)",
+                        style: AppTextStyles.centerText,
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    CustomDropdown<String>(
+                      hintText: "Full Tank Capacity",
+                      value: generatorFuilTank,
+                      items: tankCapacityLtr,
+                      itemLabel: (v) => v,
+                      onChanged: (v) {
+                        setState(() {
+                          generatorFuilTank = v;
+                        });
+                      },
+                      validator: (_) => null,
+                    ),
+                  ],
+                  const SizedBox(height: 14),
+                  _textField(
+                    title: "UPS Backup (KVA)",
+                    hint: "UPS Backup (KVA)",
+                    controller: upsBackup,
+                    validator: (v) =>
+                    v!.isEmpty ? "Generator capacity is required" : null,
+                  ),
+                  SizedBox(height: 12,),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      "UPS Backup Time (in mins)",
+                      style: AppTextStyles.centerText,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+                  CustomDropdown<String>(
+                    hintText: "Full Tank Capacity",
+                    value: upsBackupTimeMinutes,
+                    items: upsBackupTimeOptions,
+                    itemLabel: (v) => v,
+                    onChanged: (v) {
+                      setState(() {
+                        upsBackupTimeMinutes = v;
+                      });
+                    },
+                    validator: (_) => null,
+                  ),
+                ],)),
 
 
                 _sectionTitle("Lab Details"),
@@ -1354,7 +1724,231 @@ class _EditCenterInformationScreenState
                 ),
                 const SizedBox(height: 20),
 
+                _sectionTitle("Lab Infrastructure Details"),
 
+                _card(child: Column(children: [
+                  _textField(
+
+                    title:"Name of the Primary ISP",
+
+                    hint: "Name of the Primary ISP",
+                    controller: primaryIsp,
+                    validator: (v) =>
+                    v!.isEmpty ? "system name is required" : null,
+                  ),
+
+
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Primary ISP Connection Type",
+                      style: AppTextStyles.centerText,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  CustomDropdown<String>(
+                    hintText: "Select ISP Type",
+                    value: primaryIspType, // ✅ API value show hogi
+                    items: ispTypes,
+                    itemLabel: (v) => v,
+                    onChanged: (v) {
+                      if (v == null) return;
+                      setState(() {
+                        primaryIspType = v; // ✅ update hoga
+                      });
+                    },
+                    validator: (_) => null,
+                  ),
+                  SizedBox(height: 8,),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _textField(
+
+                          title:"Primary Internal Speed",
+
+                          hint: "Primary Internal Speed",
+                          controller: internateSpeedPrimary,
+                          validator: (v) =>
+                          v!.isEmpty ? "system name is required" : null,
+                        ),
+                        flex: 2,
+                      ),
+                      SizedBox(width: 7,),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 12.0),
+                          child: CustomDropdown<String>(
+                            hintText: "Unite",
+                            value: primaryUnit, // ✅ API value show hogi
+                            items: speeds,
+                            itemLabel: (v) => v,
+                            onChanged: (v) {
+                              if (v == null) return;
+                              setState(() {
+                                primaryUnit = v; // ✅ update hoga
+                              });
+                            },
+                            validator: (_) => null,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  _textField(
+
+                    title:"Name of the Secondary ISP",
+
+                    hint: "Name of the Secondary ISP",
+                    controller: secondryIsp,
+                    validator: (v) =>
+                    v!.isEmpty ? "system name is required" : null,
+                  ),
+
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Secondary ISP Connection Type",
+                      style: AppTextStyles.centerText,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  CustomDropdown<String>(
+                    hintText: "Select ISP Type",
+                    value: secondaryIsptype, // ✅ API value show hogi
+                    items: ispTypes,
+                    itemLabel: (v) => v,
+                    onChanged: (v) {
+                      if (v == null) return;
+                      setState(() {
+                        secondaryIsptype = v; // ✅ update hoga
+                      });
+                    },
+                    validator: (_) => null,
+                  ),
+                  SizedBox(height: 8,),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: _textField(
+
+                          title:"Secondary ISP Speed",
+
+                          hint: "Secondary ISP Speed",
+                          controller: internateSpeedSecondry,
+                          validator: (v) =>
+                          v!.isEmpty ? "system name is required" : null,
+                        ),
+                      ),
+                      SizedBox(width: 7,),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 12.0),
+                          child: CustomDropdown<String>(
+                            hintText: "Unite",
+                            value: secondryUnit, // ✅ API value show hogi
+                            items: speeds,
+                            itemLabel: (v) => v,
+                            onChanged: (v) {
+                              if (v == null) return;
+                              setState(() {
+                                secondryUnit = v; // ✅ update hoga
+                              });
+                            },
+                            validator: (_) => null,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 15),
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Generator Available", style: AppTextStyles.centerText)),
+                  const SizedBox(height: 8),
+                  CustomDropdown<String>(
+                    hintText: "Select",
+                    items: yesNoOptions,
+                    itemLabel: (v) => v,
+                    value: isGeneratorBackup ? "Yes" : "No",
+                    onChanged: (v) {
+                      setState(() {
+                        isGeneratorBackup = (v == "Yes");
+                      });
+                    },
+                  ),
+
+                  /// SHOW ONLY IF YES
+                  if (isGeneratorBackup) ...[
+                    const SizedBox(height: 8),
+
+                    _textField(
+                      title: "Generator Capacity (in KVA)",
+                      hint: "Generator Capacity (in KVA)",
+                      controller: generatorCapacity,
+                      validator: (v) =>
+                      v!.isEmpty ? "Generator capacity is required" : null,
+                    ),
+
+                    const SizedBox(height: 15),
+
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        "Generator full tank Capacity (ltr)",
+                        style: AppTextStyles.centerText,
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    CustomDropdown<String>(
+                      hintText: "Full Tank Capacity",
+                      value: generatorFuilTank,
+                      items: tankCapacityLtr,
+                      itemLabel: (v) => v,
+                      onChanged: (v) {
+                        setState(() {
+                          generatorFuilTank = v;
+                        });
+                      },
+                      validator: (_) => null,
+                    ),
+                  ],
+                  const SizedBox(height: 14),
+                  _textField(
+                    title: "UPS Backup (KVA)",
+                    hint: "UPS Backup (KVA)",
+                    controller: upsBackup,
+                    validator: (v) =>
+                    v!.isEmpty ? "Generator capacity is required" : null,
+                  ),
+                  SizedBox(height: 12,),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      "UPS Backup Time (in mins)",
+                      style: AppTextStyles.centerText,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+                  CustomDropdown<String>(
+                    hintText: "Full Tank Capacity",
+                    value: upsBackupTimeMinutes,
+                    items: upsBackupTimeOptions,
+                    itemLabel: (v) => v,
+                    onChanged: (v) {
+                      setState(() {
+                        upsBackupTimeMinutes = v;
+                      });
+                    },
+                    validator: (_) => null,
+                  ),
+                ],)),
 
                 _sectionTitle("Bank Details"),
                 _card(child: Column(children: [
@@ -1388,7 +1982,7 @@ class _EditCenterInformationScreenState
                     v!.isEmpty ? "Center name is required" : null,
                   ),
                   _textField(
-                    title: "Pan Number",
+                    title: "PAN Number",
                     hint: "panNo",
                     controller: panno,
                     validator: (v) =>
@@ -1396,14 +1990,25 @@ class _EditCenterInformationScreenState
                   ),
                   // Do you have a GST number?
                   // Yes  No  make
+                  yesNoSelector(
+                    title: "Do you have GST number?",
+                    value: hasGST,
+                    yesChild: Column(
+                      children: [
+                        _textField(
+                          title: "GST Number",
+                          hint: "gst",
+                          controller: gstNo,
+                          validator: (v) =>
+                          v!.isEmpty ? "Center name is required" : null,
+                        ),
 
-                  _textField(
-                    title: "GST Number",
-                    hint: "gst",
-                    controller: gstNo,
-                    validator: (v) =>
-                    v!.isEmpty ? "Center name is required" : null,
+
+                      ],
+                    ),
                   ),
+
+
                   _textField(
                     title: "GSt State Code",
                     hint: "gst State",
@@ -1418,13 +2023,25 @@ class _EditCenterInformationScreenState
                     validator: (v) =>
                     v!.isEmpty ? "Center name is required" : null,
                   ),
-                  _textField(
-                    title: "MSME Number",
-                    hint: "msm number",
-                    controller: MsmeNo,
-                    validator: (v) =>
-                    v!.isEmpty ? "Center name is required" : null,
+
+                  yesNoSelector(
+                    title: "Do you have an MSME number?",
+                    value: hasGST,
+                    yesChild: Column(
+                      children: [
+                        _textField(
+                          title: "MSME Number",
+                          hint: "msm number",
+                          controller: MsmeNo,
+                          validator: (v) =>
+                          v!.isEmpty ? "Center name is required" : null,
+                        ),
+
+
+                      ],
+                    ),
                   ),
+
 
 
 
@@ -1522,8 +2139,7 @@ class _EditCenterInformationScreenState
   String? selectedMetroDistance;
   String? selectedAirportDistance;
 
-  final List<String> distanceOptions =
-  List.generate(50, (index) => '${(index + 1) * 100}');
+
   Widget _fileInfo(File? file) {
     if (file == null) return const SizedBox();
 
@@ -1718,7 +2334,7 @@ class _EditCenterInformationScreenState
     updateController.distanceRailways = selectedRailwayDistance ?? "";
     updateController.distaceMetro = selectedMetroDistance ?? "";
     updateController.distaceAirport = selectedAirportDistance ?? "";
-   // updateController.typeOfCenter = selectedCenterType!.centerType!;
+    // updateController.typeOfCenter = selectedCenterType!.centerType!;
     if (selectedCenterType != null) {
       updateController.typeOfCenter = selectedCenterType!.centerType!;
     }
@@ -1744,6 +2360,8 @@ class _EditCenterInformationScreenState
     updateController.gstStateCode = gstStateCode.text.trim();
     updateController.UidiaNo = uidiai.text.trim();
     updateController.mSMENo = MsmeNo.text.trim();
+
+
     updateController.secondryIspType = secondryIsp.text.trim();
     updateController.fuilTnak = generatorFuilTank ?? "";
     updateController.upsBackuptimeMinutes =upsBackupTimeMinutes  ?? "";
@@ -1772,10 +2390,12 @@ class _EditCenterInformationScreenState
     updateController.secondryInternateUnit = secondryUnit ?? "";
     updateController.totalSystem = totalSystem.text.trim();
 
+// lab infra
+
+    updateController.primaaryIsp = primaryIsp.text.trim();
 
 
-
-
+    updateController.liftAvailable = liftAvailable ?? "";
 
     updateController.entranceImage = entranceImage;
     updateController.canceledCheque = canceledCheque;
@@ -2167,17 +2787,39 @@ class _EditCenterInformationScreenState
     );
   }
 
-  Widget _dropdown(String label, String value, List<String> items, Function(String) onChanged) {
+  Widget _dropdown(
+      String label,
+      String value,
+      List<String> items,
+      Function(String) onChanged,
+      ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: DropdownButtonFormField<String>(
         value: items.contains(value) ? value : null,
         decoration: _inputDecoration(label),
-        items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+
+        /// ✅ iOS-style icon
+        icon:  Icon(
+          CupertinoIcons.chevron_down,
+          size: 18,
+          color: Colors.black,
+        ),
+
+        items: items
+            .map(
+              (e) => DropdownMenuItem<String>(
+            value: e,
+            child: Text(e),
+          ),
+        )
+            .toList(),
+
         onChanged: (v) => onChanged(v ?? ''),
       ),
     );
   }
+
 
   // Future<void> _getCurrentLocation() async {
   //   bool serviceEnabled;
@@ -2227,51 +2869,99 @@ class _EditCenterInformationScreenState
     });
   }
   String? liftAvailable;
+
+
   Widget liftOption({
     required String value,
   }) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          liftAvailable = value;
-        });
-      },
-      child: Container(
-        width: 100,
-        alignment: Alignment.centerLeft,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(
-            color: liftAvailable == value
-                ? Colors.grey.shade600
-                : Colors.grey.shade400,
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            liftAvailable = value;
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          alignment: Alignment.centerLeft,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(
+              color: liftAvailable == value
+                  ? Colors.grey.shade600
+                  : Colors.grey.shade400,
+            ),
           ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Checkbox(
-              activeColor: AppColors.primaryColor,
-              checkColor: AppColors.background,
-              value: liftAvailable == value,
-              shape:  CircleBorder(
+          child: Row(
+            children: [
+              Checkbox(
+                activeColor: AppColors.primaryColor,
+                checkColor: AppColors.background,
+                value: liftAvailable == value,
+                shape: const CircleBorder(),
+                onChanged: (val) {
+                  setState(() {
+                    liftAvailable = value;
+                  });
+                },
               ),
-              onChanged: (val) {
-                setState(() {
-                  liftAvailable = value;
-                });
-              },
-            ),
-            Text(
-              value,
-              style: const TextStyle(fontSize: 14),
-            ),
-          ],
+              Text(
+                value,
+                style: const TextStyle(fontSize: 14),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+  final RxBool hasGST = false.obs;
+  Widget yesNoSelector({
+    required String title,
+    required RxBool value,
+    Widget? yesChild, // 👈 Yes par kya dikhana hai
+  }) {
+    return Obx(() => Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: AppTextStyles.centerText),
+        const SizedBox(height: 8),
+
+        Row(
+          children: [
+            Expanded(
+              child: RadioListTile<bool>(
+                title: const Text("Yes"),
+                value: true,
+                groupValue: value.value,
+                onChanged: (val) => value.value = val!,
+                contentPadding: EdgeInsets.zero,
+                dense: true,
+              ),
+            ),
+            Expanded(
+              child: RadioListTile<bool>(
+                title: const Text("No"),
+                value: false,
+                groupValue: value.value,
+                onChanged: (val) => value.value = val!,
+                contentPadding: EdgeInsets.zero,
+                dense: true,
+              ),
+            ),
+          ],
+        ),
+
+        /// ✅ Yes par extra fields
+        if (value.value == true && yesChild != null) ...[
+          const SizedBox(height: 12),
+          yesChild,
+        ],
+      ],
+    ));
+  }
+
 }
 
 class EditableLab {

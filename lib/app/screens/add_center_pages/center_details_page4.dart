@@ -342,17 +342,18 @@ class _CenterDetailsPage4State extends State<CenterDetailsPage4> {
                         },
                       ),
                       _selectedFileInfo(examController.gstCertFile),
-                      const SizedBox(height: 15),
-                      Text("GST State Code", style: AppTextStyles.centerText),
-                      const SizedBox(height: 8),
-                      AppTextField(controller: gstStateCodeController, keyboardType: TextInputType.number, onChanged: (val) {}, label: '',),
+
                     ],
                   )
                       : const SizedBox.shrink()),
 
                   const SizedBox(height: 15),
 
-                  // UIDAI
+
+                  Text("GST State Code", style: AppTextStyles.centerText),
+                  const SizedBox(height: 8),
+                  AppTextField(controller: gstStateCodeController, keyboardType: TextInputType.number, onChanged: (val) {}, label: '',),
+                  const SizedBox(height: 15),
                   Text("UIDAI Number", style: AppTextStyles.centerText),
                   const SizedBox(height: 8),
                   AppTextField(controller: uidaiController, onChanged: (val) {}, label: '',),

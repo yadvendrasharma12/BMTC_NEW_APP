@@ -110,6 +110,12 @@ class AppTextStyles {
     color: AppColors.background,
 
   );
+  static  TextStyle grey18 = GoogleFonts.karla(
+    fontSize: 18,
+    fontWeight: FontWeight.w800,
+    color: Colors.grey,
+
+  );
   static  TextStyle dashBordButton2 = GoogleFonts.karla(
     fontSize: 18,
     fontWeight: FontWeight.w800,

@@ -49,7 +49,8 @@ class ExamCenterController extends GetxController {
   var addressLat = 0.0.obs;
   var addressLong = 0.0.obs;
   var nearbyLandmark = ''.obs;
-  var isLiftAvailable = false.obs;
+  RxBool isLiftAvailable = false.obs;
+  // var isLiftAvailable = false.obs;
   var nearestRailwayStation = ''.obs;
   var nearestBusStop = ''.obs;
   var nearestMetroStation = ''.obs;
@@ -94,20 +95,25 @@ class ExamCenterController extends GetxController {
   var assistantManagerEmail = ''.obs;
   var emergencyLandlineNumber = ''.obs;
   var emergencyPhoneNumber = ''.obs;
-  var partitionInEachLab  = false.obs;
-  var acInEachLab = false.obs;
+  // var partitionInEachLab  = false.obs;
+  RxnBool partitionInEachLab = RxnBool();
+  // var acInEachLab = false.obs;
+  RxnBool acInEachLab = RxnBool();
   var fireExtinguisherInEachLab = 0.obs;
   // ================= LAB DETAILS =================
   RxList<LabDetail> labs = <LabDetail>[].obs;
 
   var totalNumberOfLab = 0.obs;
   var totalNumberOfSystem = 0.obs;
-  var labAreConnectToSingleNetwork = false.obs;
+  // var labAreConnectToSingleNetwork = false.obs;
+  RxnBool labAreConnectToSingleNetwork = RxnBool();
   var totalNetwork = 0.obs;
 
   // var isNetworkPrinterAvailabel = false.obs;
-  var isThereProjectorInEachLab = false.obs;
-  var isThereSoundSystemInEachLab = false.obs;
+  // var isThereProjectorInEachLab = false.obs;
+  RxnBool isThereProjectorInEachLab = RxnBool();
+  // var isThereSoundSystemInEachLab = false.obs;
+  RxnBool isThereSoundSystemInEachLab = RxnBool();
 
 
   var isThereALockerFacilityInLab = false.obs;
@@ -136,7 +142,7 @@ class ExamCenterController extends GetxController {
   var isGeneratorBackup = false.obs;
   var generatorBackupCapacity = 0.0.obs;
   var generatorFuelTankCapacity = 0.0.obs;
-  var upsBackup = false.obs;
+  var upsBackup = 0.obs;
   var upsBackupTime = 0.0.obs;
   var totalNoOfConnection = 0.obs;
   var backupHours = 0.obs;
@@ -262,12 +268,12 @@ class ExamCenterController extends GetxController {
       totalNumberOfSystem: totalNumberOfSystem.value,
       labAreConnectToSingleNetwork: labAreConnectToSingleNetwork.value,
       totalNetwork: totalNetwork.value,
-      partitionInEachLab: partitionInEachLab.value,
-      acInEachLab: acInEachLab.value,
+      partitionInEachLab: partitionInEachLab.value ?? false,
+      acInEachLab: acInEachLab.value ?? false,
       howManyFireExtinguisherInEachLab: fireExtinguisherInEachLab.value,
       isNetworkPrinterAvailabel: isNetworkPrinterAvailabel.value,
-      isThereProjectorInEachLab: isThereProjectorInEachLab.value,
-      isThereSoundSystemInEachLab: isThereSoundSystemInEachLab.value,
+      isThereProjectorInEachLab: isThereProjectorInEachLab.value ?? false,
+      isThereSoundSystemInEachLab: isThereSoundSystemInEachLab.value ?? false,
 
       isThereALockerFacilityInLab: isThereALockerFacilityInLab.value,
       isThereADrinkingWaterFacilityInLab: isThereADrinkingWaterFacilityInLab.value,

@@ -115,7 +115,7 @@ class ProfileUpdateController extends GetxController {
   String upsBackup = "";
   String upsBackuptimeMinutes= "";
   String secondryIspType = "";
-
+  String liftAvailable = "";
 
 
 
@@ -198,6 +198,7 @@ class ProfileUpdateController extends GetxController {
       // ================= BASIC =================
       "total_no_system":totalSystem,
       "power_back_ups_kv":upsBackup,
+      "is_lift_available":liftAvailable,
       "beneficiary_name":benifiyName,
       "total_no_lab":totalLab,
       "primary_isp_speed":primaryInternateSpeed,
@@ -219,7 +220,6 @@ class ProfileUpdateController extends GetxController {
       "address_second": "",
       "address_lat": addressLat.toString(),
       "address_long": addressLong.toString(),
-
       "is_there_sound_sytem_in_each_lab": soundSystem,
       "fire_extinguisher": fireExutter,
       "locker_facility": lockerFacelity,
@@ -283,6 +283,7 @@ class ProfileUpdateController extends GetxController {
       "nearest_airport": nearestAirport,
       "distance_from_airport": distaceAirport,
 
+
       // ================= BANK / GST =================
 
       "gst_state_code": gstStateCode,
@@ -295,7 +296,7 @@ class ProfileUpdateController extends GetxController {
       "secondary_bank_account_no": "",
       "secondary_bank_ifsc_code": "",
       "secondary_beneficiary_name": "",
-"connected_single_network": connectSingle,
+      "connected_single_network": connectSingle,
 
 
 
@@ -322,7 +323,7 @@ class ProfileUpdateController extends GetxController {
       "generator_backup_time": "",
 
       "backup_hours": "",
-      "backup_minutes": "",
+      "backup_minutes":'',
 
       // ================= FACILITY =================
       "cctv_dvr": "",

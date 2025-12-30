@@ -88,7 +88,7 @@ class ExamCenter {
   bool isGeneratorBackup;
   double generatorBackupCapacity;
   double generatorFuelTankCapacity;
-  bool upsBackup;
+  int upsBackup;
   double upsBackupTime;
   int totalNoOfConnection;
   int backupHours;
@@ -105,6 +105,7 @@ class ExamCenter {
   String msmeNumber;
   bool hasGst;
   bool hasMsme;
+
 
   ExamCenter({
     required this.name,
@@ -290,7 +291,7 @@ class ExamCenter {
     "is_generator_backup": isGeneratorBackup,
     "generator_backup_capacity": generatorBackupCapacity,
     "generator_fuel_tank_capacity": generatorFuelTankCapacity,
-    "power_back_ups_kv": upsBackup,
+    "ups_backup": upsBackup,
     "ups_backup_time": upsBackupTime,
     "total_no_of_connection": totalNoOfConnection,
     "backup_hours": backupHours,
@@ -300,7 +301,7 @@ class ExamCenter {
     "bank_account_number": bankAccountNumber,
     "bank_ifsc": bankIfsc,
     "pannumber": panNumber,
-    "gst_no": gstNumber,
+    "gst_number": gstNumber,
     "gst_state_code": gstStateCode,
     "uidai_number": uidaiNumber,
     "msme_number": msmeNumber,

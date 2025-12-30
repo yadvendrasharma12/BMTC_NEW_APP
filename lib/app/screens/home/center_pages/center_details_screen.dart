@@ -11,6 +11,7 @@ import '../../../models/profile_data_model.dart' as api;
 import '../../../models/state_modal.dart';
 import '../../../services/location_services/location_service.dart';
 import '../../../widgets/custom_dropdown.dart';
+import '../../../widgets/selectabe_tile.dart';
 
 class CenterDetailsScreen extends StatefulWidget {
   const CenterDetailsScreen({super.key});
@@ -89,13 +90,14 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
     // TODO: implement initState
     super.initState();
     _loadCountries();
+
   }
 
   String _safeText(String? value) {
     if (value == null || value.isEmpty) return "N/A";
     return value;
   }
-
+  bool? isLiftAvailable;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,6 +112,7 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
         }
 
         final api.Center center = data.center;
+        isLiftAvailable ??= center.isLiftAvailable;
         final List<api.Lab> labs = data.labs ?? [];
         final List<api.CenterImage> images = data.images ?? [];
         final List<api.Country> countries = data.countries ?? [];
@@ -307,8 +310,11 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildField("Center Name", center.centerName),
-          _buildField("Address", center.address),
+          _buildField("What is the Center name?", center.centerName),
+          _buildField("Center Description(About Center)", center.description.isNotEmpty
+              ? center.description
+              : "No Description"),
+          _buildField("Center’s Postal Address?", center.address),
           _buildField("Center's Latitude", center.addressLat),
           _buildField("Center's Longitude", center.addressLong),
           _buildField("Center Capacity", center.capacity),
@@ -332,10 +338,44 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
           _buildField("Local Area Name", center.localArea),
           _buildField("Pin Code", center.pinCode),
           _buildField("What is the Category of your Test Center?",center.typeOfCenter ),
-          _buildField("Center Description", center.description.isNotEmpty
-              ? center.description
-              : "No Description"),
           _buildField("Center nearby landmark", center.landmark),
+
+
+          Text(
+            "Is the Lift available for Physically Handicapped Candidate?",
+            style: AppTextStyles.centerText,
+          ),
+          const SizedBox(height: 8),
+
+          Row(
+            children: [
+              Expanded(
+                child: SelectableTile(
+                  value: isLiftAvailable == true,
+                  text: "Yes",
+                  onChanged: (val) {
+                    setState(() {
+                      isLiftAvailable = true;
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: SelectableTile(
+                  value: isLiftAvailable == false,
+                  text: "No",
+                  onChanged: (val) {
+                    setState(() {
+                      isLiftAvailable = false;
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+
+
           _buildField("Nearest Railway Station", center.nearestRailway),
           _buildField("Distance from Railway Station", center.distanceRailw),
           _buildField("Nearest Bus Station", center.nearestBus),
@@ -426,8 +466,20 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
             child: Text(
                 "Infrastructure Details", style: AppTextStyles.centerText),
           ),
-          _buildField("Total Labs", center.totalNoLab),
-          _buildField("Total Computers", center.totalNoSystem),
+          Padding(
+            padding: const EdgeInsets.only(left: 15),
+            child: Align(
+
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "General Lab Details",
+                style: AppTextStyles.centerSubTitle,
+              ),
+            ),
+          ),
+          SizedBox(height: 8,),
+          _buildField("Total number of labs", center.totalNoLab),
+          _buildField("Total number of systems", center.totalNoSystem),
 
           _buildField(
             "Are all labs connected through a single network?",
@@ -482,6 +534,9 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
 
           _buildField("Name of the Primary ISP", center.primaryIspName,),
 
+          _buildField("Primary ISP Connection Type", center.primaryConnectType,
+            showDropdownArrow: true,),
+
           _buildField(
               "Primary Internet speed",
               "${center.primaryConnectType ?? 'N/A'} (${center
@@ -490,25 +545,28 @@ class _CenterDetailsScreenState extends State<CenterDetailsScreen> {
 
           ),
 
-          _buildField("Primary ISP Connection Type", center.primaryConnectType,
-            showDropdownArrow: true,),
+
 
           _buildField("Name of the Secondary ISP", center.secondaryIspName),
+
+          _buildField(
+            "Secondary ISP Connection Type", center.secondaryConnectedType,
+            showDropdownArrow: true,),
+
 
           _buildField(
               "Secondary ISP speed",
               "${center.primaryConnectType ?? 'N/A'} (${center
                   .secondaryIspSpeed ?? '0'} ${center.secoundaryUnit ?? ''})"
           ),
-          _buildField(
-            "Secondary ISP Connection Type", center.secondaryConnectedType,
-            showDropdownArrow: true,),
+
           _buildField(
               "Generator Capacity (in KVA)", center.generatorBackupCapacity,
               showDropdownArrow: true),
           _buildField(
               "Generator Fuel Tank Capacity (in Ltr.)", center.fuilTankCapacity,
               showDropdownArrow: true),
+
           _buildField("UPS Backup(KVA)", center.upsBackupKua),
           _buildField("UPS Backup Time(in mins)", center.upsBackupTime,
             showDropdownArrow: true,),

@@ -194,6 +194,7 @@ class Center {
   final String fuilTankCapacity;
   final String typeOfCenter;
   final String amAltNumber;
+  final bool? isLiftAvailable;
 
 
 
@@ -275,7 +276,8 @@ class Center {
     required this.primaryinternetspeedunit,
     required this.fuilTankCapacity,
     required this.typeOfCenter,
-    required this.amAltNumber
+    required this.amAltNumber,
+    required this.isLiftAvailable,
   });
 
   factory Center.fromJson(Map<String, dynamic> json) {
@@ -302,7 +304,7 @@ class Center {
       panNo: json["pan_no"]?? '',
       typeOfCenter: json['type_of_center']?? '',
       distanceBus: json["distance_from_bus_stop"]?? '',
-      upsBackupKua: json["backup_hours"]?? '',
+      upsBackupKua: json["power_back_ups_kv"]?? '',
       nearestRailway: json["nearest_railway_station"]?? '',
       centerName: json['center_name'] ?? '',
       fuilTankCapacity: json["generator_fuel_tank_capacity"]?? '',
@@ -311,7 +313,7 @@ class Center {
       address: json['address'] ?? '',
       printerLab: json["network_printer"]?? '',
       gstNo: json["gst_no"]?? '',
-      fireExuter: json["fire_extinguisher"]?? '',
+      fireExuter: json["how_many_fire_extinguisher_in_each_lab"]?? '',
       acInLab: json["ac_in_each_lab"]?? '',
       addressLat: json['address_lat'] ?? '',
       addressLong: json['address_long'] ?? '',
@@ -353,7 +355,7 @@ class Center {
       adminUrl: json['admin_url'] ?? '',
       capacity: json['capacity'] ?? '',
       logo: json['logo'] ?? '',
-
+      isLiftAvailable: json['is_lift_available'] == true,
       generatorBackupCapacity: json['generator_backup_capacity'] ?? '',
       generatorBackupTime: json['generator_backup_time'] ?? '',
       backupHours: json['backup_hours'] ?? '',

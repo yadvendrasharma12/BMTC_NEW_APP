@@ -39,7 +39,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
 
   final ExamCenterController examController = Get.find<ExamCenterController>();
 
-  // Text Controllers for static fields
+
   final TextEditingController totalLabsController = TextEditingController();
   final TextEditingController totalSystemsController = TextEditingController();
   final TextEditingController totalNetworkController = TextEditingController();
@@ -386,20 +386,18 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                   Text("Are all labs connected through a single network?",
                       style: AppTextStyles.centerText),
                   const SizedBox(height: 8),
+
                   Obx(() => CustomDropdown<String>(
                     hintText: "Select",
-                    items: yesNoOptions, // ['Yes', 'No']
+                    items: ['Yes', 'No'],
                     itemLabel: (v) => v,
 
-                    // ✅ IMPORTANT PART
                     value: examController.labAreConnectToSingleNetwork.value == null
                         ? null
                         : (examController.labAreConnectToSingleNetwork.value! ? "Yes" : "No"),
 
-
                     onChanged: (v) {
-                      examController.labAreConnectToSingleNetwork.value =
-                      (v == 'Yes');
+                      examController.labAreConnectToSingleNetwork.value = (v == 'Yes');
                     },
 
                     validator: (value) {
@@ -408,8 +406,9 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                       }
                       return null;
                     },
-
                   )),
+
+
 
                   const SizedBox(height: 15),
                   Text("Total Network", style: AppTextStyles.centerText),
@@ -435,15 +434,19 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                       style: AppTextStyles.centerText),
                   const SizedBox(height: 8),
 
-
                   Obx(() => CustomDropdown<String>(
                     hintText: "Select",
                     items: yesNoOptions, // ['Yes','No']
                     itemLabel: (v) => v,
-                    value: examController.partitionInEachLab.value ? "Yes" : "No",
+
+                    value: examController.partitionInEachLab.value == null
+                        ? null
+                        : (examController.partitionInEachLab.value! ? "Yes" : "No"),
+
                     onChanged: (v) {
                       examController.partitionInEachLab.value = (v == "Yes");
                     },
+
                     validator: (value) {
                       if (value == null) {
                         return "Please select partition option";
@@ -452,23 +455,42 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                     },
                   )),
 
+                  // Obx(() => CustomDropdown<String>(
+                  //   hintText: "Select",
+                  //   items: yesNoOptions, // ['Yes','No']
+                  //   itemLabel: (v) => v,
+                  //   value: examController.partitionInEachLab.value ? "Yes" : "No",
+                  //   onChanged: (v) {
+                  //     examController.partitionInEachLab.value = (v == "Yes");
+                  //   },
+                  //   validator: (value) {
+                  //     if (value == null) {
+                  //       return "Please select partition option";
+                  //     }
+                  //     return null;
+                  //   },
+                  // )),
+
 
                   const SizedBox(height: 15),
                   Text("Is there an AC in each lab?",
                       style: AppTextStyles.centerText),
                   const SizedBox(height: 8),
+
+
                   Obx(() => CustomDropdown<String>(
                     hintText: "Select",
-                    items: yesNoOptions,
+                    items: yesNoOptions, // ['Yes','No']
                     itemLabel: (v) => v,
+
                     value: examController.acInEachLab.value == null
                         ? null
-                        : (examController.acInEachLab.value ? "Yes" : "No"),
-
+                        : (examController.acInEachLab.value! ? "Yes" : "No"),
 
                     onChanged: (v) {
                       examController.acInEachLab.value = (v == "Yes");
                     },
+
                     validator: (value) {
                       if (value == null) {
                         return "Please select AC availability";
@@ -476,6 +498,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                       return null;
                     },
                   )),
+
 
 
 
@@ -501,15 +524,21 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                   Text("Is there a projector in each lab?",
                       style: AppTextStyles.centerText),
                   const SizedBox(height: 8),
+
                   Obx(() => CustomDropdown<String>(
                     hintText: "Select",
                     items: yesNoOptions,
                     itemLabel: (v) => v,
-                    value: examController.isThereProjectorInEachLab.value ? "Yes" : "No",
+
+                    value: examController.isThereProjectorInEachLab.value == null
+                        ? null
+                        : (examController.isThereProjectorInEachLab.value! ? "Yes" : "No"),
+
                     onChanged: (v) {
                       examController.isThereProjectorInEachLab.value = (v == "Yes");
                     },
                   )),
+
 
                   const SizedBox(height: 15),
                   Text("Is there a sound system in each lab?",
@@ -518,21 +547,25 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
 
                   Obx(() => CustomDropdown<String>(
                     hintText: "Select",
-                    value: examController.isThereSoundSystemInEachLab.value ? "Yes" : "No",
                     items: yesNoOptions,
                     itemLabel: (v) => v,
+
+                    value: examController.isThereSoundSystemInEachLab.value == null
+                        ? null
+                        : (examController.isThereSoundSystemInEachLab.value! ? "Yes" : "No"),
+
                     onChanged: (v) {
                       examController.isThereSoundSystemInEachLab.value = (v == "Yes");
                     },
+
                     validator: (value) {
                       if (value == null) {
                         return "Please select SoundSystem availability";
                       }
                       return null;
                     },
-                  ),
+                  )),
 
-                  ),
 
 
                   const SizedBox(height: 15),
@@ -808,7 +841,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
 
 
                   const SizedBox(height: 15),
-                  Text("UPS Backup", style: AppTextStyles.centerText),
+                  Text("UPS Backup (KVA)", style: AppTextStyles.centerText),
                   const SizedBox(height: 8),
 
                   AppTextField(
@@ -816,7 +849,7 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                     keyboardType: TextInputType.number,
                     label: '',
                     onChanged: (v) {
-                      examController.upsBackup.value = (double.tryParse(v) ?? 0) as bool;
+                      examController.upsBackup.value = int.tryParse(v) ?? 0;
                     },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -826,19 +859,9 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
                     },
                   ),
 
-                  AppTextField(
-                    controller: upsBackupController,
-                    keyboardType: TextInputType.number,
-                    label: '',
 
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "UPS Backup is required";
-                      }
-                      return null;
-                    },
 
-                  ),
+
                   const SizedBox(height: 15),
                   Text("Ups Backup time (in mins)",
                       style: AppTextStyles.centerText),

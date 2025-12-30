@@ -553,7 +553,11 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     examController.isLiftAvailable.value = isLiftAvailable ?? false;
 
     /// ✅ 3. CENTER TYPE (ONLY API TYPE)
-    examController.typeOfCenter.value = categoryTypes ?? "";
+   // examController.typeOfCenter.value = categoryTypes ?? "";\
+
+    if (categoryTypes != null && categoryTypes!.isNotEmpty) {
+      examController.typeOfCenter.value = categoryTypes!;
+    }
 
     examController.countryId.value = examController.countryId.value =
         selectedCountry != null
@@ -610,6 +614,11 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
       examController.walkthroughVideoFile.value = walkthroughVideoFile;
     }
     print("===== Exam Center Step 1 Data =====");
+
+
+    print("Lift Available (UI): $isLiftAvailable");
+    print("Lift Available (Controller): ${examController.isLiftAvailable.value}");
+
     print("Center Name: ${examController.centerName.value}");
     print("Center Name: ${examController.centerType.value}");
     print("Center Description: ${examController.centerDescription.value}");
@@ -1033,7 +1042,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                   const SizedBox(height: 16),
 
                   // 🔹 Area Name
-                  Text("Area Name", style: AppTextStyles.centerText),
+                  Text("Local Area Name", style: AppTextStyles.centerText),
                   const SizedBox(height: 8),
                   AppTextField(
                     label: "",
@@ -1049,7 +1058,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                   ),
                   const SizedBox(height: 16),
 
-                  // 🔹 PinCode
+                  // 🔹 PinCodeis
                   Text("PinCode", style: AppTextStyles.centerText),
                   const SizedBox(height: 8),
                   AppTextField(
@@ -1067,7 +1076,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                   const SizedBox(height: 16),
 
                   // 🔹 Center Type
-                  Text("Type Center Type", style: AppTextStyles.centerText),
+                  Text("TWhat is the Category of your Test Center?", style: AppTextStyles.centerText),
                   const SizedBox(height: 10),
 
                   CustomDropdown<String>(
@@ -1077,8 +1086,9 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                     itemLabel: (value) => value,
                     onChanged: (value) {
                       setState(() {
-                        categoryTypes = value; // ✅ Selected value save ho rahi
+                        categoryTypes = value!;
                       });
+                      examController.typeOfCenter.value = value!; // ⭐ DIRECT SET
                     },
                     validator: (value) {
                       if (value == null) {
@@ -1088,7 +1098,7 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
                     },
                   ),
 
-                  const SizedBox(height: 17),
+
 
                   const SizedBox(height: 16),
 

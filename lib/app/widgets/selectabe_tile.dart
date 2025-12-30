@@ -1,3 +1,4 @@
+import 'package:bmtc_app/app/core/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -29,7 +30,10 @@ class SelectableTile extends StatelessWidget {
       child: Row(
         children: [
           Checkbox(
-            shape: const CircleBorder(),
+            activeColor: AppColors.primaryColor,
+            checkColor: Colors.white,
+            shape:  CircleBorder(
+            ),
             value: value,
             onChanged: onChanged,
           ),
