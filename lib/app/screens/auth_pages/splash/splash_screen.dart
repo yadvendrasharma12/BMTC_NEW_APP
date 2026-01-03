@@ -130,7 +130,7 @@ class _SplashScreenState extends State<SplashScreen>
     await Future.delayed(const Duration(seconds: 3));
 
     if (centerId != null && centerId.isNotEmpty) {
-      Get.offAll(() => VideoPageScreen());
+      Get.offAll(() => DashboardPageScreen());
     } else {
       Get.offAll(() => RegisterScreen());
     }
