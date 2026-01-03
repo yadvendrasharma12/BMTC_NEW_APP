@@ -7,6 +7,9 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../video_page/video_page_screen.dart';
+
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -55,7 +58,7 @@ class _MainScreenState extends State<MainScreen> {
               const SizedBox(height: 30,),
               GestureDetector(
                 onTap: (){
-                  Get.to(DashboardPageScreen());
+                  Get.to(VideoPageScreen());
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(horizontal: 30),

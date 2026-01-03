@@ -54,6 +54,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   }
 
+
+
   Future<void> _pickProfileImage() async {
     final XFile? picked =
     await _picker.pickImage(source: ImageSource.gallery, imageQuality: 80);

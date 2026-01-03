@@ -1,3 +1,4 @@
+import 'package:bmtc_app/app/core/app_colors.dart';
 import 'package:bmtc_app/app/core/text_style.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -126,7 +127,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           alignment: Alignment.center,
                           child: Text(
                             "${day.day}",
-                            style: const TextStyle(color: Colors.white),
+                            style:  TextStyle(color: Colors.white,fontWeight: FontWeight.w700),
                           ),
                         );
                       }
@@ -135,8 +136,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     selectedBuilder: (context, day, focusedDay) {
                       return Container(
                         margin: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: Colors.blue,
+                        decoration:  BoxDecoration(
+                          color: AppColors.primaryColor,
                           shape: BoxShape.circle,
                         ),
                         alignment: Alignment.center,

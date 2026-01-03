@@ -3,6 +3,7 @@ import 'package:bmtc_app/app/core/text_style.dart';
 import 'package:bmtc_app/app/screens/auth_pages/login/login_screen.dart';
 import 'package:bmtc_app/app/screens/auth_pages/otp/otp_screen.dart';
 import 'package:bmtc_app/app/utils/validators.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -34,7 +35,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _agreedToTerms = false;
 
 
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
 
   void _onSignUp() async {
@@ -66,12 +67,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
     formController.countryCode.value = _selectedCountryCode;
     formController.isAgree.value = _agreedToTerms;
 
-    print("Controller Data After Register:");
-    print("Name: ${formController.name.value}");
-    print("Email: ${formController.email.value}");
-    print("Phone: ${formController.mobilePhone.value}");
-    print("Country Code: ${formController.countryCode.value}");
-    print("Agreed Terms: ${formController.isAgree.value}");
+
+    if (kDebugMode) {
+      print("Controller Data After Register:");
+    }
+    if (kDebugMode) {
+      print("Name: ${formController.name.value}");
+    }
+    if (kDebugMode) {
+      print("Email: ${formController.email.value}");
+    }
+    if (kDebugMode) {
+      print("Phone: ${formController.mobilePhone.value}");
+    }
+    if (kDebugMode) {
+      print("Country Code: ${formController.countryCode.value}");
+    }
+    if (kDebugMode) {
+      print("Agreed Terms: ${formController.isAgree.value}");
+    }
 
     Get.to(() => OtpScreen(
       mobileNumber: formController.mobilePhone.value,
@@ -348,7 +362,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Get.to(LoginScreen());
+                          Get.to(() => LoginScreen());
                         },
                         child: Text(
                           "Log in",

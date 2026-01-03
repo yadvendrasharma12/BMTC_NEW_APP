@@ -15,6 +15,7 @@ class SelfBookingController extends GetxController {
   void onInit() {
     super.onInit();
     fetchSelfBooking();
+    print("🔥 SelfBookingController INIT → ${hashCode}");
   }
 
   /// 👉 Fetch all bookings

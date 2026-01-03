@@ -18,21 +18,7 @@ class CenterDetailsPage3 extends StatefulWidget {
   State<CenterDetailsPage3> createState() => _CenterDetailsPage3State();
 }
 
-class LabDetail {
-  String? floor;
-  String? processor;
-  String? monitor;
-  String? os;
-  String? ram;
-  String? hardDisk;
-  String? switchCompany;
-  String? switchCategory;
-  String? switchParts;
-  final TextEditingController computersController = TextEditingController();
 
-  void dispose() {
-  }
-}
 
 class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
 
@@ -72,17 +58,25 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
   final List<String> yesNoOptions = ['Yes', 'No'];
   final List<String> ispTypes = ['Broadband', 'Lease line', 'Fibre Optics', 'Air Fibre'];
   final List<String> speeds = ['Gbps', 'Mbps'];
-  final List<String> floors = ['Ground', '1st', '2nd', '3rd','4th','5th','6th','7th','8th','9th','10th',"Basement"];
+  final List<String> floors = ['Ground', '1', '2', '3','4','5','6','7','8','9','10','11', '12', '13','14','15','16','17','18','19','20',"Basement"];
   final List<String> processors = ['Core 2 Duo','i3', 'i5', 'i7', 'i9'];
   final List<String> monitors = ['LCD', 'LED', 'CRT'];
-  final List<String> oss = ['Win 7','Win 8', 'Win 10','Win 11','MacOS'];
+  final List<String> oss = ['Win 7','Win 8', 'Win 10','Win 11','MacOS','Linux'];
   final List<String> rams = ['2GB', '4GB','8GB', '16GB','32GB',];
   final List<String> hardDisks = ['80GB', '128GB','160GB','256GB','512GB','1TB','2TB','4TB'];
   final List<String> switchCompanies = ['Cisco','Netgear', 'TP-Link', 'D-Link','Dex','Others'];
   final List<String> switchCategories = ['Unmanaged', 'Smart','Managed L2','Managed L3'];
-  final List<String> switchParts = ['8','16','24','32'];
-  final List<String> upsBackupTimeOptions = ['5 mins','10 mins','15 mins','20 mins','25 mins','30 mins','35 mins','40 mins','50 mins','60 mins',];
-  final List<String> tankCapacityLtr = ['1 ltr',  '1.5 ltr','2 ltr', '2.5 ltr', '3 ltr', '3.5 ltr', '4 ltr', '4.5 ltr', '5 ltr',];
+  final List<String> switchParts = ['8','16','24','32','48'];
+
+  final List<String> upsBackupTimeOptions = List.generate(100, (index) {
+    final minutes = (index + 1) * 5;
+    return '$minutes mins';
+  });
+
+  final List<String> tankCapacityLtr = List.generate(1000, (index) {
+    final value = (index + 1) * 0.5;
+    return '${value.toStringAsFixed(value % 1 == 0 ? 0 : 1)} ltr';
+  });
 
   @override
   void dispose() {
@@ -95,9 +89,6 @@ class _CenterDetailsPage3State extends State<CenterDetailsPage3> {
     primaryInternetController.dispose();
     secondaryInternetController.dispose();
     generatorCapacityController.dispose();
-    for (var lab in examController.labs) {
-      lab.dispose();
-    }
     super.dispose();
   }
 

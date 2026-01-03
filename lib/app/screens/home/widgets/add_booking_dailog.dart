@@ -115,10 +115,11 @@ class _AddBookingDialogState extends State<AddBookingDialog> {
   void _onBatchChanged(int? value) {
     setState(() {
       selectedBatch = value;
-      _batchTimeControllers.clear();
+      _batchTimes.clear();
+
       if (selectedBatch != null) {
         for (int i = 0; i < selectedBatch!; i++) {
-          _batchTimeControllers.add(TextEditingController());
+          _batchTimes.add(null);
         }
       }
     });
@@ -180,7 +181,25 @@ class _AddBookingDialogState extends State<AddBookingDialog> {
   }
 
 
+  List<TimeOfDay?> _batchTimes = [];
 
+
+  Future<void> _pickBatchTime(int index) async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _batchTimes[index] ?? TimeOfDay.now(),
+    );
+
+    if (picked != null) {
+      setState(() {
+        _batchTimes[index] = picked;
+      });
+    }
+  }
+  late List<String> batchTimings = _batchTimes.map((t) {
+    if (t == null) return "";
+    return _formatTime(t); // eg: 11:50 PM
+  }).toList();
 
   @override
   void dispose() {
@@ -422,24 +441,24 @@ class _AddBookingDialogState extends State<AddBookingDialog> {
                       ),
                       const SizedBox(height: 6),
 
-                      CustomDropdown<String>(
-                        hintText: "Select Timing",
-                        value: _batchTimeControllers[i].text.isEmpty
-                            ? null
-                            : _batchTimeControllers[i].text,
-                        items: apiBatchTimings,
-                        itemLabel: (v) => v,
-                        onChanged: (v) {
-                          setState(() {
-                            _batchTimeControllers[i].text = v!;
-                          });
-                        },
-                        validator: (_) => null,
+                      GestureDetector(
+                        onTap: () => _pickBatchTime(i),
+                        child: AbsorbPointer(
+                          child: AppTextField(
+                            controller: TextEditingController(
+                              text: _formatTime(_batchTimes[i]),
+                            ),
+                            hintText: "Select time (AM / PM)",
+                            label: '',
+                            suffix: const Icon(Icons.access_time),
+                          ),
+                        ),
                       ),
 
                       const SizedBox(height: 12),
                     ],
                   ],
+
 
 
                   const SizedBox(height: 20),

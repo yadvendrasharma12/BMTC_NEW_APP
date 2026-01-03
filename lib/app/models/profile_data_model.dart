@@ -292,7 +292,7 @@ class Center {
       description: json['center_description']?? '',
       bankAccount: json["bank_account_number"]?? '',
       uidainNo: json["uidai_number"]?? '',
-      powerbachup: json["power_back_ups_kv"]?? '',
+      powerbachup: json["ups_backup_time"]?? '',
       primaryinternetspeedunit: json["primary_internet_speed_unit"]?? '',
       localArea: json["local_area_name"]?? '',
       msmeNo: json["msme_number"]?? '',

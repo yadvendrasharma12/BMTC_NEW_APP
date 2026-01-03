@@ -19,7 +19,7 @@ class LabDetail {
   final TextEditingController computersController = TextEditingController();
 
   void dispose() {
-
+    computersController.dispose();
   }
 }
 class ExamCenterController extends GetxController {
@@ -122,13 +122,7 @@ class ExamCenterController extends GetxController {
 
 
   var isNetworkPrinterAvailabel = RxnBool();
-  // var isThereProjectorInEachLab = RxnBool();
-  // var isThereSoundSystemInEachLab = RxnBool();
-  //
-  // var isThereALockerFacilityInLab = RxnBool();
-  // var isThereADrinkingWaterFacilityInLab = RxnBool();
 
-  // ================= PRIMARY / SECONDARY INFRA =================
   var primaryInfrastructure = ''.obs;
   var primaryIspConnectType = ''.obs;
   var primaryIspSpeed = 0.0.obs;
@@ -201,6 +195,8 @@ class ExamCenterController extends GetxController {
 
 
     ExamCenter center = ExamCenter(
+
+
       name: name.value,
       email: email.value,
       mobilePhone: mobilePhone.value,
@@ -306,6 +302,74 @@ class ExamCenterController extends GetxController {
       hasMsme: hasMsme.value,
     );
 
+    print("🔹 === SUBMITTING EXAM CENTER DATA ===");
+    print("Basic Info:");
+    print("  Name: ${name.value}");
+    print("  Email: ${email.value}");
+    print("  Mobile: ${mobilePhone.value}");
+    print("  Country Code: ${countryCode.value}");
+    print("  MPIN: ${mpin.value}");
+    print("Center Info:");
+    print("  Center Name: ${centerName.value}");
+    print("  Center Description: ${centerDescription.value}");
+    print("  Capacity: ${capacity.value}");
+    print("  Center Type: ${centerType.value}");
+    print("  Type Of Center: ${typeOfCenter.value}");
+    print("  Address Lat: ${addressLat.value}");
+    print("  Address Long: ${addressLong.value}");
+    print("  Nearby Landmark: ${nearbyLandmark.value}");
+    print("Lab Info: Total Labs: ${labs.length}");
+    for (int i = 0; i < labs.length; i++) {
+      final lab = labs[i];
+      print("  Lab ${i + 1}:");
+      print("    Floor: ${lab.floor.value}");
+      print("    Computers: ${lab.computersController.text}");
+      print("    Processor: ${lab.processor.value}");
+      print("    Monitor: ${lab.monitor.value}");
+      print("    OS: ${lab.os.value}");
+      print("    RAM: ${lab.ram.value}");
+      print("    HDD: ${lab.hdd.value}");
+      print("    Ethernet Company: ${lab.ethernetCompany.value}");
+      print("    Switch Category: ${lab.switchCategory.value}");
+      print("    Ethernet Ports: ${lab.ethernetPorts.value}");
+    }
+    print("Files:");
+    print("  Entrance: ${entranceFile.value?.path}");
+    print("  Lab Photo: ${labPhotoFile.value?.path}");
+    print("  Main Gate: ${mainGateFile.value?.path}");
+    print("  Server Room: ${serverRoomFile.value?.path}");
+    print("  Conference Room: ${conferenceRoomFile.value?.path}");
+    print("  UPS/Generator: ${upsGeneratorFile.value?.path}");
+    print("  Walkthrough Video: ${walkthroughVideoFile.value?.path}");
+    print("Banking Info:");
+    print("  Beneficiary Name: ${beneficiaryName.value}");
+    print("  Bank Name: ${bankName.value}");
+    print("  Account Number: ${bankAccountNumber.value}");
+    print("  IFSC: ${bankIfsc.value}");
+    print("  PAN: ${panNumber.value}");
+    print("  GST: ${gstNumber.value}");
+    print("  Has GST: ${hasGst.value}");
+    print("  Has MSME: ${hasMsme.value}");
+    print("Facilities:");
+    print("  Lift Available: ${isLiftAvailable.value}");
+    print("  Projector in Labs: ${isThereProjectorInEachLab.value}");
+    print("  Sound System in Labs: ${isThereSoundSystemInEachLab.value}");
+    print("  Locker Facility: ${isThereALockerFacilityInLab.value}");
+    print("  Drinking Water Facility: ${isThereADrinkingWaterFacilityInLab.value}");
+    print("Network Info:");
+    print("  Total Network: ${totalNetwork.value}");
+    print("  Lab Connected to Single Network: ${labAreConnectToSingleNetwork.value}");
+    print("Generator / UPS:");
+    print("  Generator Backup: ${isGeneratorBackup.value}");
+    print("  UPS Backup: ${upsBackup.value}");
+    print("  UPS Backup Time: ${upsBackupTime.value}");
+    print("  Backup Hours: ${backupHours.value}");
+    print("  Backup Minutes: ${backupMinutes.value}");
+    print("=====================================");
+
+
+
+
     print("🔹 Data prepared, calling API...");
     var response = await ExamCenterService.storeExamCenter(center);
 
@@ -316,8 +380,8 @@ class ExamCenterController extends GetxController {
       // await MySharedPrefs.save(centerId);
       final id = response['center_id'].toString();
 
-      centerId.value = id;                  // 🔑 CONTROLLER me set
-      await MySharedPrefs.save(id); // 🔑 LOCAL STORAGE
+      centerId.value = id;
+      await MySharedPrefs.save(id);
 
       await MySharedPrefs.saveLoginData(
         mobilePhone: mobilePhone.value,

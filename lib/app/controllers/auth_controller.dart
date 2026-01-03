@@ -266,7 +266,6 @@ class AuthController extends GetxController {
   }
 
   Future<void> logout() async {
-    print("=== LOGOUT START ===");
     isLoading.value = true;
 
     try {
@@ -282,31 +281,34 @@ class AuthController extends GetxController {
 
       if (response.statusCode == 200 && data["status"] == "success") {
 
+        // ✅ Toast FIRST
+        if (Get.context != null) {
+          AppToast.showSuccess(
+            Get.context!,
+            data["message"] ?? "Logout successful",
+          );
+        }
 
-
-        print("✅ Login data cleared but Center ID SAFE");
         await MySharedPrefs.clearLoginData();
         await MySharedPrefs.clear();
 
+        // ✅ Navigation LAST
         Get.offAll(() => const LoginScreen());
 
-        if (Get.context != null) {
-          AppToast.showSuccess(Get.context!, data["message"] ?? "Logout successful");
-        }
       } else {
         if (Get.context != null) {
-          AppToast.showError(Get.context!, data["message"] ?? "Logout failed");
+          AppToast.showError(Get.context!, "Logout failed");
         }
       }
     } catch (e) {
       if (Get.context != null) {
-        AppToast.showError(Get.context!, "Logout error: $e");
+        AppToast.showError(Get.context!, "Logout error");
       }
     } finally {
       isLoading.value = false;
-      print("=== LOGOUT END ===");
     }
   }
+
 
 
   Future<void> mPinGenerate({

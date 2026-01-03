@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 
-import 'package:bmtc_app/app/maps_page/maps_location_screen.dart';
+
 import 'package:bmtc_app/app/models/profile_data_model.dart' as api;
 import 'package:bmtc_app/app/core/text_style.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,7 +25,9 @@ import '../../../services/location_services/location_service.dart';
 import '../../../utils/toast_message.dart';
 import '../../../widgets/custom_container.dart';
 import '../../../widgets/custom_dropdown.dart';
+import '../../../widgets/selectabe_tile.dart';
 import '../../../widgets/uploading_container.dart';
+import '../../maps_page/maps_location_screen.dart';
 
 class EditCenterInformationScreen extends StatefulWidget {
   final List<api.Lab> apiLabs;
@@ -163,7 +165,7 @@ class _EditCenterInformationScreenState
         localAreaName.text = center.localArea ?? '';
         airport.text = center.nearestAirport ?? '';
         landmark.text = center.landmark ?? '';
-
+        isLiftAvailable ??= center.isLiftAvailable;
         // Point of contact
         pointOfContactName.text = center.amName ?? '';
         pointOfContactNumber.text = center.amContactNo ?? '';
@@ -220,6 +222,10 @@ class _EditCenterInformationScreenState
         fireExuter = center.fireExuter;
 
         // Dropdowns
+
+        // backupMinutes
+
+
         selectedBusDistance = matchDropdownValue(
             apiValue: center.distanceBus, options: distanceOptions);
         selectedRailwayDistance = matchDropdownValue(
@@ -240,7 +246,7 @@ class _EditCenterInformationScreenState
         generatorFuilTank = matchDropdownValue(
             apiValue: center.fuilTankCapacity, options: tankCapacityLtr);
         upsBackupTimeMinutes = matchDropdownValue(
-            apiValue: center.upsBackupTime, options: upsBackupTimeOptions);
+            apiValue: center.backupMinutes, options: upsBackupTimeOptions);
 
         primaryUnit = unites.firstWhereOrNull(
                 (e) => e.toLowerCase() == (center.primaryinternetspeedunit ?? '').toLowerCase());
@@ -285,7 +291,7 @@ class _EditCenterInformationScreenState
   ];
   final List<String> yesNoOptions = ['Yes', 'No'];
   final List<String> speeds = ['Gbps', 'Mbps'];
-  final List<String> upsBackupTimeOptions = [ '0.0','5','10','15','20','25','30','35','40','50','60',];
+  final List<String> upsBackupTimeOptions = [ '0','5','10','15','20','25','30','35','40','50','60',];
   final List<String> tankCapacityLtr = [  '0.0','1',  '1.5','2 ', '2.5 ', '3 ', '3.5', '4 ', '4.5 ', '5 ',];
 
   bool parseYesNo(dynamic value) {
@@ -602,6 +608,7 @@ class _EditCenterInformationScreenState
   @override
   Widget build(BuildContext context) {
     final images = controller.profileDataModel.value?.data.images ?? [];
+
 
     if (isInitializing) {
       return const Scaffold(
@@ -980,11 +987,30 @@ class _EditCenterInformationScreenState
                           const SizedBox(height: 10),
 
                           Row(
-
                             children: [
-                              liftOption(value: "Yes"),
-                              SizedBox(width: 10,),
-                              liftOption(value: "No"),
+                              Expanded(
+                                child: SelectableTile(
+                                  value: isLiftAvailable == true,
+                                  text: "Yes",
+                                  onChanged: (val) {
+                                    setState(() {
+                                      isLiftAvailable = true;
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: SelectableTile(
+                                  value: isLiftAvailable == false,
+                                  text: "No",
+                                  onChanged: (val) {
+                                    setState(() {
+                                      isLiftAvailable = false;
+                                    });
+                                  },
+                                ),
+                              ),
                             ],
                           ),
                         ],
@@ -1722,233 +1748,233 @@ class _EditCenterInformationScreenState
                   itemCount: labs.length,
                   itemBuilder: (context, index) => _labCard(index),
                 ),
-                const SizedBox(height: 20),
-
-                _sectionTitle("Lab Infrastructure Details"),
-
-                _card(child: Column(children: [
-                  _textField(
-
-                    title:"Name of the Primary ISP",
-
-                    hint: "Name of the Primary ISP",
-                    controller: primaryIsp,
-                    validator: (v) =>
-                    v!.isEmpty ? "system name is required" : null,
-                  ),
 
 
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Primary ISP Connection Type",
-                      style: AppTextStyles.centerText,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  CustomDropdown<String>(
-                    hintText: "Select ISP Type",
-                    value: primaryIspType, // ✅ API value show hogi
-                    items: ispTypes,
-                    itemLabel: (v) => v,
-                    onChanged: (v) {
-                      if (v == null) return;
-                      setState(() {
-                        primaryIspType = v; // ✅ update hoga
-                      });
-                    },
-                    validator: (_) => null,
-                  ),
-                  SizedBox(height: 8,),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _textField(
-
-                          title:"Primary Internal Speed",
-
-                          hint: "Primary Internal Speed",
-                          controller: internateSpeedPrimary,
-                          validator: (v) =>
-                          v!.isEmpty ? "system name is required" : null,
-                        ),
-                        flex: 2,
-                      ),
-                      SizedBox(width: 7,),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 12.0),
-                          child: CustomDropdown<String>(
-                            hintText: "Unite",
-                            value: primaryUnit, // ✅ API value show hogi
-                            items: speeds,
-                            itemLabel: (v) => v,
-                            onChanged: (v) {
-                              if (v == null) return;
-                              setState(() {
-                                primaryUnit = v; // ✅ update hoga
-                              });
-                            },
-                            validator: (_) => null,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  _textField(
-
-                    title:"Name of the Secondary ISP",
-
-                    hint: "Name of the Secondary ISP",
-                    controller: secondryIsp,
-                    validator: (v) =>
-                    v!.isEmpty ? "system name is required" : null,
-                  ),
-
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Secondary ISP Connection Type",
-                      style: AppTextStyles.centerText,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  CustomDropdown<String>(
-                    hintText: "Select ISP Type",
-                    value: secondaryIsptype, // ✅ API value show hogi
-                    items: ispTypes,
-                    itemLabel: (v) => v,
-                    onChanged: (v) {
-                      if (v == null) return;
-                      setState(() {
-                        secondaryIsptype = v; // ✅ update hoga
-                      });
-                    },
-                    validator: (_) => null,
-                  ),
-                  SizedBox(height: 8,),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: _textField(
-
-                          title:"Secondary ISP Speed",
-
-                          hint: "Secondary ISP Speed",
-                          controller: internateSpeedSecondry,
-                          validator: (v) =>
-                          v!.isEmpty ? "system name is required" : null,
-                        ),
-                      ),
-                      SizedBox(width: 7,),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 12.0),
-                          child: CustomDropdown<String>(
-                            hintText: "Unite",
-                            value: secondryUnit, // ✅ API value show hogi
-                            items: speeds,
-                            itemLabel: (v) => v,
-                            onChanged: (v) {
-                              if (v == null) return;
-                              setState(() {
-                                secondryUnit = v; // ✅ update hoga
-                              });
-                            },
-                            validator: (_) => null,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 15),
-                  Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("Generator Available", style: AppTextStyles.centerText)),
-                  const SizedBox(height: 8),
-                  CustomDropdown<String>(
-                    hintText: "Select",
-                    items: yesNoOptions,
-                    itemLabel: (v) => v,
-                    value: isGeneratorBackup ? "Yes" : "No",
-                    onChanged: (v) {
-                      setState(() {
-                        isGeneratorBackup = (v == "Yes");
-                      });
-                    },
-                  ),
-
-                  /// SHOW ONLY IF YES
-                  if (isGeneratorBackup) ...[
-                    const SizedBox(height: 8),
-
-                    _textField(
-                      title: "Generator Capacity (in KVA)",
-                      hint: "Generator Capacity (in KVA)",
-                      controller: generatorCapacity,
-                      validator: (v) =>
-                      v!.isEmpty ? "Generator capacity is required" : null,
-                    ),
-
-                    const SizedBox(height: 15),
-
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        "Generator full tank Capacity (ltr)",
-                        style: AppTextStyles.centerText,
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    CustomDropdown<String>(
-                      hintText: "Full Tank Capacity",
-                      value: generatorFuilTank,
-                      items: tankCapacityLtr,
-                      itemLabel: (v) => v,
-                      onChanged: (v) {
-                        setState(() {
-                          generatorFuilTank = v;
-                        });
-                      },
-                      validator: (_) => null,
-                    ),
-                  ],
-                  const SizedBox(height: 14),
-                  _textField(
-                    title: "UPS Backup (KVA)",
-                    hint: "UPS Backup (KVA)",
-                    controller: upsBackup,
-                    validator: (v) =>
-                    v!.isEmpty ? "Generator capacity is required" : null,
-                  ),
-                  SizedBox(height: 12,),
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      "UPS Backup Time (in mins)",
-                      style: AppTextStyles.centerText,
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
-                  CustomDropdown<String>(
-                    hintText: "Full Tank Capacity",
-                    value: upsBackupTimeMinutes,
-                    items: upsBackupTimeOptions,
-                    itemLabel: (v) => v,
-                    onChanged: (v) {
-                      setState(() {
-                        upsBackupTimeMinutes = v;
-                      });
-                    },
-                    validator: (_) => null,
-                  ),
-                ],)),
+                // _sectionTitle("Lab Infrastructure Details"),
+                //
+                // _card(child: Column(children: [
+                //   _textField(
+                //
+                //     title:"Name of the Primary ISP",
+                //
+                //     hint: "Name of the Primary ISP",
+                //     controller: primaryIsp,
+                //     validator: (v) =>
+                //     v!.isEmpty ? "system name is required" : null,
+                //   ),
+                //
+                //
+                //   Align(
+                //     alignment: Alignment.centerLeft,
+                //     child: Text(
+                //       "Primary ISP Connection Type",
+                //       style: AppTextStyles.centerText,
+                //     ),
+                //   ),
+                //   const SizedBox(height: 8),
+                //   CustomDropdown<String>(
+                //     hintText: "Select ISP Type",
+                //     value: primaryIspType, // ✅ API value show hogi
+                //     items: ispTypes,
+                //     itemLabel: (v) => v,
+                //     onChanged: (v) {
+                //       if (v == null) return;
+                //       setState(() {
+                //         primaryIspType = v; // ✅ update hoga
+                //       });
+                //     },
+                //     validator: (_) => null,
+                //   ),
+                //   SizedBox(height: 8,),
+                //   Row(
+                //     children: [
+                //       Expanded(
+                //         child: _textField(
+                //
+                //           title:"Primary Internal Speed",
+                //
+                //           hint: "Primary Internal Speed",
+                //           controller: internateSpeedPrimary,
+                //           validator: (v) =>
+                //           v!.isEmpty ? "system name is required" : null,
+                //         ),
+                //         flex: 2,
+                //       ),
+                //       SizedBox(width: 7,),
+                //       Expanded(
+                //         child: Padding(
+                //           padding: const EdgeInsets.only(top: 12.0),
+                //           child: CustomDropdown<String>(
+                //             hintText: "Unite",
+                //             value: primaryUnit, // ✅ API value show hogi
+                //             items: speeds,
+                //             itemLabel: (v) => v,
+                //             onChanged: (v) {
+                //               if (v == null) return;
+                //               setState(() {
+                //                 primaryUnit = v; // ✅ update hoga
+                //               });
+                //             },
+                //             validator: (_) => null,
+                //           ),
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                //
+                //   _textField(
+                //
+                //     title:"Name of the Secondary ISP",
+                //
+                //     hint: "Name of the Secondary ISP",
+                //     controller: secondryIsp,
+                //     validator: (v) =>
+                //     v!.isEmpty ? "system name is required" : null,
+                //   ),
+                //
+                //   Align(
+                //     alignment: Alignment.centerLeft,
+                //     child: Text(
+                //       "Secondary ISP Connection Type",
+                //       style: AppTextStyles.centerText,
+                //     ),
+                //   ),
+                //   const SizedBox(height: 8),
+                //   CustomDropdown<String>(
+                //     hintText: "Select ISP Type",
+                //     value: secondaryIsptype, // ✅ API value show hogi
+                //     items: ispTypes,
+                //     itemLabel: (v) => v,
+                //     onChanged: (v) {
+                //       if (v == null) return;
+                //       setState(() {
+                //         secondaryIsptype = v; // ✅ update hoga
+                //       });
+                //     },
+                //     validator: (_) => null,
+                //   ),
+                //   SizedBox(height: 8,),
+                //   Row(
+                //     children: [
+                //       Expanded(
+                //         flex: 2,
+                //         child: _textField(
+                //
+                //           title:"Secondary ISP Speed",
+                //
+                //           hint: "Secondary ISP Speed",
+                //           controller: internateSpeedSecondry,
+                //           validator: (v) =>
+                //           v!.isEmpty ? "system name is required" : null,
+                //         ),
+                //       ),
+                //       SizedBox(width: 7,),
+                //       Expanded(
+                //         child: Padding(
+                //           padding: const EdgeInsets.only(top: 12.0),
+                //           child: CustomDropdown<String>(
+                //             hintText: "Unite",
+                //             value: secondryUnit, // ✅ API value show hogi
+                //             items: speeds,
+                //             itemLabel: (v) => v,
+                //             onChanged: (v) {
+                //               if (v == null) return;
+                //               setState(() {
+                //                 secondryUnit = v; // ✅ update hoga
+                //               });
+                //             },
+                //             validator: (_) => null,
+                //           ),
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                //
+                //   const SizedBox(height: 15),
+                //   Align(
+                //       alignment: Alignment.centerLeft,
+                //       child: Text("Generator Available", style: AppTextStyles.centerText)),
+                //   const SizedBox(height: 8),
+                //   CustomDropdown<String>(
+                //     hintText: "Select",
+                //     items: yesNoOptions,
+                //     itemLabel: (v) => v,
+                //     value: isGeneratorBackup ? "Yes" : "No",
+                //     onChanged: (v) {
+                //       setState(() {
+                //         isGeneratorBackup = (v == "Yes");
+                //       });
+                //     },
+                //   ),
+                //
+                //   /// SHOW ONLY IF YES
+                //   if (isGeneratorBackup) ...[
+                //     const SizedBox(height: 8),
+                //
+                //     _textField(
+                //       title: "Generator Capacity (in KVA)",
+                //       hint: "Generator Capacity (in KVA)",
+                //       controller: generatorCapacity,
+                //       validator: (v) =>
+                //       v!.isEmpty ? "Generator capacity is required" : null,
+                //     ),
+                //
+                //     const SizedBox(height: 15),
+                //
+                //     Align(
+                //       alignment: Alignment.topLeft,
+                //       child: Text(
+                //         "Generator full tank Capacity (ltr)",
+                //         style: AppTextStyles.centerText,
+                //       ),
+                //     ),
+                //
+                //     const SizedBox(height: 8),
+                //
+                //     CustomDropdown<String>(
+                //       hintText: "Full Tank Capacity",
+                //       value: generatorFuilTank,
+                //       items: tankCapacityLtr,
+                //       itemLabel: (v) => v,
+                //       onChanged: (v) {
+                //         setState(() {
+                //           generatorFuilTank = v;
+                //         });
+                //       },
+                //       validator: (_) => null,
+                //     ),
+                //   ],
+                //   const SizedBox(height: 14),
+                //   _textField(
+                //     title: "UPS Backup (KVA)",
+                //     hint: "UPS Backup (KVA)",
+                //     controller: upsBackup,
+                //     validator: (v) =>
+                //     v!.isEmpty ? "Generator capacity is required" : null,
+                //   ),
+                //   SizedBox(height: 12,),
+                //   Align(
+                //     alignment: Alignment.topLeft,
+                //     child: Text(
+                //       "UPS Backup Time (in mins)",
+                //       style: AppTextStyles.centerText,
+                //     ),
+                //   ),
+                //
+                //   const SizedBox(height: 8),
+                //   CustomDropdown<String>(
+                //     hintText: "Full Tank Capacity",
+                //     value: upsBackupTimeMinutes,
+                //     items: upsBackupTimeOptions,
+                //     itemLabel: (v) => v,
+                //     onChanged: (v) {
+                //       setState(() {
+                //         upsBackupTimeMinutes = v;
+                //       });
+                //     },
+                //     validator: (_) => null,
+                //   ),
+                // ],)),
 
                 _sectionTitle("Bank Details"),
                 _card(child: Column(children: [
@@ -2026,7 +2052,7 @@ class _EditCenterInformationScreenState
 
                   yesNoSelector(
                     title: "Do you have an MSME number?",
-                    value: hasGST,
+                    value: has_msme,
                     yesChild: Column(
                       children: [
                         _textField(
@@ -2138,6 +2164,7 @@ class _EditCenterInformationScreenState
   String? selectedBusDistance;
   String? selectedMetroDistance;
   String? selectedAirportDistance;
+  String? selectedUpsMinute;
 
 
   Widget _fileInfo(File? file) {
@@ -2916,7 +2943,12 @@ class _EditCenterInformationScreenState
       ),
     );
   }
+
+
+
   final RxBool hasGST = false.obs;
+  final RxBool has_msme = false.obs;
+
   Widget yesNoSelector({
     required String title,
     required RxBool value,

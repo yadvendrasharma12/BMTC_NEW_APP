@@ -31,7 +31,7 @@ class _MpinScreenState extends State<MpinScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _mPinController = TextEditingController();
   final ExamCenterController formController = Get.find<ExamCenterController>();
-  final AuthController authController = Get.put(AuthController());
+  final AuthController authController = Get.find<AuthController>();
 
   late StreamController<ErrorAnimationType> errorController;
   String currentText = "";
@@ -41,10 +41,48 @@ class _MpinScreenState extends State<MpinScreen> {
     super.initState();
     errorController = StreamController<ErrorAnimationType>();
   }
-  void _onVerify() {
+
+
+  // void _onVerify() {
+  //   final mpin = _mPinController.text.trim();
+  //
+  //   // 🔹 DEBUG: Print controller data before setting MPIN
+  //   print("Data before saving MPIN:");
+  //   print("Name: ${formController.name.value}");
+  //   print("Email: ${formController.email.value}");
+  //   print("Phone: ${formController.mobilePhone.value}");
+  //   print("MPIN (input): $mpin");
+  //
+  //   if (mpin.isEmpty) {
+  //     errorController.add(ErrorAnimationType.shake);
+  //     AppToast.showError(context, 'Please enter your MPIN');
+  //     return;
+  //   }
+  //
+  //   if (mpin.length != 4) {
+  //     errorController.add(ErrorAnimationType.shake);
+  //     AppToast.showError(context, 'MPIN must be 4 digits');
+  //     return;
+  //   }
+  //
+  //   formController.mpin.value = mpin;
+  //
+  //   AppToast.showSuccess(context, 'MPIN created successfully!');
+  //
+  //   // 🔹 DEBUG: Print after saving MPIN
+  //   print("Data after saving MPIN:");
+  //   print("Name: ${formController.name.value}");
+  //   print("Email: ${formController.email.value}");
+  //   print("Phone: ${formController.mobilePhone.value}");
+  //   print("MPIN: ${formController.mpin.value}");
+  //
+  //   Get.off(() => CenterDetailsPage1());
+  // }
+
+
+  void _onVerify() async {
     final mpin = _mPinController.text.trim();
 
-    // 🔹 DEBUG: Print controller data before setting MPIN
     print("Data before saving MPIN:");
     print("Name: ${formController.name.value}");
     print("Email: ${formController.email.value}");
@@ -63,21 +101,31 @@ class _MpinScreenState extends State<MpinScreen> {
       return;
     }
 
-    formController.mpin.value = mpin;
+    try {
+      // 🔵 START LOADING
+      authController.isLoading.value = true;
 
-    AppToast.showSuccess(context, 'MPIN created successfully!');
+      await Future.delayed(const Duration(seconds: 2)); // API / Firebase
 
-    // 🔹 DEBUG: Print after saving MPIN
-    print("Data after saving MPIN:");
-    print("Name: ${formController.name.value}");
-    print("Email: ${formController.email.value}");
-    print("Phone: ${formController.mobilePhone.value}");
-    print("MPIN: ${formController.mpin.value}");
+      formController.mpin.value = mpin;
 
-    Get.off(() => CenterDetailsPage1());
+      AppToast.showSuccess(context, 'MPIN created successfully!');
+
+      print("Data after saving MPIN:");
+
+      print("Name: ${formController.name.value}");
+      print("Email: ${formController.email.value}");
+      print("Phone: ${formController.mobilePhone.value}");
+      print("MPIN: ${formController.mpin.value}");
+
+      Get.off(() => CenterDetailsPage1());
+    } catch (e) {
+      AppToast.showError(context, "Failed to create MPIN");
+    } finally {
+      // 🔴 STOP LOADING
+      authController.isLoading.value = false;
+    }
   }
-
-
 
 
 
@@ -172,11 +220,15 @@ class _MpinScreenState extends State<MpinScreen> {
             const SizedBox(height: 21),
 
 
-                CustomPrimaryButton(
-                  text: "Create MPIN",
-                  icon: Icons.arrow_right_alt_rounded,
-                  onPressed: () =>_onVerify(),
-                ),
+                Obx(() {
+                  return CustomPrimaryButton(
+                    text: "Create MPIN",
+                    icon: Icons.arrow_right_alt_rounded,
+                    isLoading: authController.isLoading.value,
+                    onPressed:
+                    authController.isLoading.value ? null : _onVerify,
+                  );
+                }),
 
                 const SizedBox(height: 15),
 

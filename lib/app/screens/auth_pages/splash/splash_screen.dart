@@ -74,12 +74,9 @@
 
 import 'dart:async';
 import 'package:bmtc_app/app/core/app_colors.dart';
-import 'package:bmtc_app/app/screens/add_center_pages/center_details_page1.dart';
-import 'package:bmtc_app/app/screens/add_center_pages/center_details_page3.dart';
-import 'package:bmtc_app/app/screens/add_center_pages/center_details_page4.dart';
-import 'package:bmtc_app/app/screens/auth_pages/login/login_screen.dart';
-import 'package:bmtc_app/app/screens/auth_pages/onboarding/onboarding_screen.dart';
+import 'package:bmtc_app/app/screens/auth_pages/register/register_screen.dart';
 import 'package:bmtc_app/app/screens/home/dashboard_page/dashBoard_page_screen.dart';
+import 'package:bmtc_app/app/screens/video_page/video_page_screen.dart';
 import 'package:bmtc_app/app/utils/shared_preferances.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -133,12 +130,12 @@ class _SplashScreenState extends State<SplashScreen>
     await Future.delayed(const Duration(seconds: 3));
 
     if (centerId != null && centerId.isNotEmpty) {
-      Get.offAll(() => const DashboardPageScreen());
+      Get.offAll(() => VideoPageScreen());
     } else {
-      Get.offAll(() => LoginScreen());
+      Get.offAll(() => RegisterScreen());
     }
   }
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
   @override
   void dispose() {
     _controller.dispose();

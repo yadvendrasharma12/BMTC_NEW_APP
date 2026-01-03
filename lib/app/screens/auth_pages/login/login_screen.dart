@@ -29,11 +29,27 @@ class _LoginScreenState extends State<LoginScreen> {
 
   late StreamController<ErrorAnimationType> errorController;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   errorController = StreamController<ErrorAnimationType>();
+  // }
+
   @override
   void initState() {
     super.initState();
     errorController = StreamController<ErrorAnimationType>();
+
+    // ✅ Logout / navigation message handle here
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final msg = Get.arguments;
+      if (msg != null && msg is String && msg.isNotEmpty) {
+        AppToast.showSuccess(context, msg);
+      }
+    });
   }
+
+
 
   @override
   void dispose() {
@@ -121,6 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 24),
                 Obx(() {
                   return CustomPrimaryButton(
+
                     text: "Log in",
                     icon: Icons.arrow_right_alt_rounded,
                     isLoading: authController.isLoading.value,

@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:bmtc_app/app/screens/home/exam_details/confim_popup.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../../../controllers/dashboard_controller.dart';
 import '../../../../core/app_colors.dart';
 import '../../../../core/text_style.dart';
+import '../../../../utils/toast_message.dart';
 import '../../../../widgets/custom_textformfield.dart';
 import '../../center_pages/center_page_screen.dart';
 import '../../self_booking/self_booking_screen.dart';
@@ -110,11 +115,30 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
 
                 const SizedBox(height: 20),
 
-                AppTextField(
-                  controller: searchController,
-                  keyboardType: TextInputType.text,
-                  label: 'Search by Exam Name or City',
-                  prefix: const Icon(Icons.search),
+                Row(
+                  children: [
+                    Expanded(
+                      child: AppTextField(
+                        controller: searchController,
+                        keyboardType: TextInputType.text,
+                        label: 'Search by Exam Name or City',
+                        prefix: const Icon(Icons.search),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton.icon(
+                      onPressed: _exportBookings,
+                      icon:  Icon(Icons.download, size: 18,color: Colors.white,),
+                      label:  Text("Export",style: AppTextStyles.button,),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 20),
@@ -327,5 +351,81 @@ class _ConfirmBookingScreenState extends State<ConfirmBookingScreen> {
       ),
     );
   }
+  void _exportBookings() async {
+    if (filteredBookings.isEmpty) {
+      AppToast.showInfo(Get.context!, "No data to export");
+      return;
+    }
+
+    final headers = [
+      "Exam Name",
+      "Client",
+      "City",
+      "Exam Date",
+      "Seats",
+      "Pricing",
+      "Status"
+    ];
+
+    final csvData = [
+      headers.join(","),
+
+      ...filteredBookings.map((booking) {
+        final examDate =
+            "${booking['start_date'] ?? '-'} to ${booking['end_date'] ?? '-'}";
+
+        final statusValue = booking['exam_center_status']?.toString();
+
+        final status = statusValue == "1"
+            ? "Approved"
+            : statusValue == "2"
+            ? "Rejected"
+            : "Pending";
+
+        return [
+          booking['exam_name'] ?? "-",
+          booking['client_name'] ?? "-",
+          booking['exam_city_name'] ?? "-",
+          examDate,
+          booking['exam_required_seat'] ?? "-",
+          booking['price_per_seat'] ?? "-",
+          status
+        ].join(",");
+      })
+    ].join("\n");
+
+    try {
+      if (await Permission.storage.request().isGranted) {
+        Directory downloadsDir;
+
+        if (Platform.isAndroid) {
+          downloadsDir = Directory("/storage/emulated/0/Download");
+        } else {
+          downloadsDir = await getApplicationDocumentsDirectory();
+        }
+
+        if (!downloadsDir.existsSync()) {
+          downloadsDir.createSync(recursive: true);
+        }
+
+        final fileName =
+            "confirmed_bookings_${DateTime.now().millisecondsSinceEpoch}.csv";
+
+        final file = File("${downloadsDir.path}/$fileName");
+
+        await file.writeAsString(csvData);
+
+        AppToast.showSuccess(
+            Get.context!, "Exported successfully to Downloads");
+      } else {
+        AppToast.showError(Get.context!, "Storage permission denied!");
+      }
+    } catch (e) {
+      AppToast.showError(Get.context!, "Export failed: $e");
+    }
+  }
+
+
+
 
 }

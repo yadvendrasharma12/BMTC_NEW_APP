@@ -9,8 +9,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../controllers/profile_data_controller.dart';
 import '../../../core/text_style.dart';
-import '../../../maps_page/maps_location_screen.dart';
+
 import '../../../utils/toast_message.dart';
+import '../../maps_page/maps_location_screen.dart';
 
 class CenterPageScreen extends StatefulWidget {
   const CenterPageScreen({super.key});

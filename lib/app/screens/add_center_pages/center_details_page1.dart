@@ -1,6 +1,6 @@
 
 import 'dart:io';
-import 'package:bmtc_app/app/maps_page/maps_location_screen.dart';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +21,7 @@ import '../../widgets/uploading_container.dart';
 import '../../widgets/custom_button.dart';
 import '../../core/app_colors.dart';
 import '../../core/text_style.dart';
+import '../maps_page/maps_location_screen.dart';
 import 'center_details_page2.dart';
 
 class CenterDetailsPage1 extends StatefulWidget {
@@ -68,118 +69,16 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
   final List<String> states = ['Karnataka', 'Maharashtra', 'Delhi'];
   final List<String> cities = ['Bangalore', 'Mysore', 'Mumbai', 'Delhi'];
 
-  final List<String> distanceOptions = [
-    '100 Meters',
-    '200 Meters',
-    '300 Meters',
-    '400 Meters',
-    '500 Meters',
-    '600 Meters',
-    '700 Meters',
-    '800 Meters',
-    '900 Meters',
-    '1000 Meters',
-    '1.10 km',
-    '1.20 km',
-    '1.30 km',
-    '1.40 km',
-    '1.50 km',
-    '1.60 km',
-    '1.70 km',
-    '1.80 km',
-    '1.90 km',
-    '2 km',
-    '2.10 km',
-    '2.20 km',
-    '2.30 km',
-    '2.40 km',
-    '2.50 km',
-    '2.60 km',
-    '2.70 km',
-    '2.80 km',
-    '2.90 km',
-    '3 km',
-    '3.10 km',
-    '3.20 km',
-    '3.30 km',
-    '3.40 km',
-    '3.50 km',
-    '3.60 km',
-    '3.70 km',
-    '3.80 km',
-    '3.90 km',
-    '4 km',
-    '4.10 km',
-    '4.20 km',
-    '4.30 km',
-    '4.40 km',
-    '4.50 km',
-    '4.60 km',
-    '4.70 km',
-    '4.80 km',
-    '4.90 km',
-    '5 km',
-    '5.10 km',
-    '5.20 km',
-    '5.30 km',
-    '5.40 km',
-    '5.50 km',
-    '5.60 km',
-    '5.70 km',
-    '5.80 km',
-    '5.90 km',
-    '6 km',
-    '6.10 km',
-    '6.20 km',
-    '6.30 km',
-    '6.40 km',
-    '6.50 km',
-    '6.60 km',
-    '6.70 km',
-    '6.80 km',
-    '6.90 km',
-    '7 km',
-    '7.10 km',
-    '7.20 km',
-    '7.30 km',
-    '7.40 km',
-    '7.50 km',
-    '7.60 km',
-    '7.70 km',
-    '7.80 km',
-    '7.90 km',
-    '8 km',
-    '8.10 km',
-    '8.20 km',
-    '8.30 km',
-    '8.40 km',
-    '8.50 km',
-    '8.60 km',
-    '8.70 km',
-    '8.80 km',
-    '8.90 km',
-    '9 km',
-    '9.10 km',
-    '9.20 km',
-    '9.30 km',
-    '9.40 km',
-    '9.50 km',
-    '9.60 km',
-    '9.70 km',
-    '9.80 km',
-    '9.90 km',
-    '10 km',
-    '10.10 km',
-    '10.20 km',
-    '10.30 km',
-    '10.40 km',
-    '10.50 km',
-    '10.60 km',
-    '10.70 km',
-    '10.80 km',
-    '10.90 km',
-    '11 km',
-  ];
+  final List<String> distanceOptions = List.generate(3000, (index) {
+    final meters = (index + 1) * 100;
+
+    if (meters < 1000) {
+      return '$meters Meters';
+    } else {
+      final km = meters / 1000;
+      return '${km.toStringAsFixed(2)} km';
+    }
+  });
 
   File? entranceFile;
   String? entranceFileName;
@@ -224,23 +123,81 @@ class _CenterDetailsPage1State extends State<CenterDetailsPage1> {
     busStationNameController.dispose();
     metroStationNameController.dispose();
     airportNameController.dispose();
+    latitudeController.dispose();
+    longitudeController.dispose();
+
+    _latWorker?.dispose();
+    _lngWorker?.dispose();
+
     super.dispose();
   }
+
+  Worker? _latWorker;
+  Worker? _lngWorker;
+
+
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //
+  //   _fetchCenterTypes();
+  //   _loadCountries();
+  //
+  //   _latWorker = ever<double>(
+  //     examController.addressLat,
+  //         (lat) {
+  //       if (!mounted) return;
+  //       latitudeController.text = lat.toString();
+  //     },
+  //   );
+  //
+  //   _lngWorker = ever<double>(
+  //     examController.addressLong,
+  //         (lng) {
+  //       if (!mounted) return;
+  //       longitudeController.text = lng.toString();
+  //     },
+  //   );
+  // }
 
   @override
   void initState() {
     super.initState();
-    _fetchCenterTypes();
-    _loadCountries();
 
-    ever(examController.addressLat, (lat) {
-      latitudeController.text = lat.toString();
-    });
+    _latWorker = ever<double>(
+      examController.addressLat,
+          (lat) {
+        if (!mounted) return;
+        latitudeController.text = lat.toString();
+      },
+    );
 
-    ever(examController.addressLong, (lng) {
-      longitudeController.text = lng.toString();
+    _lngWorker = ever<double>(
+      examController.addressLong,
+          (lng) {
+        if (!mounted) return;
+        longitudeController.text = lng.toString();
+      },
+    );
+
+    // 🚀 Heavy work AFTER screen renders
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadInitialData();
     });
   }
+  Future<void> _loadInitialData() async {
+    try {
+      await Future.wait([
+        _fetchCenterTypes(),
+        _loadCountries(),
+      ]);
+    } catch (e) {
+      AppToast.showError(context, "Failed to load initial data");
+    }
+  }
+
+
 
   Future<PlatformFile?> _pickImageFile() async {
     final result = await FilePicker.platform.pickFiles(

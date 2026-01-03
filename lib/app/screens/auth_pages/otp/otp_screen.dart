@@ -38,7 +38,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   final TextEditingController _otpController = TextEditingController();
   final ExamCenterController formController = Get.find<ExamCenterController>();
-final AuthController authController = Get.put(AuthController());
+  final AuthController authController = Get.find<AuthController>();
 
   late StreamController<ErrorAnimationType> errorController;
   String currentText = "";
@@ -49,7 +49,28 @@ final AuthController authController = Get.put(AuthController());
     errorController = StreamController<ErrorAnimationType>();
   }
 
-  void _onVerify() {
+  // void _onVerify() {
+  //   final otp = _otpController.text.trim();
+  //
+  //   if (otp.isEmpty || otp.length != 6) {
+  //     errorController.add(ErrorAnimationType.shake);
+  //     AppToast.showError(context, 'Please enter valid 6-digit OTP');
+  //     return;
+  //   }
+  //
+  //   // ✅ Save OTP in controller
+  //   formController.otp.value = otp;
+  //   print("Data in OTP Screen:");
+  //   print("Name: ${formController.otp.value}");
+  //   print("Name: ${formController.name.value}");
+  //   print("Phone: ${formController.mobilePhone.value}");
+  //
+  //   AppToast.showSuccess(context, 'OTP verified successfully!');
+  //   Get.to(() => MpinScreen());
+  // }
+
+
+  void _onVerify() async {
     final otp = _otpController.text.trim();
 
     if (otp.isEmpty || otp.length != 6) {
@@ -58,16 +79,28 @@ final AuthController authController = Get.put(AuthController());
       return;
     }
 
-    // ✅ Save OTP in controller
-    formController.otp.value = otp;
-    print("Data in OTP Screen:");
-    print("Name: ${formController.otp.value}");
-    print("Name: ${formController.name.value}");
-    print("Phone: ${formController.mobilePhone.value}");
+    try {
+      // 🔵 START LOADING
+      authController.isLoading.value = true;
 
-    AppToast.showSuccess(context, 'OTP verified successfully!');
-    Get.to(() => MpinScreen());
+      await Future.delayed(const Duration(seconds: 2)); // API CALL
+
+      formController.otp.value = otp;
+      print("Data in OTP Screen:");
+      print("Name: ${formController.otp.value}");
+      print("Name: ${formController.name.value}");
+      print("Phone: ${formController.mobilePhone.value}");
+      AppToast.showSuccess(context, 'OTP verified successfully!');
+      Get.to(() => MpinScreen());
+    } catch (e) {
+      AppToast.showError(context, "OTP verification failed");
+    } finally {
+      // 🔴 STOP LOADING
+      authController.isLoading.value = false;
+    }
   }
+
+
 
   @override
   void dispose() {
@@ -166,18 +199,20 @@ final AuthController authController = Get.put(AuthController());
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {
+                        onTap: authController.isLoading.value
+                            ? null
+                            : () {
                           authController.resendOtp(
                             context: context,
                             mobile_phone: widget.mobileNumber,
-
                           );
                         },
                         child: Text(
-                          "Resend",
+                          authController.isLoading.value ? "Sending..." : "Resend",
                           style: AppTextStyles.linkText,
                         ),
                       ),
+
 
                     ],
                   ),
@@ -186,12 +221,14 @@ final AuthController authController = Get.put(AuthController());
                 const SizedBox(height: 21),
 
 
-                CustomPrimaryButton(
-                  text: "Verify OTP",
-                  icon: Icons.arrow_right_alt_rounded,
-                  onPressed: () =>_onVerify(),
-                ),
-
+            Obx(() {
+              return CustomPrimaryButton(
+                text: "Verify OTP",
+                icon: Icons.arrow_right_alt_rounded,
+                isLoading: authController.isLoading.value,
+                onPressed: authController.isLoading.value ? null : _onVerify,
+              );
+            }),
                 const SizedBox(height: 15),
 
                 Align(

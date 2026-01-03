@@ -1059,7 +1059,10 @@ class _MapsLocationScreenState extends State<MapsLocationScreen> {
               ),
             ),
 
-          /// 🔙 BACK BUTTON
+
+
+
+          if (!widget.isViewOnly)
           Positioned(
             top: MediaQuery.of(context).padding.top + 12,
             left: 12,
@@ -1072,7 +1075,7 @@ class _MapsLocationScreenState extends State<MapsLocationScreen> {
             ),
           ),
 
-          /// ✅ CONFIRM BUTTON
+
           if (!widget.isViewOnly)
             Positioned(
               bottom: 20,
